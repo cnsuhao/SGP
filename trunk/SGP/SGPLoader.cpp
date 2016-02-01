@@ -123,6 +123,11 @@ void SGPLoader::doGraphSamplingByFixMemUneq()
  	}
 }
 
+void SGPLoader::doGraphSampleingByDBS()
+{
+
+}
+
 void SGPLoader::doGraphSamplePartition(PartitionAlgorithm partition_algorithm)
 {
 	_partitions_in_memory.ClearPartition();

@@ -17,7 +17,8 @@ typedef enum _PartitionAlgorithm {
 typedef enum _SampleMode {
 	FIX_RATIO, //degree * _sample_ratio. the samples size not fixed. it is for BFS
 	FIX_MEM_EQ, //fixed samples's size of _edges_limition. the replaced likelihood is equal for each edge in sampling cache
-	FIX_MEM_UNEQ //fixed samples's size of _edges_limition. the replaced likelihood is unequal for each edge in sampling cache
+	FIX_MEM_UNEQ, //fixed samples's size of _edges_limition. the replaced likelihood is unequal for each edge in sampling cache
+	RESERVOIR_DBS // DBS-sample : weighted sample with reservoir design like 
 } SampleMode;
 
 class SGPLoader
@@ -50,6 +51,7 @@ private:
 	void doGraphSamplingByFixRatioMode();
 	void doGraphSamplingByFixMemEq();
 	void doGraphSamplingByFixMemUneq();
+	void doGraphSampleingByDBS();
 	
 	// read the fist samples of _edges_limition from the begin of _graph_file. return the read lines
 	int ReadInitSamples();
