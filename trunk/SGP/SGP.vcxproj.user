@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LocalDebuggerCommandArguments>-cmd sgpkl -i d:\workspace\SGP\data\graph.test -o d:\workspace\SGP\out\sgpkl -log d:\workspace\SGP\out\log_sgpkl_uneq.txt -k 4 -m random -aw 50 -ew 100 -sm uneq</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+</Project>
