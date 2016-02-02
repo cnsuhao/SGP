@@ -428,6 +428,17 @@ void Graph::BuildGraphFromEdgesCache(vector<EDGE>& edges_cache)
 	}
 }
 
+void Graph::BuildGraphFromEdgesCache(map<EdgeID, DBS_Edge_Item>& edges_cache)
+{
+	map<EdgeID, DBS_Edge_Item>::iterator iter = edges_cache.begin();
+	while(iter!=edges_cache.end())
+	{
+		EDGE e = GetEdgeofID(iter->first);
+		InsertEdge(e);
+		iter++;
+	}
+}
+
 void Graph::ComputeShortestPathsFromVertex(VERTEX u, vector<int>& shortest_path_lens)
 {
 	shortest_path_lens.clear();

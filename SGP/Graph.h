@@ -10,65 +10,7 @@
 #include <unordered_set>
 #include <set>
 
-using namespace std;
-
-typedef unsigned __int32 VERTEX;
-
-typedef struct _EDGE {
-	VERTEX _u;
-	VERTEX _v;
-} EDGE, *PEDGE;
-
-typedef struct _EdgeInfo {
-	int			_adj_vex_pos;
-} EdgeInfo;
-
-typedef std::vector <EdgeInfo> EdgeInfoArray;
-
-typedef enum _VertexStatus {
-	NORM=0,
-	REMOVED
-} VertexStatus;
-
-typedef struct _VertexInfo {
-	VERTEX			_u;
-	EdgeInfoArray	_edge_list;
-	VertexStatus	_indicator;
-	int				_degree;
-	bool            _visisted; //dfs, bfs
-} VertexInfo;
-
-typedef std::vector <VertexInfo> VertexInfoArray;
-
-typedef struct _AdjTable{
-	VertexInfoArray _vex_table;
-	map<int, int> _vertex_to_pos_idx;
-} AdjTable;
-
-typedef pair <int, int> Int_Pair;
-
-typedef set<int, less<int>> RemoveVertexList;
-
-typedef unsigned __int64 EdgeID;//this is used to cache the edges of sampling or dfs, bfs, to check if it sampled or visited
-
-EdgeID MakeEdgeID(VERTEX u, VERTEX v);
-EDGE GetEdgeofID(EdgeID eid);//u,v
-
-
-/*
- vertex_v2 and edge_v2 are the types used by metis, fennel, dbs, sgp etc.
-the var param is reserved for the extend by the application
-*/
-typedef struct _VERTEXV2 {
-	VERTEX _vex;
-	void* param;
-} Vertex_v2, *PVertex_v2;
-
-typedef struct _EDGEV2 {
-	EDGE _e;
-	void* param;
-} Edge_v2, *PEdge_v2;
-
+#include "commondef.h"
 
 class Graph {
 private:
@@ -110,6 +52,7 @@ public:
 	void BuildGraphFromDir(string& dir);
 	void BuildGraphFromFile(string& file);
 	void BuildGraphFromEdgesCache(vector<EDGE>& edges_cache);
+	void BuildGraphFromEdgesCache(map<EdgeID, DBS_Edge_Item>& edges_cache);
 
 	void WriteGraphToFileByBFS(string& file);
 	void WriteGraphToFileByDFS(string& file);

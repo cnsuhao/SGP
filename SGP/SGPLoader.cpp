@@ -141,6 +141,7 @@ bool SGPLoader::doGraphSamplingByDBS()
 
 	//step 6 - step 10 : initalize the item of edge and vertex
 	InitSamples_DBS();
+
 	//step11 to step 27 : sampling on \eta edges read until the end of stream.
 	while(ReadNextEdgesCache_DBS())
 	{
@@ -196,6 +197,8 @@ bool SGPLoader::InitSamples_DBS()
 		iter_edges->second._weight = min_degree;
 		iter_edges->second._random = rand()/RAND_MAX;
 		iter_edges->second._key = pow(iter_edges->second._random, 1.0/iter_edges->second._weight);
+
+		iter_edges++;
 	}
 
 	return true;
@@ -203,6 +206,8 @@ bool SGPLoader::InitSamples_DBS()
 
 bool SGPLoader::ReadNextEdgesCache_DBS()
 {
+	_dbs_edges_cache_to_process.clear();
+
 	EDGE e;
 	int iread = 0;
 	while(iread<_edges_cache_limitation && ReadEdge(e))
@@ -250,6 +255,7 @@ void SGPLoader::UpdateWeightofEdgesInEs()
 	{
 		EDGE e = GetEdgeofID(iter_edges->first);
 
+		//find the minimum degree of vertices of e
 		int min_degree = INT_MAX;
 		map<VERTEX, DBS_Vertex_Item>::iterator iter_vexs;
 		for(int j=0;j<2; j++)
@@ -270,17 +276,21 @@ void SGPLoader::UpdateWeightofEdgesInEs()
 			}
 		}
 		
-		if(iter_edges->second._weight > min_degree)
+		if(iter_edges->second._weight != min_degree)
 		{
 			iter_edges->second._weight = min_degree;
 			//don't generate the random number again
 			iter_edges->second._key = pow(iter_edges->second._random, 1.0/iter_edges->second._weight);
 		}
-		if(iter_edges->second._weight<_min_weight)
+
+		//update the minimum key
+		if(iter_edges->second._key < _min_weight)
 		{
-			_min_weight = iter_edges->second._weight;
+			_min_weight = iter_edges->second._key;
 			_min_weight_edge_id = iter_edges->first;
 		}
+
+		iter_edges++;
 	}
 }
 
@@ -326,6 +336,7 @@ bool SGPLoader::SamplingEdgeCache()
 
 			SearchMinimumKey();
 		}
+		iter++;
 	}
 }
 
@@ -368,9 +379,16 @@ void SGPLoader::SearchMinimumKey()
 			_min_weight = iter_edges->second._key;
 			_min_weight_edge_id =  iter_edges->first;
 		}
+		iter_edges++;
 	}
 
 }
+
+void SGPLoader::BuildSampleGraph()
+{
+	_graph_sample.BuildGraphFromEdgesCache(_dbs_edge_items);
+}
+
 void SGPLoader::doGraphSamplePartition(PartitionAlgorithm partition_algorithm)
 {
 	_partitions_in_memory.ClearPartition();
@@ -561,7 +579,6 @@ float SGPLoader::ComputeProbOfEdgeRemoved(EDGE e)
 
 	return max_degree;
 }
-
 
 void SGPLoader::UpdateProbsOfEdgeRemoved()
 {

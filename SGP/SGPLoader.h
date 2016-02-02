@@ -1,36 +1,13 @@
 #pragma once
+
 #include "Graph.h"
 #include "Partitioner.h"
 #include "AssignContext.h"
+#include "commondef.h"
 
 int rand(int range_min, int range_max);
 float randf(float range_min, float range_max);
 
-typedef enum _EdgeOrderMode { 
-	RANDOM, DFS, BFS 
-} EdgeOrderMode;
-
-typedef enum _PartitionAlgorithm {
-	KL, MaxMin
-} PartitionAlgorithm;
-
-typedef enum _SampleMode {
-	FIX_RATIO, //degree * _sample_ratio. the samples size not fixed. it is for BFS
-	FIX_MEM_EQ, //fixed samples's size of _edges_limition. the replaced likelihood is equal for each edge in sampling cache
-	FIX_MEM_UNEQ, //fixed samples's size of _edges_limition. the replaced likelihood is unequal for each edge in sampling cache
-	RESERVOIR_DBS // DBS-sample : weighted sample with reservoir design like 
-} SampleMode;
-
-typedef struct _DBS_EDGE_ITEM {
-	double _weight;
-	double _random;
-	double _key;
-} DBS_Edge_Item, PDBS_Edge_Item;
-
-typedef struct _DBS_VERTEX_ITEM
-{
-	int degree;
-} DBS_Vertex_Item, PDBS_Vertex_Item;
 
 class SGPLoader
 {
@@ -47,11 +24,7 @@ private:
 	int						_k;
 	float					_sample_ratio;//sample's ratio, it maybe not used.
 	int						_edges_limition;//samples size, $\rho$
-	
 	Partitioner				_partitions_in_memory;
-	
-	map<EdgeID, int>		_sampled_edges_idx;//to search the sampled edges, edgeid-->vex's pos in _samples_cache
-	vector<EDGE>			_samples_cache; // the cache of sampled edges. E_s
 	
 	//assign context data
 	AssignContextManager	_assign_manager;
@@ -59,7 +32,10 @@ private:
 
 	SampleMode				_sample_mode;
 
-	//data for sampling with unequal prob.
+	//the data for equal sample or unequal sample: deprecated
+	map<EdgeID, int>		_sampled_edges_idx;//to search the sampled edges, edgeid-->vex's pos in _samples_cache
+	vector<EDGE>			_samples_cache; // the cache of sampled edges. E_s
+	//data for sampling with unequal prob: deprecated
 	map<EdgeID, float>      _sample_removed_probs;//<edge, removed-prob>.here the removed-prob is the max of degreem, which isn't normalized
 	float                   _removed_probs_sum;//the sum of the max degree for each in _sample_removed_probs
 	map<VERTEX, int>        _vertex_degree_in_sample;//<vex, degree>
@@ -67,8 +43,8 @@ private:
 	//data for dbs sampling
 	map<VERTEX, DBS_Vertex_Item>	_dbs_vertex_items;//vertex --> degree; DBS_Vertex_Item represents V_s
 	map<EdgeID, DBS_Edge_Item>		_dbs_edge_items;//edgeid --> weight, rand, key; DBS_Edge_Item represents E_s
-	int	_edges_cache_limitation;// $\eta$, $\eta$<_edges_limition
-	vector<EDGE>		_dbs_edges_cache_to_process;//E'
+	int								_edges_cache_limitation;// $\eta$, $\eta$<_edges_limition
+	vector<EDGE>					_dbs_edges_cache_to_process;//E'
 
 	EdgeID				_min_weight_edge_id;//the edge to replace
 	double				_min_weight;
@@ -88,6 +64,8 @@ private:
 	bool AppendEdgeSample_DBS(EDGE e);
 	//find the minimum key in the current E_s
 	void SearchMinimumKey();
+	//build the graph on the _dbs_edge_items
+	void BuildSampleGraph();
 
 	void doGraphSamplingByFixRatioMode();
 	void doGraphSamplingByFixMemEq();
