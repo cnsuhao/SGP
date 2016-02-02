@@ -51,7 +51,7 @@ private:
 	Partitioner				_partitions_in_memory;
 	
 	map<EdgeID, int>		_sampled_edges_idx;//to search the sampled edges, edgeid-->vex's pos in _samples_cache
-	vector<EDGE>			_samples_cache; // the cache of sampled edges
+	vector<EDGE>			_samples_cache; // the cache of sampled edges. E_s
 	
 	//assign context data
 	AssignContextManager	_assign_manager;
@@ -65,14 +65,34 @@ private:
 	map<VERTEX, int>        _vertex_degree_in_sample;//<vex, degree>
 
 	//data for dbs sampling
-	map<VERTEX, DBS_Vertex_Item>	_dbs_vertex_items;//vertex --> degree; DBS_Vertex_Item
-	map<EdgeID, DBS_Edge_Item>		_dbs_edge_items;//edge --> weight, rand, key; DBS_Edge_Item
+	map<VERTEX, DBS_Vertex_Item>	_dbs_vertex_items;//vertex --> degree; DBS_Vertex_Item represents V_s
+	map<EdgeID, DBS_Edge_Item>		_dbs_edge_items;//edgeid --> weight, rand, key; DBS_Edge_Item represents E_s
 	int	_edges_cache_limitation;// $\eta$, $\eta$<_edges_limition
+	vector<EDGE>		_dbs_edges_cache_to_process;//E'
+
+	EdgeID				_min_weight_edge_id;//the edge to replace
+	double				_min_weight;
+
+	//funtion for dbs
+	//read the first \rho edges into _dbs_edge_items
+	int ReadInitSamples_DBS();
+	//compute the sample weight by the first \rho edges
+	bool InitSamples_DBS();
+	//read the next \eta edges into _dbs_edges_cache_to_process and update _dbs_vertex_items at the same time
+	bool ReadNextEdgesCache_DBS();
+	//update the weight of edge in E_s
+	void UpdateWeightofEdgesInEs();
+	//sampling the edges in E'(_dbs_edges_cache_to_process)
+	bool SamplingEdgeCache();
+	//insert a edge into _dbs_edge_items
+	bool AppendEdgeSample_DBS(EDGE e);
+	//find the minimum key in the current E_s
+	void SearchMinimumKey();
 
 	void doGraphSamplingByFixRatioMode();
 	void doGraphSamplingByFixMemEq();
 	void doGraphSamplingByFixMemUneq();
-	void doGraphSamplingByDBS();
+	bool doGraphSamplingByDBS();
 	
 	// read the fist samples of _edges_limition from the begin of _graph_file. return the read lines
 	int ReadInitSamples();

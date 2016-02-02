@@ -38,7 +38,8 @@ void SGPLoader::doGraphSampling()
 	case FIX_MEM_UNEQ:
 		return doGraphSamplingByFixMemUneq();
 	case RESERVOIR_DBS:
-		return doGraphSamplingByDBS();
+		break;
+		//return doGraphSamplingByDBS();
 	}
 
 }
@@ -125,24 +126,96 @@ void SGPLoader::doGraphSamplingByFixMemUneq()
  	}
 }
 
-void SGPLoader::doGraphSamplingByDBS()
+bool SGPLoader::doGraphSamplingByDBS()
 {
 	_dbs_edge_items.clear();
 	_dbs_vertex_items.clear();
+	_dbs_edges_cache_to_process.clear();
 	
+	//step1 - step 5. read the first \rho edges
+	if(ReadInitSamples_DBS() < _edges_limition)
+	{
+		Log::log("the graph is too small!\n");
+		return false;
+	}
+
+	//step 6 - step 10 : initalize the item of edge and vertex
+	InitSamples_DBS();
+	//step11 to step 27 : sampling on \eta edges read until the end of stream.
+	while(ReadNextEdgesCache_DBS())
+	{
+		UpdateWeightofEdgesInEs();
+
+		SamplingEdgeCache();
+	}
+
+}
+
+int SGPLoader::ReadInitSamples_DBS()
+{
 	EDGE e;
-	DBS_Edge_Item e_item = {0,0,0};
 	int iread = 0;
 	while(iread<_edges_limition && ReadEdge(e))
 	{
-		if(isEdgeExist(e))
+		if(AppendEdgeSample_DBS(e))
+		{
+			iread++;
+		}
+	}
+	return iread;
+}
+
+bool SGPLoader::InitSamples_DBS()
+{
+	srand((unsigned)time(NULL));
+	map<EdgeID, DBS_Edge_Item>::iterator iter_edges = _dbs_edge_items.begin();
+	while(iter_edges != _dbs_edge_items.end())
+	{
+		EDGE e = GetEdgeofID(iter_edges->first);
+
+		int min_degree = INT_MAX;
+		map<VERTEX, DBS_Vertex_Item>::iterator iter_vexs;
+		for(int j=0;j<2; j++)
+		{
+			VERTEX vex = (j==0)?e._u:e._v;
+			iter_vexs = _dbs_vertex_items.find(vex);
+			if(iter_vexs == _dbs_vertex_items.end())
+			{
+				Log::log("DBS : get the degree of vertex of edge : read first \\rho edges : error occur!!! ");
+				return false;
+			}
+			else
+			{
+				if(iter_vexs->second.degree < min_degree)
+				{
+					min_degree = iter_vexs->second.degree;
+				}
+			}
+		}
+		
+		iter_edges->second._weight = min_degree;
+		iter_edges->second._random = rand()/RAND_MAX;
+		iter_edges->second._key = pow(iter_edges->second._random, 1.0/iter_edges->second._weight);
+	}
+
+	return true;
+}
+
+bool SGPLoader::ReadNextEdgesCache_DBS()
+{
+	EDGE e;
+	int iread = 0;
+	while(iread<_edges_cache_limitation && ReadEdge(e))
+	{
+		//check if e has exists in E_s
+		EdgeID e_id = MakeEdgeID(e._u,e._v);
+		if(_dbs_edge_items.find(e_id) == _dbs_edge_items.end())
 			continue;
 
-		AppendEdgeSample(e);
+		//save e in the edge cache
+		_dbs_edges_cache_to_process.push_back(e);
 
-		EdgeID e_id = MakeEdgeID(e._u,e._v);
-		_dbs_edge_items.insert(pair<EdgeID, DBS_Edge_Item>(e_id, e_item));
-
+		//update the degree
 		DBS_Vertex_Item v_item = {0};
 		map<VERTEX, DBS_Vertex_Item>::iterator iter;
 		for(int j=0;j<2; j++)
@@ -159,15 +232,19 @@ void SGPLoader::doGraphSamplingByDBS()
 				(iter->second).degree++;
 			}
 		}
-		
 		iread++;
 	}
-	if(iread < _edges_limition)
-	{
-		Log::log("the graph is too small!\n");
-		return;
-	}
 
+	if(iread > 0 )
+		return true;
+	else
+		return false;
+}
+
+void SGPLoader::UpdateWeightofEdgesInEs()
+{
+	_min_weight = DBL_MAX;
+	srand((unsigned)time(NULL));
 	map<EdgeID, DBS_Edge_Item>::iterator iter_edges = _dbs_edge_items.begin();
 	while(iter_edges != _dbs_edge_items.end())
 	{
@@ -192,15 +269,108 @@ void SGPLoader::doGraphSamplingByDBS()
 				}
 			}
 		}
-		iter_edges->second._weight = min_degree;
-		iter_edges->second._random = rand();
-		iter_edges->second._weight = pow(iter_edges->second._random, 1.0/iter_edges->second._weight);
+		
+		if(iter_edges->second._weight > min_degree)
+		{
+			iter_edges->second._weight = min_degree;
+			//don't generate the random number again
+			iter_edges->second._key = pow(iter_edges->second._random, 1.0/iter_edges->second._weight);
+		}
+		if(iter_edges->second._weight<_min_weight)
+		{
+			_min_weight = iter_edges->second._weight;
+			_min_weight_edge_id = iter_edges->first;
+		}
 	}
-
-	//TODO:...
-
 }
 
+bool SGPLoader::SamplingEdgeCache()
+{
+	vector<EDGE>::iterator iter = _dbs_edges_cache_to_process.begin();
+	while(iter != _dbs_edges_cache_to_process.end())
+	{
+		int min_degree = INT_MAX;
+		EDGE e = *iter;
+		
+		for(int j=0;j<2; j++)
+		{
+			VERTEX vex = (j==0)?e._u:e._v;
+			map<VERTEX, DBS_Vertex_Item>::iterator iter_vexs = _dbs_vertex_items.find(vex);
+			if(iter_vexs == _dbs_vertex_items.end())
+			{
+				Log::log("DBS : get the degree of vertex of edge : read first \\rho edges : error occur!!! ");
+				return false;
+			}
+			else
+			{
+				if(iter_vexs->second.degree < min_degree)
+				{
+					min_degree = iter_vexs->second.degree;
+				}
+			}
+		}
+		double r = rand()/RAND_MAX;
+		double key = pow(r, 1.0/min_degree);
+		if(key > _min_weight)
+		{
+			map<EdgeID, DBS_Edge_Item>::iterator iter_edges = _dbs_edge_items.find(_min_weight_edge_id);
+			if(iter_edges == _dbs_edge_items.end())
+			{
+				Log::log("DBS : SamplingEdgeCache : error occur!!! ");
+				return false;
+			}
+			_dbs_edge_items.erase(iter_edges);
+			DBS_Edge_Item e_item = {min_degree, r, key};
+			EdgeID e_id = MakeEdgeID(e._u, e._v);
+			_dbs_edge_items.insert(pair<EdgeID, DBS_Edge_Item>(e_id, e_item));
+
+			SearchMinimumKey();
+		}
+	}
+}
+
+bool SGPLoader::AppendEdgeSample_DBS(EDGE e)
+{
+	EdgeID e_id = MakeEdgeID(e._u,e._v);
+	if(_dbs_edge_items.find(e_id) == _dbs_edge_items.end())
+		return false; //edge exits
+
+	DBS_Edge_Item e_item = {0,0,0};
+	DBS_Vertex_Item v_item = {0};
+
+	_dbs_edge_items.insert(pair<EdgeID, DBS_Edge_Item>(e_id, e_item));
+
+	map<VERTEX, DBS_Vertex_Item>::iterator iter;
+	for(int j=0;j<2; j++)
+	{
+		VERTEX vex = (j==0)?e._u:e._v;
+		iter = _dbs_vertex_items.find(vex);
+		if(iter == _dbs_vertex_items.end())
+		{
+			v_item.degree = 1;
+			_dbs_vertex_items.insert(pair<VERTEX, DBS_Vertex_Item>(vex, v_item));
+		}
+		else
+		{
+			(iter->second).degree++;
+		}
+	}
+}
+
+void SGPLoader::SearchMinimumKey()
+{
+	_min_weight = DBL_MAX;
+	map<EdgeID, DBS_Edge_Item>::iterator iter_edges = _dbs_edge_items.begin();
+	while(iter_edges != _dbs_edge_items.end())
+	{
+		if(iter_edges->second._key < _min_weight)
+		{
+			_min_weight = iter_edges->second._key;
+			_min_weight_edge_id =  iter_edges->first;
+		}
+	}
+
+}
 void SGPLoader::doGraphSamplePartition(PartitionAlgorithm partition_algorithm)
 {
 	_partitions_in_memory.ClearPartition();
@@ -289,6 +459,7 @@ bool SGPLoader::ReadEdge(EDGE& e)
 	}
 	return false;
 }
+
 void SGPLoader::AppendEdgeSample(EDGE e)
 {
 	_samples_cache.push_back(e);
