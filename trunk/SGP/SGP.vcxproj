@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssignContext.h" />
+    <ClInclude Include="commondef.h" />
     <ClInclude Include="FENNEL.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="Log.h" />
