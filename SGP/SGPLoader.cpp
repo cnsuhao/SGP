@@ -37,6 +37,8 @@ void SGPLoader::doGraphSampling()
 		return doGraphSamplingByFixMemEq();
 	case FIX_MEM_UNEQ:
 		return doGraphSamplingByFixMemUneq();
+	case RESERVOIR_DBS:
+		return doGraphSamplingByDBS();
 	}
 
 }
@@ -123,8 +125,51 @@ void SGPLoader::doGraphSamplingByFixMemUneq()
  	}
 }
 
-void SGPLoader::doGraphSampleingByDBS()
+void SGPLoader::doGraphSamplingByDBS()
 {
+	_dbs_edge_items.clear();
+	_dbs_vertex_items.clear();
+	
+	EDGE e;
+	DBS_Edge_Item e_item = {0,0,0};
+	int iread = 0;
+	while(iread<_edges_limition && ReadEdge(e))
+	{
+		if(isEdgeExist(e))
+			continue;
+
+		AppendEdgeSample(e);
+
+		EdgeID e_id = MakeEdgeID(e._u,e._v);
+		_dbs_edge_items.insert(pair<EdgeID, DBS_Edge_Item>(e_id, e_item));
+
+		DBS_Vertex_Item v_item = {0};
+		map<VERTEX, DBS_Vertex_Item>::iterator iter;
+		for(int j=0;j<2; j++)
+		{
+			VERTEX vex = (j==0)?e._u:e._v;
+			iter = _dbs_vertex_items.find(vex);
+			if(iter == _dbs_vertex_items.end())
+			{
+				v_item.degree = 1;
+				_dbs_vertex_items.insert(pair<VERTEX, DBS_Vertex_Item>(vex, v_item));
+			}
+			else
+			{
+				(iter->second).degree++;
+			}
+		}
+		
+		iread++;
+	}
+	if(iread < _edges_limition)
+	{
+		Log::log("the graph is too small!\n");
+		return;
+	}
+
+
+
 
 }
 
@@ -227,7 +272,10 @@ void SGPLoader::AppendEdgeSample(EDGE e, int pos)
 	EdgeID e_id = MakeEdgeID(e._u,e._v);
 	_samples_cache.at(pos) = e;
 	_sampled_edges_idx.insert(pair<EdgeID, int>(e_id, pos));
-
+	
+	//TODO:
+	//move these codes to the independent function of unequal sampling
+	/*
 	if(_sample_mode == FIX_MEM_UNEQ)
 	{
 		map<VERTEX, int>::iterator iter_vexs = _vertex_degree_in_sample.find(e._u);
@@ -253,6 +301,7 @@ void SGPLoader::AppendEdgeSample(EDGE e, int pos)
 		_sample_removed_probs.insert(pair<EdgeID, float>(e_id, e_prob));
 		_removed_probs_sum += e_prob;
 	}
+	*/
 }
 
 float SGPLoader::GetProbOfEdge(EDGE e)

@@ -44,6 +44,7 @@ typedef struct _AdjTable{
 	VertexInfoArray _vex_table;
 	map<int, int> _vertex_to_pos_idx;
 } AdjTable;
+
 typedef pair <int, int> Int_Pair;
 
 typedef set<int, less<int>> RemoveVertexList;
@@ -51,6 +52,21 @@ typedef set<int, less<int>> RemoveVertexList;
 typedef unsigned __int64 EdgeID;//this is used to cache the edges of sampling or dfs, bfs, to check if it sampled or visited
 
 EdgeID MakeEdgeID(VERTEX u, VERTEX v);
+
+/*
+ vertex_v2 and edge_v2 are the types used by metis, fennel, dbs, sgp etc.
+the var param is reserved for the extend by the application
+*/
+typedef struct _VERTEXV2 {
+	VERTEX _vex;
+	void* param;
+} Vertex_v2, *PVertex_v2;
+
+typedef struct _EDGEV2 {
+	EDGE _e;
+	void* param;
+} Edge_v2, *PEdge_v2;
+
 
 class Graph {
 private:

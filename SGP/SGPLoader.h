@@ -21,6 +21,17 @@ typedef enum _SampleMode {
 	RESERVOIR_DBS // DBS-sample : weighted sample with reservoir design like 
 } SampleMode;
 
+typedef struct _DBS_EDGE_ITEM {
+	float _weight;
+	float _random;
+	float _key;
+} DBS_Edge_Item, PDBS_Edge_Item;
+
+typedef struct _DBS_VERTEX_ITEM
+{
+	int degree;
+} DBS_Vertex_Item, PDBS_Vertex_Item;
+
 class SGPLoader
 {
 public:
@@ -35,23 +46,33 @@ private:
 	ifstream				_ifs;
 	int						_k;
 	float					_sample_ratio;//sample's ratio, it maybe not used.
-	int						_edges_limition;//samples size
+	int						_edges_limition;//samples size, $\rho$
+	
 	Partitioner				_partitions_in_memory;
-	map<EdgeID, int>		_sampled_edges_idx;//to search the sampled edges
-	SampleMode				_sample_mode;
+	
+	map<EdgeID, int>		_sampled_edges_idx;//to search the sampled edges, edgeid-->vex's pos in _samples_cache
 	vector<EDGE>			_samples_cache; // the cache of sampled edges
+	
+	//assign context data
 	AssignContextManager	_assign_manager;
 	int                     _assign_win_size;
+
+	SampleMode				_sample_mode;
 
 	//data for sampling with unequal prob.
 	map<EdgeID, float>      _sample_removed_probs;//<edge, removed-prob>.here the removed-prob is the max of degreem, which isn't normalized
 	float                   _removed_probs_sum;//the sum of the max degree for each in _sample_removed_probs
 	map<VERTEX, int>        _vertex_degree_in_sample;//<vex, degree>
 
+	//data for dbs sampling
+	map<VERTEX, DBS_Vertex_Item>	_dbs_vertex_items;//vertex --> degree; DBS_Vertex_Item
+	map<EdgeID, DBS_Edge_Item>		_dbs_edge_items;//edge --> weight, rand, key; DBS_Edge_Item
+	int	_edges_cache_limitation;// $\eta$, $\eta$<_edges_limition
+
 	void doGraphSamplingByFixRatioMode();
 	void doGraphSamplingByFixMemEq();
 	void doGraphSamplingByFixMemUneq();
-	void doGraphSampleingByDBS();
+	void doGraphSamplingByDBS();
 	
 	// read the fist samples of _edges_limition from the begin of _graph_file. return the read lines
 	int ReadInitSamples();
@@ -88,7 +109,6 @@ public:
 	void doGraphSamplePartition(PartitionAlgorithm partition_algorithm);
 	// assign the reminder of edges
 	void doAssignReminderEdges();
-
 
 	void SetEdgeOrderMode(EdgeOrderMode mode);
 	void SetGraphFile(string graphfile);
