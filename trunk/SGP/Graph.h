@@ -52,6 +52,8 @@ typedef set<int, less<int>> RemoveVertexList;
 typedef unsigned __int64 EdgeID;//this is used to cache the edges of sampling or dfs, bfs, to check if it sampled or visited
 
 EdgeID MakeEdgeID(VERTEX u, VERTEX v);
+EDGE GetEdgeofID(EdgeID eid);//u,v
+
 
 /*
  vertex_v2 and edge_v2 are the types used by metis, fennel, dbs, sgp etc.

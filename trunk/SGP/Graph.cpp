@@ -11,6 +11,14 @@ EdgeID MakeEdgeID(VERTEX u, VERTEX v)
 	return (EdgeID)((EdgeID(_min_vex) << 32) | (EdgeID(_max_vex) & 0x00000000FFFFFFFF));
 }
 
+EDGE GetEdgeofID(EdgeID eid)
+{
+	VERTEX _min_vex = (VERTEX)((eid&0xFFFFFFFF00000000)>> 32);
+	VERTEX _max_vex = (VERTEX)(eid & 0x00000000FFFFFFFF);
+	EDGE e = {_min_vex,  _max_vex};
+	return e;
+}
+
 void Graph::ClearGraph()
 {
 	_graph_data._vex_table.clear();

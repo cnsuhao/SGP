@@ -22,9 +22,9 @@ typedef enum _SampleMode {
 } SampleMode;
 
 typedef struct _DBS_EDGE_ITEM {
-	float _weight;
-	float _random;
-	float _key;
+	double _weight;
+	double _random;
+	double _key;
 } DBS_Edge_Item, PDBS_Edge_Item;
 
 typedef struct _DBS_VERTEX_ITEM
