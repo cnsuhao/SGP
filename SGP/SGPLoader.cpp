@@ -168,8 +168,36 @@ void SGPLoader::doGraphSamplingByDBS()
 		return;
 	}
 
+	map<EdgeID, DBS_Edge_Item>::iterator iter_edges = _dbs_edge_items.begin();
+	while(iter_edges != _dbs_edge_items.end())
+	{
+		EDGE e = GetEdgeofID(iter_edges->first);
 
+		int min_degree = INT_MAX;
+		map<VERTEX, DBS_Vertex_Item>::iterator iter_vexs;
+		for(int j=0;j<2; j++)
+		{
+			VERTEX vex = (j==0)?e._u:e._v;
+			iter_vexs = _dbs_vertex_items.find(vex);
+			if(iter_vexs == _dbs_vertex_items.end())
+			{
+				Log::log("DBS : get the degree of vertex of edge : read first \\rho edges : error occur!!! ");
+				return;
+			}
+			else
+			{
+				if(iter_vexs->second.degree < min_degree)
+				{
+					min_degree = iter_vexs->second.degree;
+				}
+			}
+		}
+		iter_edges->second._weight = min_degree;
+		iter_edges->second._random = rand();
+		iter_edges->second._weight = pow(iter_edges->second._random, 1.0/iter_edges->second._weight);
+	}
 
+	//TODO:...
 
 }
 
