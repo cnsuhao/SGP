@@ -428,9 +428,9 @@ void Graph::BuildGraphFromEdgesCache(vector<EDGE>& edges_cache)
 	}
 }
 
-void Graph::BuildGraphFromEdgesCache(map<EdgeID, DBS_Edge_Item>& edges_cache)
+void Graph::BuildGraphFromEdgesCache(map<EdgeID, Edge_Item>& edges_cache)
 {
-	map<EdgeID, DBS_Edge_Item>::iterator iter = edges_cache.begin();
+	map<EdgeID, Edge_Item>::iterator iter = edges_cache.begin();
 	while(iter!=edges_cache.end())
 	{
 		EDGE e = GetEdgeofID(iter->first);
