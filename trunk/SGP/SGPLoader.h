@@ -32,77 +32,77 @@ private:
 
 	SampleMode				_sample_mode;
 
-	//the data for equal sample or unequal sample: deprecated
-	map<EdgeID, int>		_sampled_edges_idx;//to search the sampled edges, edgeid-->vex's pos in _samples_cache
-	vector<EDGE>			_samples_cache; // the cache of sampled edges. E_s
-	//data for sampling with unequal prob: deprecated
-	map<EdgeID, float>      _sample_removed_probs;//<edge, removed-prob>.here the removed-prob is the max of degreem, which isn't normalized
-	float                   _removed_probs_sum;//the sum of the max degree for each in _sample_removed_probs
-	map<VERTEX, int>        _vertex_degree_in_sample;//<vex, degree>
+	/***********************************************************************************************************************************/
+	//data structure for sampling
+	map<VERTEX, Vertex_Item>		_sample_vertex_items;//vertex --> degree; Vertex_Item represents V_s
+	map<EdgeID, Edge_Item>			_sample_edge_items;//edgeid --> weight, rand, key; Edge_Item represents E_s
+	/***********************************************************************************************************************************/
 
-	//data for dbs sampling
-	map<VERTEX, DBS_Vertex_Item>	_dbs_vertex_items;//vertex --> degree; DBS_Vertex_Item represents V_s
-	map<EdgeID, DBS_Edge_Item>		_dbs_edge_items;//edgeid --> weight, rand, key; DBS_Edge_Item represents E_s
+	/***********************************************************************************************************************************/
+	//data for eq sample
+	vector<EdgeID>	_sample_reserior;//auxiliary variable
+	/***********************************************************************************************************************************/
+	//the function for eq sample
+	bool doGraphSamplingByFixMemEq();
+	/***********************************************************************************************************************************/
+
+	/***********************************************************************************************************************************/
+	//data for dbs
 	int								_edges_cache_limitation;// $\eta$, $\eta$<_edges_limition
 	vector<EDGE>					_dbs_edges_cache_to_process;//E'
-
-	EdgeID				_min_weight_edge_id;//the edge to replace
-	double				_min_weight;
-
-	//funtion for dbs
-	//read the first \rho edges into _dbs_edge_items
+	EdgeID				_min_weight_edge_id;//the subtituted edge with the minimum key
+	double				_min_weight; // minimum key
+	/***********************************************************************************************************************************/
+	//the funtion for dbs sampling
+	//the entry to dbs sampling
+	bool doGraphSamplingByDBS();
+	//read the first \rho edges into _sample_edge_items
 	int ReadInitSamples_DBS();
 	//compute the sample weight by the first \rho edges
 	bool InitSamples_DBS();
-	//read the next \eta edges into _dbs_edges_cache_to_process and update _dbs_vertex_items at the same time
+	//read the next \eta edges into _dbs_edges_cache_to_process and update _sample_vertex_items at the same time
 	bool ReadNextEdgesCache_DBS();
 	//update the weight of edge in E_s
 	void UpdateWeightofEdgesInEs();
 	//sampling the edges in E'(_dbs_edges_cache_to_process)
 	bool SamplingEdgeCache();
-	//insert a edge into _dbs_edge_items
+	//insert a edge into _sample_edge_items
 	bool AppendEdgeSample_DBS(EDGE e);
 	//find the minimum key in the current E_s
 	void SearchMinimumKey();
-	//build the graph on the _dbs_edge_items
-	void BuildSampleGraph();
+	/***********************************************************************************************************************************/
 
-	void doGraphSamplingByFixRatioMode();
-	void doGraphSamplingByFixMemEq();
-	void doGraphSamplingByFixMemUneq();
-	bool doGraphSamplingByDBS();
-	
+	/***********************************************************************************************************************************/
+	//data for uneq sampling
+	int _sum_d;//auxiliary variable
+	//NOTE:only the item weight is used as the min degree in _sample_edge_items
+	/***********************************************************************************************************************************/
+	//the function for uneq sampling	
+	bool doGraphSamplingByFixMemUneq();
 	// read the fist samples of _edges_limition from the begin of _graph_file. return the read lines
-	int ReadInitSamples();
+	int ReadInitSamples_Uneq();
+	bool AppendEdgeSample_Uneq(EDGE e);
+	//compute the min degree of edge after the first _edges_limition edges read
+	bool InitEdgeWeightInEs();
+	bool UpdateVertexWeight_Uneq(EDGE e);
+	bool SelectNewEdge_Uneq(EDGE e);
+	/***********************************************************************************************************************************/
+
+	bool doGraphSamplingByFixRatioMode();
+
+	/***********************************************************************************************************************************/
+	// the functions in common
+	//build the graph on the _sample_edge_items
+	void BuildSampleGraph();
 	//read an edge from current pos of ifs
 	bool ReadEdge(EDGE& e);
-	//append an edge into sample cache at the position of pos without checking if it exists. the prob of removed isn't computed
-	void AppendEdgeSample(EDGE e, int pos);
-	//at the end
-	void AppendEdgeSample(EDGE e);
-	//remove an edge from sample cache. just remove it from index.
-	void RemoveEdgeSampleOfPos(int pos);
-
-	//compute the prob of a edge for unequal sampling. if return < 0, error. (1-d/n)/sum(1-d/n) = (1-d/n)/{n-sum(d)/n}
-	float ComputeProbOfEdgeRemoved(EDGE e);
-	//re-compute the probs of edge to be removed when the degrees of v1 and v2 have been changed.
-	//NOTE: only the operation of append edge will cause the degree changing
-	void UpdateProbsOfEdgeRemoved(VERTEX changed_v1, VERTEX changed_v2);
-	//update all probs of edges
-	void UpdateProbsOfEdgeRemoved();
-	//get the unnormalized prob of edge to be removed. if not found, return -1.0f
-	float GetProbOfEdge(EDGE e);
-	//set the unnormalized prob of edge to be removed
-	void SetProbOfEdge(EDGE e, float prob);
-	//select an edge to remove by unequal sampling. the return is the pos of selected edge. if -1 returned, error.
-	int SelectEdgeToRemoveByUneq();
-
 	void ResetGraphInputStream(void);
 	bool isSampled(EDGE& e);
+	/***********************************************************************************************************************************/
 
 public:
 	//sampling the _graph_file and construct _graph_sample
-	void doGraphSampling();
+	bool doGraphSampling();
 	//partitioning the graph sample into _partitions_in_memory of k clusters
 	void doGraphSamplePartition(PartitionAlgorithm partition_algorithm);
 	// assign the reminder of edges
@@ -132,8 +132,5 @@ public:
 	//check if the edge exists
 	bool isEdgeExist(EDGE& e);
 
-	//debug
-	bool check_cache_idx(void);
-	void check_degree_distribution(void);
 };
 

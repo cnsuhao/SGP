@@ -52,7 +52,7 @@ public:
 	void BuildGraphFromDir(string& dir);
 	void BuildGraphFromFile(string& file);
 	void BuildGraphFromEdgesCache(vector<EDGE>& edges_cache);
-	void BuildGraphFromEdgesCache(map<EdgeID, DBS_Edge_Item>& edges_cache);
+	void BuildGraphFromEdgesCache(map<EdgeID, Edge_Item>& edges_cache);
 
 	void WriteGraphToFileByBFS(string& file);
 	void WriteGraphToFileByDFS(string& file);

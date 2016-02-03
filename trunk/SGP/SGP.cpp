@@ -31,16 +31,16 @@ string usage =
 	"params: -i <inputfile> -o <outputdir> -k <clusters num> -log <log file>\n"
 	"SGPKL:\n"
 	"partitioning a graph by sgp of kl algorithm.\n"
-	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq>\n"
+	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs>\n"
 	"SGPMaxMin:\n"
 	"partitioning a graph by sgp of max-min algorithm\n"
-	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq>\n"
+	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs>\n"
 	"SGPStreamKL:\n"
 	"partitioning a graph by stream sgp of kl algorithm.\n"
-	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq>\n"
+	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs>\n"
 	"SGPStreamMaxMin:\n"
 	"partitioning a graph by stream sgp  of max-min algorithm.\n"
-	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq>\n"
+	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs>\n"
 	"Test:\n"
 	"do a test!!!!"
 	"params: -i <input file> -log <log file>";
@@ -403,6 +403,7 @@ bool ParseCommand(map<string, string> &command_params)
 			SampleMode mode;
 			if(sample_mode.compare("eq")==0) mode = FIX_MEM_EQ;
 			if(sample_mode.compare("uneq")==0) mode = FIX_MEM_UNEQ;
+			if(sample_mode.compare("dbs")==0) mode = RESERVOIR_DBS;
 
 			EdgeOrderMode ordermode;
 			if(order_mode.compare("dfs") == 0) ordermode = DFS;
@@ -438,6 +439,7 @@ bool ParseCommand(map<string, string> &command_params)
 			SampleMode mode;
 			if(sample_mode.compare("eq")==0) mode = FIX_MEM_EQ;
 			if(sample_mode.compare("uneq")==0) mode = FIX_MEM_UNEQ;
+			if(sample_mode.compare("dbs")==0) mode = RESERVOIR_DBS;
 
 			EdgeOrderMode ordermode;
 			if(order_mode.compare("dfs") == 0) ordermode = DFS;
@@ -473,6 +475,7 @@ bool ParseCommand(map<string, string> &command_params)
 			SampleMode mode;
 			if(sample_mode.compare("eq")==0) mode = FIX_MEM_EQ;
 			if(sample_mode.compare("uneq")==0) mode = FIX_MEM_UNEQ;
+			if(sample_mode.compare("dbs")==0) mode = RESERVOIR_DBS;
 
 			EdgeOrderMode ordermode;
 			if(order_mode.compare("dfs") == 0) ordermode = DFS;
@@ -508,6 +511,7 @@ bool ParseCommand(map<string, string> &command_params)
 			SampleMode mode;
 			if(sample_mode.compare("eq")==0) mode = FIX_MEM_EQ;
 			if(sample_mode.compare("uneq")==0) mode = FIX_MEM_UNEQ;
+			if(sample_mode.compare("dbs")==0) mode = RESERVOIR_DBS;
 
 			EdgeOrderMode ordermode;
 			if(order_mode.compare("dfs") == 0) ordermode = DFS;
