@@ -172,7 +172,8 @@ bool SGPLoader::InitEdgeWeightInEs()
 			}
 		}
 		
-		iter_edges->second._weight = min_degree;
+		iter_edges->second._weight = _max_d - min_degree;
+		_sum_weight += iter_edges->second._weight;
 		iter_edges++;
 	}
 
@@ -195,7 +196,6 @@ bool SGPLoader::UpdateVertexWeight_Uneq(EDGE e)
 		{
 			(iter->second).degree++;
 		}
-		_sum_d ++;
 	}
 	return true;
 }
@@ -207,7 +207,7 @@ bool SGPLoader::SelectNewEdge_Uneq(EDGE e)
 		return false; //edge exits
 
 	//select a edge to replace
-	int r = rand(1, _sum_d);
+	int r = rand(1, _sum_weight);
 	int sum = 0;
 	map<EdgeID, Edge_Item>::iterator iter_edges = _sample_edge_items.begin();
 	while(iter_edges != _sample_edge_items.end())
@@ -218,6 +218,7 @@ bool SGPLoader::SelectNewEdge_Uneq(EDGE e)
 		else
 			break;
 	}
+	_sum_weight -= (int)(iter_edges->second._weight);
 	_sample_edge_items.erase(iter_edges);
 
 	//insert new edge
@@ -240,8 +241,9 @@ bool SGPLoader::SelectNewEdge_Uneq(EDGE e)
 			}
 		}
 	}
-	Edge_Item e_item = {min_d,0,0};
+	Edge_Item e_item = {_max_d-min_d,0,0};
 	_sample_edge_items.insert(pair<EdgeID, Edge_Item>(e_id, e_item));
+	_sum_weight += _max_d-min_d;
 
 	return true;
 }
