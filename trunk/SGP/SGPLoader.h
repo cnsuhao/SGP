@@ -74,7 +74,8 @@ private:
 
 	/***********************************************************************************************************************************/
 	//data for uneq sampling
-	int _sum_d;//auxiliary variable
+	int _max_d;//auxiliary variable
+	int _sum_weight;//auxiliary variable
 	//NOTE:only the item weight is used as the min degree in _sample_edge_items
 	/***********************************************************************************************************************************/
 	//the function for uneq sampling	
@@ -86,6 +87,7 @@ private:
 	bool InitEdgeWeightInEs();
 	bool UpdateVertexWeight_Uneq(EDGE e);
 	bool SelectNewEdge_Uneq(EDGE e);
+	void SetMaxDegree(int d) {_max_d = d;};
 	/***********************************************************************************************************************************/
 
 	bool doGraphSamplingByFixRatioMode();
