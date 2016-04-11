@@ -74,7 +74,7 @@ private:
 
 	/***********************************************************************************************************************************/
 	//data for uneq sampling
-	int _max_d;//auxiliary variable
+	int _max_d;//auxiliary variable. NOTE: set the value before sampling
 	int _sum_weight;//auxiliary variable
 	//NOTE:only the item weight is used as the min degree in _sample_edge_items
 	/***********************************************************************************************************************************/
