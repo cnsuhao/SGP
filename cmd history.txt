@@ -7,3 +7,4 @@
 -cmd dfs -i D:\workspace\SGP\data\*.*  -o D:\workspace\SGP\out\dfs.graph -log D:\workspace\SGP\out\log_dfs.txt
 
 -cmd sgpkl -i D:\workspace\SGP\data\graph.test -o D:\workspace\SGP\out\sgpkl -log D:\workspace\SGP\out\log_sgpkl_uneq.txt -k 4 -m random -aw 20 -ew 1000 -sm uneq
+
