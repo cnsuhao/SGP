@@ -1,0 +1,565 @@
+
+%\documentclass{acm_proc_article-sp}
+\documentclass{sig-alternate-2013}
+\usepackage{algorithm} %format of the algorithm
+\usepackage{algorithmic} %format of the algorithm
+\usepackage{xcolor}
+\usepackage{verbatim}
+\usepackage{enumerate}
+
+\begin{document}
+
+\title{Efficiently Loading Big Graph in Distributed System
+\titlenote{A full version of this paper is available as }}
+
+\numberofauthors{1}
+\author{
+\alignauthor
+Xiaoguang Li\\
+       \affaddr{School of Information, Liaoning University}\\
+       \affaddr{Liaoning Province, P.R.China}\\
+       \email{xgli@lnu.edu.cn}
+}
+
+\maketitle
+
+\begin{abstract}
+
+\end{abstract}
+
+% A category with the (minimum) three required fields
+\category{H.4}{Information Systems Applications}{Miscellaneous}
+%A category including the fourth, optional field follows...
+\category{D.2.8}{Software Engineering}{Metrics}[complexity measures, performance measures]
+
+\terms{Theory}
+
+\keywords{Big Graph Partition, Graph Sampling, Graph Loading}
+
+\section{Introduction}
+Many real-world complex systems can be represented as graphs and networks from information networks, to communication networks, to biological networks. Given a large massive graph with millions or billions of vertices and edges, loading the graph into a distributed system in a partitioning manner facilitates the parallel processing of graph analysis, such as minimum span tree, shortest path, clique. Partitioning graph also minimizes the total number of cross-partition edges among partitions so as to minimize the data transfer along the edges.
+
+Data loading in distributed system has been extensively studied in the field of database. Many partitioning techniques, such as hash partitioning, range partitioning, round robin partitioning, have been widely applied into massive databases. Partitioning the tuple by such techniques can be processed in a constant time depending on partitioning function and the tuple itself, and therefore whatever the size of data on disk is, the data will be accessed sequentially and read once. It is infeasible, however, to load a graph by an existing algorithm with a linear time-complexity, since graph partitioning is well-known as NP-hard problem.
+
+In comparison with the traditional partitioning techniques, partitioning a vertex always requires not only the vertex itself, but also its neighbors. Moreover, the algorithm of graph partitioning need to repeat scanning the graph and iteratively find an optimal series of partition target, such as minimizing \textit{edge-cuts}.
+Thus, most of graph partitioning algorithms usually required the graph to fit into main memory, such as Kernighan-Lin (KL) \cite{Fiduccia:klvar, Kernighan:kl}, MIN-MAX Greedy algorithm\cite{Battiti:minmaxgreedy, Laguna:greedy}, spectral partitioning\cite{Luxburg:spectralcluster}, balanced minimum cut\cite{Karger:mincut}.
+Many real-world graphs, unfortunately, have grown exceedingly large in recent years and are continuing to grow at a fast rate. For example, the Web graph has over 1 trillion webpages (Google); most social networks (e.g., Facebook, MSN) have millions to billions of users; many citation networks (e.g., DBLP, Citeseer) have millions of publications; other networks such as phone-call networks, email networks, stock-market networks, etc., are also massively large. With the size of graph becoming very large, it is often too expensive to partition large graph in memory.
+So, the technique called \emph{graph summary} was proposed to shrink the original graph fit into the memory. \emph{Hyper graph} is a kind of summary mentioned in  multilevel approaches\cite{Lang:multilevel, Teng:multilevel, Dhillon:multilevel}. \emph{Hyper graph} is built by selecting edges successively and collapsing them into a hyper vertex so as to obtain a graph small enough. \emph{Graph skeleton} constructed by a small random sample from graph's edges\cite{Karger:mincut} was used to compute the minimum cut. But the construction of both such graph summaries is also required to probe the original graph repeatedly, which suffered from potential and massive access to disk.
+
+Besides the graph data to load is stored as the file of vertices and edges by self-defined format on disk, the graph is always of the format of online stream of vertices and edges, flowing into a distributed system continuously. The gigantic size of data stream implies that we generally cannot store the entire stream data set in main memory or even on the disk of partitioner. Certainly, it is impractical to scan through an entire data stream more than once. To the best of our knowledge, there were few works about partitioning graph data stream, except for a streaming graph partitioner proposed by Isabelle.S et.al\cite{Stanton:streampartition}. They provided a empirical study of a set of natural heuristics for streaming balanced graph partitioning. The quality of partitions highly depends on the locality of stream. Certain systems or applications that need as good a partitioning as possible will still repartition the graph after it has been fully loaded onto the cluster.
+
+Totally, loading big graphs in an manner of graph partitions is becoming a challenge on account of massive disk I/O overhead. In this paper, we propose an I/O efficient approach to loading a big graph approximately. In this study, our focus is not to design a new algorithm of graph partitioning, but to improve I/O efficiency by trading off the accuracy of partitioning against the efficiency of loading. Firstly loading graph on disk is considered, the proposed approach scans through the graph twice only by two phases. In the first phase, a representative subgraph fitting into main memory is built out of big graph data by the first scanning, and then a set of partitions, called \textit{approximate partitioner}, are retrieved by a gain-based partitioning algorithm in memory. After that, in the second phase, all the remainder of vertices and edges will be partitioned on account of their locality by the approximate partitioner in linear time by the second scanning.
+
+The representative subgraph and its approximate partitioner here play the role as partitioning function as the traditional techniques of database do. Intuitionally, the representative subgraph should be selected for the target of the \textit{edge-cuts}, that is, the edge-cuts by approximate partitioner applied were expected to be as close to the edge-cuts of original graph as possible. However, it is quite difficult to evaluate the edge-cuts in advanced, since the final edge-cuts are not related to the initial partitions only, but also to the partitioning design. We notice that gain-based algorithms partition a vertex by its difference of connections to the partitions, called as \textit{gain of vertex}. Actually, a vertex's partition isn't determined by its absolute value of gain, but by the sign of gain. That is, if a vertex has more connections to the partition $i$ than $j$, it should be allocated in the partition $i$. The absolute value of gain just makes the effect of the order of partitioning vertex. So, we consider that if the gain sign of vertex in the representative graph is consistent with the one in the original graph, the vertex will be set to the partition by approximate partitioner as the \textit{true partitioner} of original graph does. Based on this idea, the representative subgraph is built by an unequal sampling on edges to keep the expectation of inconsistence of gain bounded by given threshold. We theoretically give the analysis of the expectation of gain inconsistency, and point out that the unequal sampling should be bias to the vertex of low degree if the expectation of gain inconsistency is held.
+
+The representative subgraph includes most of vertices in the original graph, and holds the structure information(indicated by edges) enough to evaluate the sign of gain. In addition, the approximate partitioner is consistent approximately with the true partitioner with respect to edge-cuts. Hence, partitioning each vertex of remainder may depend on its locality in a constant time complexity at the second phase, and need not to migrate vertices iteratively for partition optimizing. Traditionally, the locality of vertex consists of its neighbors. It works when the graph data are stored by BFS order, where the locality can be retrieved after $d$ edges cached ( $d$ is the degree of vertex). For the order of DFS or random, the partitioner can't determine the locality until the end of file or stream. It means that we have to cache all the vertices, and their related edges, which are not contained in representative graph. In fact, there is an widely accepted observation by the study of \textit{Graph Random Walk} in the real world, that is, a random walk started inside a good partition will mostly stay inside the partition \cite{DBLP:books/sp/social11}. It implied that, beside for the neighbors of vertex, the vertices linking indirectly to the vertex support the determination of partition to some extent. Here, we expand the "neighbors" to the vertices linking to the vertex directly or indirectly in the following window of vertices and edges read sequentially so as to avoid caching all the data. We also put forwards the measure, called \textit{strength of locality support}, to evaluate the vertex's contribution to the locality in terms of \textit{influence} and \textit{attraction}.
+
+For graph stream, each the edge of new arrival is sampled probabilistically to the representative subgraph as mentioned above. The difference from above is that the new vertex of not chosen edge will be  partitioned immediately by current approximate partitioner according to its expand locality. The challenge is that the approximate partitioner needs to be adjusted with the representative subgraph varied, and to re-assign the vertices partitioned by previous approximate partitioners.
+
+However it is quite overhead to query the assigning context of vertex, since the vertex has been written to persist disk and the vertices of context maybe reside the different partitions. Querying the context of vertex must lead to the massive I/O operation on disk or network. Our idea is to cache the context of vertex of high likelihood to be re-assigned in the slave site.
+\textcolor{red}{.......}
+
+\textcolor{red}{experiment - conclusion}
+
+The rest of the paper is organized as follows. We first present the related works in Section 2. Next, We introduce the background about graph loading in Section 3. Partitioning graph by sampling as the core of graph loading is proposed and discussed in Section 4, including the overall algorithm of loading, the analysis of partitioning and graph sampling design. Section 5 studies loading the real-world graph, including the implementation of graph sampling design - degree bias sampling, and edges assigning. Section 6 focuses on loading the graph stream. We compare the approaches in this paper with other state-of-the-art graph loading algorithms and graph partitioning algorithms in Section 7. Finally, we conclude in Section 8.
+
+\section{Related Works}
+
+Graph partitioning as the core of graph loading in distributed system is an NP-hard problem, and therefore all known algorithms for generating partitions merely return approximations to the optimal solution. Numerous algorithms for graph partitioning have been developed in the field of social network analysis, graph theory, et. al. Geometric approaches use the geometric coordinates associated with a graph's vertices to aid in the creation of a partition, but geometric feature also limit its application because geometric coordinate is not the case for all graphs. Spectral methods generally refer to algorithms that assign nodes to communities based on the eigenvectors of matrices, such as the adjacency matrix of the network itself or other related matrices\cite{Luxburg:spectralcluster}.The main disadvantage of spectral algorithms lies in their computational complexity, and spectral clustering is hard to scale up to networks with more than tens of thousands of vertices. Gain-based partitioning algorithms, such as Kernighan-Lin (KL) algorithm\cite{Fiduccia:klvar, Kernighan:kl}, MIN-MAX Greedy algorithm\cite{Battiti:minmaxgreedy, Laguna:greedy}, are based on the notion of gain metric for quantifying the benefit of allocating a vertex from one subset to the other. The gain of a vertex in KL algorithm and the variations is the reduction in edge-cut if the vertex is moved from its current partition to the other partition. While each iteration in the original KL algorithm had a complexity of $O(|E|\log{|E|})$. The partition in the family of MIN-MAX Greedy algorithms is immediately obtained by repeatedly adding a vertex to the sets that produces the minimum possible increase of the cut size.
+
+To address the scale problem, \emph{graph summaries} that substantially smaller than the original graph, typically can be used to return approximate partitions. Multilevel graph partitioning algorithms \cite{Lang:multilevel, Teng:multilevel, Dhillon:multilevel} are proposed  to coarsen(contract) the input graph successively so as to obtain a graph small enough, partition this small graph and then successively project this partition back up to the original graph, refining the partition at each step along the way. The costs of coarsening and refining are both proportional to the number of edges, and the original graph was scanned many times and the temporary graph of coarsening and refining at each step must be saved.
+
+Sampling graph is another way to obtain a small graph. Sampling on graphs has been used in many different flavors, but few in graph partitioning. Conceptually we can split the graph sampling algorithms into three groups: randomly selecting nodes, randomly selecting edges and the exploration techniques that simulate random walks or virus propagation to find a representative sample of the nodes\cite{DBLP:conf/kdd/LeskovecF06}. Previous work focused on using sampling to condense the graph to allow for better visualization. Works on graph compression focused on transforming the graph to speed up algorithms. Techniques for efficiently storing and retrieving the web-graph were also studied. Internet modeling community studied sampling from undirected graphs and concluded that some graph properties can be preserved by random-node selection with sample sizes down to 30\%.  Works study separability and stability of various graph properties degree distribution, central betweeness, hop-plot\cite{DBLP:conf/kdd/LeskovecF06}. To our knowledge, most related to our work is the algorithm determining the minimum cut base on \emph{graph skeleton} constructed by a small random sample from graph's edges\cite{Karger:mincut}. The algorithm need scan the original graph many times to probe the sampling ratio and compute the skeleton until a certain minimum cut value on the skeleton is greater than $\Omega((\log n)/\epsilon^2)$.
+
+Isabelle. S et.al\cite{Stanton:streampartition} proposed a streaming graph partitioning, which reads serial graph data from a disk onto a cluster. However, they just put forward ten heuristics of selecting the index of the partition where a vertex is assigned, and define three stream orderings of vertex arrival. One might need to perform a full graph partitioning once the graph has been fully loaded.
+
+\section{Problem Background}\label{section-background}
+\subsection{Notations}
+
+We model a graph to load as an undirected and unlabeled graph,  $G=(V,E)$, where $V$ is the set of vertices and $E$ is the set of edges. In real-world, the data of graph are always treated as a sequence of edges and vertices, which stored on the disk of loading server by self-defined format, or streaming into loading server without the storage. Without the lost of generality, the data of graph are defined as the edge sequence $E_{seq}=(e_1,e_2,...,e_m)$, for $e=(v_i, v_j), e \in E_{seq}$, $v_i$ and $v_j$ are the adjacent vertices joint by $e$, and we define the corresponding set of vertices of $E_{seq}$ as $V_{seq} = \{v | v\in e , e\in E_{seq}\}$. Let $n$ and $m$ be the size of $E_{seq}$ and $V_{seq}$ respectively. For graph stream, $n$ and $m$ is increased with time. Generally, for most of graph in practice, we have $n<<m$.
+
+\textit{Graph loader} is a program resided in loading server and responsible for reading the graph data from the disk or online stream into a distributed system with $k$ storage nodes. Its goal is to find a close to optimal balanced graph partitioning with as more efficiency as possible, and save each partition into a storage node respectively. Graph partitioning is to divide $V$ of $G$ into $k$ partitions, $P=\{P_1, P_2, ... , P_k\}$ such that $P_i \bigcap P_j = \emptyset$, for any $i\neq j$, and |$P_i$| = $n/k$, and ${\bigcup}_i P_i = V$. The number of edges whose incident vertices belong to different partitions is called \textit{edge-cuts}. Optimal balanced graph partitioning is $k$ set of partitions with minimized edge-cuts. We call the algorithm that searching the optimal graph partitioning as \textit{optimal partitioner}.
+
+
+We assume there is the limitation of the size of main memory in loading server, denoted by $M$, and $M<<m$.
+Let $Partition |_{V\rightarrow P\bigcup \emptyset}$ be the function of mapping the vertex into its partition. If $Partition(u)=i$, we say that $u$ is partitioned into $P_i$, while if $Partition(u)=\emptyset$, we say that $u$ isn't partitioned yet.
+
+
+\subsection{Order of Vertex and Edge}\label{section-edge-order}
+
+The order of vertex and edge for a graph $G$ is always following three orders: breadth-first search(\textit{BFS}), depth-first search(\textit{DFS}) and random search(\textit{Random}). BFS is generated by selecting a starting node from each connected component of the graph uniformly at random and is the result of a breadth-first search that starts at the given node. If there are multiple connected components, the component ordering is done at random. DFS is identical to the BFS ordering except that depth-first search is used. Both BFS and DFS are natural ways of linearizing graphs and are highly simplified models used by most of graph data collectors, such as web crawler. Here, we assume the vertices and edges in sequence obey single ordering. Random search is an ordering that assumes that the vertices arrive in an order given by a random permutation of the vertices. In practice, few graph sequences obey to the order of complete random, but they always are the sequence of the mixture between DFS and BFS.
+
+The order of vertex and edge is important to the computation complexity of partitioning graph, specially, with the format of stream. It challenges the efficiency of graph partitioning not processed in main memory. Finding all the neighbors of a vertex as its locality, or computing the degree of a vertex, for example, is critical operation of graph partitioning, and these operations are easy implementing for BFS order since all the adjacent vertices and edges will be seen immediately in the sequence after the vertex, but for the order of random or DFS, we have to wait until the end of the sequence.
+
+\subsection{Gain-based Graph Partitioning}
+Most of popular graph partitioning algorithms are based on comparison of the external and internal cost of vertex, called as gain-based partitioning algorithm, such as KL and MIN-MAX Greedy. The approach proposed in this study is also based on the concept of vertex gain.
+
+For a graph $G$, given a set of partitions $P_1$ and $P_2$ of $V$, $P_1 {\bigcup} P_2 = V$, suppose $u\in P_1$, the $external\ cost\ E_u$  of $u$ is defined as the number of edges connecting the vertex $u$ and the vertex in $P_2$, while the $internal\ cost\ I_u$ of $u$ is the number of edges connecting the vertex $u$ and the vertex in $P_1$.
+The $D$ value of $u$, $D_u = E_u-I_u$, is defined as the $gain$ obtained by moving $u$ from its current partition. Gain-based algorithms allocate a vertex from one subset to the other if it benefits from the gain of moving. For example, KL algorithm swaps a pair of vertices $(u, v)$ if their total gain is improved iteratively, where $u$, $v$ belong to different partition. MIN-MAX Greedy algorithm repeatedly add a vertex to the two sets that produces the minimum possible increase $\delta f$ of the cut size $f$, where $\delta f$ is equivalent to $D$ value. For gain-based partitioning, we observed that the migration of vertex was decided by its gain, not by its order of gain,that is, whether the gain of vertex is the best or not, it will be migrated sooner or later if the partitioning benefits from its moving.
+
+$k$-way graph partitioning usually is the procedure of recursive bisection adopted by the majority of the algorithms due to its simplicity. The procedure has two phases in general. It generates a $k$-way partition by performing a bisection on the original graph and recursively considering the resulting subgraphs in the first phase,  and then repeated the application of the 2-way partitioning procedure to optimal in the second phase.  Such algorithms are heuristic to find the best gain of moving at each iteration.
+
+The partitioning process can be described by a full and complete binary tree, where the leafs are the final partitions and the internal nodes are the temporal results. For a binary tree of graph partitioning, we denote $LCA(i, j)$ as the lowest common ascendant of  the partition $P_i$ and $P_j$, that is, the descendants $P_i$ and $P_j$ are split recursively from their $LCA$.
+
+%The pairwise optimality is only a necessary condition for global optimality.
+
+\section{ Loading Graph by Representative Subgraph }
+
+As shown before, the target of this paper is to design a I/O-efficient approach to loading a big graph into $k$ storage nodes with approximately minimum edge-cuts. We consider the loading of graph data on disk by scanning thorough disk twice in this chapter.
+
+\subsection{Loading Graph On Disk}
+
+Our idea is to design a partitioning function to allocate vertices and edges streamingly as  the way of data partitioning processed by the traditional techniques in the field of database. Here, partitioning function is designed as a set of partitions, which is derived from a representative subgraph that fits into the memory and preserves the information of allocating vertex enough to determine vertex's partition with high probability and makes the final edge-cuts approximate to the optimal edge-cuts. The main steps are as follows:
+\begin{itemize}
+\item Firstly, a representative subgraph resided entirely in memory is selected out of the original graph with a sampling design by scanning through graph data.
+\item Secondly, the representative subgraph is divided into $k$ partitions by an internal-memory gain-based algorithm mentioned in Chapter \ref{section-background}. The $k$ partitions of representative subgraph is called as \textit{approximate partitioner}.
+\item Finally, the remainder of edges and vertices that don't selected into the representative subgraph are allocated streamingly to the corresponding storage node on account of their locality and approximate partitioner by scanning through the graph data once again.
+\end{itemize}
+
+For such loading strategy, the questions we ask here are:
+\begin{itemize}
+\item What is a "good" representative subgraph out of big graph with the limitation of memory, and how to create it?
+\item How do we allocate the remainder of vertices and edges besides the representative graph without vertex migration?
+\end{itemize}
+
+Here, the representative subgraph is constructed by the technique of simple random sampling without replacement. As mentioned in related works, state-of-the-art graph sampling techniques can be broadly classified as \textit{sampling by random node selection(RN), sampling by random edge selection(RE) and sampling by exploration(SE)}. Actually, for a very big graph on disk, it is infeasible for \textit{SE} to explore the graph arbitrarily. For \textit{RN}, the sample consists of the induced subgraph over the selected nodes and all edges among the nodes. It means that the vertex's neighbors need to be obtained efficiently, which is suitable for the sequence of BFS order only. Furthermore, It is hard to control the sampled graph size to fit in the memory, since $n<<m$. So, we adopt \textit{RE} to select the representative graph.
+
+We firstly give an I/O-efficient loading algorithm for graph on disk, called \textit{Sample-based Graph Loading(SGL)}. \textit{SGL} is a general loading algorithm with no concern of the order of graph sequence and the goodness of representative graph. Both of problems will be leave discussing in the following sections. For \textit{SGL}, the limitation of memory $\rho$ refers to the limitation of edges since $n<<m$ in practice, and $m$ and $n$ are unknown in advance.
+The main steps of \textit{SGL} algorithm are shown as Algorithm \ref{alg:sampling-graph}. The sampling design of \textit{SGL} as shown from Step \ref{alogrithm-sgl-disk-sample-step-begin} to Step \ref{alogrithm-sgl-disk-sample-step-end} is a kind of \textit{Reservoir Sampling} \cite{Yves:samplebook} with the probability of $\rho/m$, which is a family of randomized algorithms for randomly choosing a sample of items of given size from the list of either a very large or unknown number.
+
+\begin{algorithm}[h]
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand\algorithmicensure {\textbf{Output:} }
+\caption{Sample-based Graph Loading (SGLd)}
+\label{alg:sampling-graph}
+\begin{algorithmic}[1]
+\REQUIRE ~~\\
+%$V_{seq}$: Vertex Sequence;
+$E_{seq}$: Edge Sequence $(e_1,e_2,...,e_m)$;\\
+$k$: The Number of Storage nodes;\\
+$\rho$: Limitation of Edges in Memory;\\
+\ENSURE ~~\\
+Graph Partitions $G_P^1,G_P^2,...,G_P^k$ on $k$ storage-nodes;
+%$edgecuts$ //Edge-cuts;
+
+\STATE $V_s=\emptyset,E_s=\emptyset$;
+\STATE Read the first $\rho$ edges of $E_{seq}$ into $E_s$ and initialize $V_s$ by $E_s$; \label{alogrithm-sgl-disk-sample-step-begin}
+\FOR{$i = \rho+1$ to $m$}
+ \STATE Read the edge $e_i=(u,v)$ from $E_{seq}$;
+ \STATE $j$ = random(1, $i$);
+ \IF{$j < \rho$}
+   \STATE Select an item $l$ from $E_s$ on random and replace $E_s[l]$ by $e_i$ ;
+   %\STATE $V_s = V_s \bigcup \{u,v \}$;
+ \ENDIF
+\ENDFOR \label{alogrithm-sgl-disk-sample-step-end}
+\STATE Build the sample graph  $G_s$ by $E_s$;
+\STATE Apply a gain-based partitioning algorithm  to compute $k$ partitions $G_P^s=\{G_1^s,...,G_k^s\}$ for $G_s$;
+\FOR {each $G_i^s$, $i=1,..,k$}
+  \STATE Save $G_i^s$ as $G_P^i$ on the site $i$;
+\ENDFOR
+\FOR{each unsampled edge $e=(u,v) \in E_{seq}$ } \label{alogrithm-sgl-disk-allocate-step-begin}
+  \IF { $u$ or $v \not\in{V_s}$} %if4
+    \STATE Allocate  $u$ or $v$ to $V_i^s$ by its locality and save it to the site $i$;
+  \ENDIF %endif4
+  \IF{$i\neq j$, where $u\in{V_i^s}$ and $v\in{V_j^s}$} %if3
+   \STATE Label $e$ as cut edge, and save $e$ to both $E_P^i$ and $E_P^j$;
+  \ELSE
+    \STATE Save $e$ to $E_P^i$;
+  \ENDIF %endif3
+ \ENDFOR \label{alogrithm-sgl-disk-allocate-step-end}
+\RETURN $G_P$;
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Expectation of Error Gain}
+For Question 1, the "goodness" of representative subgraph intuitively means what the extend of the edge-cuts for approximate partitioner is close to the one for optimal partitioner. However, it is quite difficult for graph partitioning to design a sampling algorithm with the objective of edge-cuts, since the final edge-cuts of partitioning algorithm isn't relevant to the heuristic only, but also the initial partitions.
+We observed that for gain-based partitioning algorithms, the partition of vertex isn't determined by its absolute value of gain, but the sign of gain. That is, if a vertex has more connections to the partition $i$ than $j$, it should be allocated in the partition $i$. The absolute value of gain just makes the effect of the order of vertex allocation.
+For example, suppose that the vertex $v$ of the partition $P_1$ has $n_1$ internal-connections to the partition $P_1$ and $n_2$ external-connections to the partition $P_2$, if $n_1\geq n_2$, i.e the gain $n_1 - n_2 \geq 0$ then $v$ will be stayed in $P_1$, otherwise moved into $P_2$. If the sign of vertex gain for a representative subgraph is consistent with the one for the original graph, we say the partition of vertex for representative subgraph will keep consistence with that for the original graph.
+
+Here, we introduce the notion of \textit{expectation of error gain} to measure the goodness of approximate partitioner instead of the edge-cuts.
+Since recursive bisection partitioning is adopted, without the lost of generality, we assume $k = 2$ and it is easy to extend $k$ to any integer of $2^h$. Given the graph $G$, let $P=\{P_A,P_B\}$ be a set of partitions for $G$, where $P_A \bigcup P_B = V$, and $d_v$ be the degree of the vertex $v \in V$, $d_v \geq 0$. Let $s$ be the probability of edge sampling, and $G^s = (V^s, E^s)$ be a subgraph of $G$ obtained by an edge-sampling on $G$, where $V^s \subseteq V, E^s \subseteq E$. $P^s=\{P_A^s,P_B^s\}$ is the corresponding partitions for $P$, where $P_A^s \subseteq P_A, P_B^s \subseteq P_B$. $d_v^s$ is the degree of $v \in V^s$. We have the expectation of $d_v^s$, $E(d_v^s) = s\cdot d_v$.
+
+\newdef{definition}{Definition}
+\begin{definition}\label{def-boundary}
+ A \textit{boundary vertex} of partition is the vertex that has at least one link to other partitions. Let $\mathcal{B}$ be the set of boundary vertices for a graph partitions.
+\end{definition}
+
+\begin{definition}\label{def-gain}
+ Given the graph $G$, and its partitions $P$, the $gain$ of vertex $v \in V$ with respect to $P$ is defined as the connection difference of $v$ between $P_A$ and $P_B$, and denoted as $\delta_v$.
+ Obviously, we have $-d_v\leq\delta_v\leq d_v$. For $G^s$ and $P^s$, the $gain$ of $v$ with respect to $P^s$ is defined as the connection difference of $v$ between $P_A^s$ and $P_B^s$, and  denoted as $\delta_v^s$.
+\end{definition}
+
+\begin{definition}\label{def-inconsistgain}
+For the graph $G$ and its sample $G^s$, given the partitions $P$ and $P^s$, if  $\delta_v^s \cdot \delta_v >0$, where $\delta_v^s \neq 0,  \delta_v \neq 0$, or $\delta_v=0 \land \delta_v^s =0$, we say $\delta_v^s$ is \textit{consistent} with $\delta_v$, denoted as  $\delta_v^s \equiv \delta_v $,  otherwise  $\delta_v^s$ is \textit{inconsistent} with $\delta_v$, denoted as $\delta_v^s \not\equiv \delta_v $. If $\delta_v^s \not\equiv \delta_v $, the error gain of $v$ with the given $\delta_v$ is $ |\delta_v| $ and denoted as $\tilde\delta_v$.
+\end{definition}
+
+\newtheorem{theorem}{Theorem}
+\begin{theorem}\label{theorem-partition-error-a-vertex}
+For the graph $G$ and its sample $G^s$ with sample ratio $s$, given the vertex $v \in V$, the expectation of error gain $E(\tilde\delta_v)$  satisfies that
+\begin{equation}\label{theorem1-eq-0}
+E(\tilde\delta_v) \leq \frac{1}{s} (1-\exp(-\frac{s\cdot d_v}{2}))
+\end{equation}
+\end{theorem}
+\begin{proof}
+For $v \in V$, let $P(\delta_v^s \not\equiv \delta_v, \delta_v)$ be the probability that $\delta_v^s$ is inconsistent with given $\delta_v$, and we have
+\begin{equation}\label{theorem1-eq-1}
+P( \delta_v^s \not\equiv \delta_v, \delta_v) = P(\delta_v)P(\delta_v^s \not\equiv \delta_v |\delta_v)
+\end{equation}
+Since $-d_v\leq\delta_v\leq d_v$, and we assume $\delta_v$ obeys uniform distribution with the interval $[-d_v, d_v]$, then
+\begin{equation}\label{theorem1-eq-2}
+P(\delta_v)=\frac{1}{2d_v}
+\end{equation}
+Let $X_1, X_2,...,X_{d_v^s}$ be independent random variables taking on values -1 or 1, which means a connection to $P_A$ or $P_B$ is sampled, then we have $\delta_v^s = \sum_{i=1}^{d_v^s} X_i$. Here let $\epsilon = E\delta_v^s$.
+According to Definition \ref{def-inconsistgain}, for $ \delta_v^s \not\equiv \delta_v$, we have $\delta_v^s < E\delta_v^s - \epsilon$ if $\delta_v > 0 $ , or $\delta_v^s > \epsilon - E\delta_v^s$ if $\delta_v < 0$.
+Obviously, the expectation of $\delta_v^s$ is $s\cdot \delta_v$. According to the \textit{Hoeffding Inequality}, we have
+\begin{equation}\label{theorem1-eq-3}
+P(\delta_v^s \not\equiv \delta_v | \delta_v)  \leq  \exp(-\frac{2\epsilon^2}{4d_v^s}) \\
+ = \exp(-\frac{s\cdot \delta_v^2}{2d_v})
+\end{equation}
+With \eqref{theorem1-eq-2} and \eqref{theorem1-eq-3}, we have
+\begin{equation}\label{theorem1-eq-4}
+P( \delta_v^s \not\equiv \delta_v, \delta_v) = \frac{1}{2d_v} \cdot \exp(-\frac{s\cdot \delta_v^2}{2d_v})
+\end{equation}
+With \eqref{theorem1-eq-4}, we have
+\begin{eqnarray}
+E(\tilde\delta_v) &\leq& \sum_{\delta_v=-d_v}^{d_v} {|\delta_v| \cdot P( \delta_v^s \not\equiv \delta_v, \delta_v) } \notag \\
+&=& 2\sum_{\delta_v=0}^{d_v} {\delta_v \cdot P( \delta_v^s \not\equiv \delta_v, \delta_v) } \notag \\
+&=& \sum_{\delta_v=0}^{d_v} { \frac{\delta_v}{d_v} \cdot \exp(-\frac{s\cdot \delta_v^2}{2d_v})} \notag \\
+&\approx& \int_0^{d_v} {\frac{\delta_v}{d_v} \cdot exp(-\frac{s\cdot \delta_v^2}{2d_v})d\delta_v} \notag \\
+&=& \int_0^{d_v} {-\frac{1}{s} \cdot \exp(-\frac{s\cdot \delta_v^2}{2d_v})d(-\frac{s\cdot \delta_v^2}{2d_v})} \notag \\
+&=& -\frac{1}{s} [\exp(-\frac{s\cdot \delta_v^2}{2d_v})]_0^{d_v} \notag \\
+&=& \frac{1}{s} (1-\exp(-\frac{s\cdot d_v}{2})) \notag
+\end{eqnarray}
+\end{proof}
+
+%theorem - total partitioning error
+\begin{theorem}\label{theorm-total-partioning-error}
+ Let $n_d$ be the number of the vertex of the degree $d$, $d_{max}$ be the maximum degree, and $E_{\tilde{\delta_G}}$ be the total expectation of error gain for $G$, then we have
+\begin{equation}\label{theorem-total-partioning-error-eq}
+E_{\tilde{\delta_G}} \leq \sum_{1\leq d\leq d_{max}} {\frac{n_d}{s} (1-(1-\frac{1}{k})^d) (1-\exp(-\frac{s\cdot d}{2}))}
+\end{equation}
+\end{theorem}
+\begin{proof}
+Obviously, the total expectation of error gain for $G$  is determined by boundary vertex that has at least one neighbor on other partitions. Under $k$ partitions, an edge's  vertices have the probability $1-\frac{1}{k}$ to be on different partitions, and then we have the probability that a vertex of degree $d$ has at least one link to another partition is $1-(1-\frac{1}{k})^d$ \textcolor{red}{(or $1-\frac{1}{k^d}$)} . Due to the linearity of expectation and with Theorem \ref{theorem-partition-error-a-vertex}, we have Equation \ref{theorem-total-partioning-error-eq}
+\end{proof}
+
+
+\newtheorem{lemma}{Lemma}
+\begin{lemma}\label{lemma-partitioning-error-func-property}
+The upper-bound of $E(\tilde\delta_v)$, $\hat{E}(\tilde\delta_v)$,  is decreasing function of sampling probability $s$, and increasing function of the vertex degree $d$.
+\end{lemma}
+\begin{proof}
+The derivation of $\hat{E}(\tilde\delta_v)$ with respect to $s$ is
+\begin{eqnarray}
+\frac{\partial \hat{E}(\tilde\delta_v)}{\partial s} = \frac{1}{s^2}((\frac{sd_v}{2} + 1)\exp(-\frac{sd_v}{2})-1) \notag
+\end{eqnarray}
+According to the inequality $e^{-x} < \frac{1}{1+x}$, where $x>-1$, we have $\frac{\partial \hat{E}(\tilde\delta_v) }{\partial s} < 0$.
+
+The derivation of $\hat{E}(\tilde\delta_v)$ with respect to $d_v$ is
+\begin{eqnarray}
+\frac{\partial \hat{E}(\tilde\delta_v) }{\partial d_v} = \frac{1}{2}\exp(-\frac{sd_v}{2}) > 0 \notag
+\end{eqnarray}
+\end{proof}
+
+
+\begin{lemma}\label{lemma-expection-error-significant}
+The change of $\hat{E}(\tilde\delta_v)$ is more significant to sampling probability $s$,than vertex degree $d_v$.
+\end{lemma}
+\begin{proof}
+According to Lemma \ref{lemma-partitioning-error-func-property}, we have
+\begin{eqnarray}
+&&|\frac{\partial \hat{E}(\tilde\delta_v) }{\partial s}| - |\frac{\partial \hat{E}(\tilde\delta_v)}{\partial d_v}| \notag \\
+&&=\frac{1}{s^2}(1-(\frac{sd_v}{2} + 1)\exp(-\frac{sd_v}{2})) - \frac{1}{2}\exp(-\frac{sd_v}{2}) \notag \\
+&&=\frac{1}{s^2 \exp(sd_v/2)}(\exp(sd_v/2)-(1+sd_v/2)-\frac{s^2}{2})  \notag \end{eqnarray}
+Since $s^2 \geq 0$ and $\exp(sd_v/2) > 0$, the maximum of $s$ is 1, and the minimum of $d_v$ is 1, we have
+\begin{eqnarray}
+|\frac{\partial \hat{E}(\tilde\delta_v)}{\partial s}| - |\frac{\partial \hat{E}(\tilde\delta_v) }{\partial d_v}| > 0 \notag
+\end{eqnarray}
+\end{proof}
+
+\subsection{Sampling Representative Subgraph }
+
+The sampling design is preferred to keep the expectation of error gain bounded by a given threshold.
+According to Theorem \ref{theorem-partition-error-a-vertex}, we can get the following theorem.
+\begin{theorem}\label{theorm-sampling-prob}
+For the vertex $v$, let $\alpha$ be the threshold of $E(\tilde\delta_v)$, if the sampling probability $s$ satisfies
+\begin{equation}\label{theorm-sampling-prob-eq}
+1-\alpha \cdot s \leq \exp{(-\frac{s \cdot d}{2})}
+\end{equation}
+$E(\tilde\delta_v) \leq \alpha$ will be hold.
+\end{theorem}
+
+According to Theorem \ref{theorm-sampling-prob}, the probability of edge sampling can be computed under the given degree of vertex in advance, so $E_{\tilde{\delta_G}}$ will be bounded by
+$\sum_{d} {n_d} {(1-(1-\frac{1}{k})^d) \alpha}$
+Moreover, $n_d$ can be estimated by $n \cdot P_d$ when the probability distribution of degree $P_d$ is provided, such as the power-law-like  distributions observed in many real graphs, and $\alpha$ can be set as $\frac{\beta}{n\sum_{d} {P_d} {(1-(1-\frac{1}{k})^d)}} $ with the $E_{\tilde{\delta_G}}$ upper-bound $\beta$.
+In such case the size of sample edges is $n \sum_{d}{\frac {P_d \cdot d}{s_d}} $, where $s_d$ is the sampling ratio for the vertex of degree $d$.
+
+\textcolor{red}{i think it is difficult to compute the sample ratio of each vertex for BFS, because we don't know how to select $\alpha$, even though $\beta$ can be set. in fact, $\beta$ is infeasible to set in advance since we don't know what the cut value is. So DBS...  }
+
+For the order of BFS, vertex's degree can be calculated by caching locally a part of edges when scanning the edge sequence, and then the probability of edge sampling for the vertex can be determined. However, for the order of random or DFS, a vertex's degree cann't be determined until all its edges have been confirmed to reach by the end of edge sequence, that is, extra scanning the edge sequence is required to count the degree for all the vertices. Counting the degree of vertex in advance always is infeasible for edge stream.
+
+we propose an unequal sampling algorithm without extra scanning, called \textit{Degree Bias Sampling (DBS)}.
+$E(\tilde\delta_v)$ in Theorem \ref{theorem-partition-error-a-vertex} can be transformed as
+\begin{eqnarray}\label{lemma-partitioning-error-func-of-expection-of-d}
+{E(\tilde\delta_v)} \leq \frac{d_v}{Ed_v^s} (1-\exp(-\frac{Ed_v^s}{2}))
+\end{eqnarray}
+Similar to Lemma \ref{lemma-partitioning-error-func-property} and Lemma \ref{lemma-expection-error-significant}, $\hat{E}(\tilde\delta_v)$ is decreasing function of the expectation of degree $d_v^s$. The change of $\hat{E}(\tilde\delta_v)$ is more significant to $Ed_v^s$ than $d_v$. It implies that if the $\hat{E}(\tilde\delta_v)$ is kept at the same level, the high sampling probability is expected for the vertex of low degree, otherwise the low sampling probability is preferred for the vertex of high degree. \textit{DBS} replaces the edge in the reservoir according to the current degree of its end vertices with the bias to low degree.
+
+The algorithm of \textit{DBS} is shown in Algorithm \ref{alg:degree-bias-sampling}. The element of $V_s$ has two items: \textit{vex} and \textit{d}, representing the information of vertex and its degree respectively. $V_s[v]$ is the element of the vertex $v$. The element in $E_s$ has four items: the item \textit{edge} that includes the vertices $u$ and $v$ of edge, the item \textit{weight} that is the sampling weight determined by the inverse of the minimum degree of $u$ and $v$ and the item with high relative weight has high probability of sampling,  the item \textit{rand} that is a random real in $[0,1]$, and the item \textit{key} that is the key for weighted sampling and calculated by ${rand}^{1/weight}$.   The edge is selected into the reservoir according to the relative $weight$ by the algorithm of weighted random sampling in \textit{DBS}, similar to \textit{A-Res} proposed by Pavlos S. Efraimidis etc \cite{Pavlos:weightedsampling}. The differences between \textit{DBS} and \textit{A-Res} are that 
+
+(1)  for \textit{A-Res} the weight of the item of population must be given in advanced, while for \textit{DBS} the degree observed by now is used to determine the weight. The assumption under \textit{DBS} is that  the degree of vertex is relative high in the observations if it is of the high relative degree in the population.  The assumption can be proved by the following:
+Suppose that the degrees of $u_1$ and $u_2$ are $d_1$ and $d_2$, $d_1\ge d_2$,  the total sampling degree of  $u_1$ and $u_2$ is $l$ and let $k$ be the sampling degree of $u_1$, then the probability distribution of $k$ is the distribution of \textit{Bernouli} , that is, if $l$ is big enough,  $ p(k)=C_l^k p^k(1-p)^{l-k} = \frac{\lambda^k}{k!} e^{-\lambda}$ where $p=\frac{d_1}{d_1+d_2}, \lambda = l p$. Since $d_1\ge d_2$, $p\ge1/2$, then we have $p(k\ge l/2)>1/2$.
+
+(2)  In \textit{A-Res} the items except for the first $\rho$ items will be checked one by one, while such strategy will cause the phenomenon \textit{"first arrival, first dead"} for \textit{DBS}, that is,  the degrees of the vertices of the first arrival edge will be increased firstly and then the edges attached on these vertices are of high replaced probability even though the degrees are relative low in the final. Ideally, the random order is expected to avoid such phenomenon, but for DFS order or mixture order, the locality of arrival edges influences seriously the quality of weighted sampling. So, \textit{DBS} introduces an extra buffer of size $\eta$, and updates the degrees after each $\eta$ items read, which reduces the locality in some sense. The parameter of $\eta$ is set by experience. %????????????????
+
+\begin{algorithm}[h]
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand\algorithmicensure {\textbf{Output:} }
+\caption{Degree Bias Sampling}  
+\label{alg:degree-bias-sampling}
+\begin{algorithmic}[1]
+\REQUIRE ~~\\ %Input
+Edge Sequence $E_{seq}$;
+\ENSURE ~~\\ %Output
+Sample Graph $G_s$;
+
+\STATE $V_s=\emptyset,E_s=\emptyset$;
+\FOR {each $e=(u, v)$ in the first $\rho$ edges of $E_{seq}$}
+  \STATE $E_s=E_s \bigcup (e, 0,0,0)$; //(edge, weight, random, key)
+  \STATE $V_s=V_s \bigcup (u, V_s[u].d+1)\bigcup (v, V_s[v].d+1)$;
+\ENDFOR
+\FOR {each item $it\in E_s$}
+ \STATE $it.weight = \frac{1}{min(V_s[item.edge.u].d,V_s[item.edge.v].d)}$;
+ \STATE $it.rand = random(0,1)$;
+ \STATE $it.key = it.rand^{1/it.weight}$
+\ENDFOR
+\REPEAT 
+  \STATE { Read the next $\eta$ edges into $E'$ from $E_{seq}$ at the begin of the position $\rho+1+i*\eta$ for $i=0,1,...$ }
+  \FOR {each $e=(u, v)$ in the set of  $E'$}
+    \STATE $V_s=V_s \bigcup (u, V_s[u].d+1)\bigcup (v, V_s[v].d+1)$;
+  \ENDFOR
+  \STATE For each item of $E_s$, re-caculate its key ;
+  \STATE $T =\underset{it\in{E_s}} \arg \min \{ it.key\}$;
+  \FOR {each edge $e=(u, v) \in E'$}
+    \STATE $w =\frac{1}{min(V_s[u].d,V_s[v].d)}$;
+    \STATE $r= random(0,1)$;
+    \STATE $key = r^{1/w}$;
+    \IF {key > T.key }
+      \STATE Replace $T$ by the item $(e, w, r, key)$;  
+      \STATE $T =\underset{it\in{E_s}} \arg \min \{ it.key\}$;
+   \ENDIF
+  \ENDFOR 
+\UNTIL {the end of $E_{seq}$}
+\STATE Build the sample graph $G_s$ by $E_s$
+\RETURN  $G_s$;
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Allocating Unsampled Vertex}
+In the second pass of scanning the graph, \textit{SGL} allocates the unsampled edges and vertices according to the approximate partitioner of $G_s$. For the unsampled edge $e=(u, v)$, as shown from Step \ref{alogrithm-sgl-disk-allocate-step-begin} to Step \ref{alogrithm-sgl-disk-allocate-step-end} of Algorithm \ref{alg:sampling-graph}, if both $u$ and $v$ exist in $G_s$, $e$ is allocated by the partitions of $u$ and $v$, whereas if there exits a vertex of edge that doesn't belong to $G_s$, $SGL$ has to wait for allocating it until its locality is retrieved. Here, the locality of vertex is defined as following:
+
+\begin{definition}\label{def-locality}
+For graph $G=(V, E)$, the $locality$ of vertex $u\in V$ is defined as the set of its adjacent  vertices, that is $LOC(u)=\{v | v\in V, (u,v)\in E \}$.
+\end{definition}
+
+An unsampled vertex is allocated until more than $s \cdot d$ percent of the adjacent vertices in its locality have been read and partitioned, where $s$ is decided by Equation \ref{theorm-sampling-prob-eq} with the bound of given error $\alpha$, otherwise  the vertices of locality should be cached. 
+For a vertex of degree $d$, the likelihood that none of its $d$ edges is sampled is  $(1-s)^d$ and the expectation of the number of unsampled vertex of degree $d$ is $n_d (1-s)^d$, where $n_d$ is the number of vertices of degree $d$. The expectation of required space is $d n_d (1-s)^d$. 
+With the sum of expectation with respect to the degree $1\sim d_{max}$, We have the average space complexity of locality cache is $O(\sum_{d=1}^{d_{max}} {d n_d(1-s)^d})$ .
+Since $s<1$, few of vertices are unsampled and the cache will be small.
+Moreover,  the approximate partitioner needn't to be re-adjusted with unsampled vertex allocated, because it is considered to be qualified to allocating the vertex with the bound of error gain.
+
+\section{ Loading Stream Graph }
+For loading the stream graph , it is infeasible visiting the stream graph twice, since the edges flow continuously into the loading system and usually unable to be stored in the disk of loading node. To this problem, \textit{SGL} is modified here to fit into streaming graph loading.
+
+\subsection {Streaming Loading Algorithm}
+
+The algorithm of loading stream graph is shown in Algorithm \ref{alg:streaming-loading}.  
+The element of vertex in Algorithm \ref{alg:streaming-loading} has three items: 
+the item $sampled$ represents whether the vertex is selected in $V_s$ or not; 
+the item $partition$ indicates the partition of the vertex; 
+the item $AC$ is the \textit{Allocation Context} of vertex determining the partition of unsampled vertex. 
+The algorithm mainly includes two phases as following.
+
+\textit{Phase I}: For each new arrival edge $e^+$, \textit{DBS} is applied to select $e^+$ into the reservoir $E_s$. If $e^+$ substituted for $e^-$ in $E_s$, and then it will be checked whether the representative graph should be re-partitioned to update the approximate partitioner or not, as shown from Step \ref{alg-sgl-stream-adjust-partitioner-begin} to Step \ref{alg-sgl-stream-adjust-partitioner-end}. if it required, $G_s$ will be repartitioned after $\eta$ edges read, as shown from Step \ref{alg-sgl-stream-repartition-begin} to \ref{alg-sgl-stream-repartition-end}. The details of re-partitioning will be discussed in Chapter \ref{ch-sgls-adjust-ap}.
+Otherwise, $e^+$ will be allocated and saved  immediately into the corresponding storage node in terms of current approximate partitioner and its $AC$ as shown from Step \ref{alg-sgl-stream-allocate-edge-begin} to Step \ref{alg-sgl-stream-allocate-edge-end}.
+Here, \textit{AC} is the expand locality for determining the partition of unsampled vertex of $e^+$, which will be discussed further in Chapter \ref{ch-sgls-ac}.
+
+\textit{Phase II}:  At the end of stream, the partition of unsampled vertex maybe different from the one of its allocation, so the following should be checked in parallel on each storage node. 
+\begin{enumerate}[i.]
+\item If there are vertices in the storage node that were migrated into different partitions on updating the approximate partitioner, they must be removed from the current node, as shown by Step \ref{alg-sgl-stream-clean-storage-node}; 
+\item For unsampled vertex, if there is the vertex in its $AC$  whose partition is different from the one in the final approximate partitioner, it must be re-allocated, as shown from Step \ref{alg-sgl-stream-ac-change-begin} to Step \ref{alg-sgl-stream-ac-change-end};
+\item After ($i$) and ($ii$), the edge with the partition of its unsampled vertex changed should be re-allocated, as shown from Step \ref{alg-sgl-stream-fix-EP-begin}  to Step \ref{alg-sgl-stream-fix-EP-end}.
+\end{enumerate}
+
+\begin{algorithm}[h]
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand\algorithmicensure {\textbf{Output:} }
+\caption{Sample-based Stream Graph Loading (SGLs)}
+\label{alg:streaming-loading}
+\begin{algorithmic}[1]
+\REQUIRE ~~\\
+$E_{seq}$: Edge Sequence;\\
+$k$: The Number of Storage nodes;\\
+$\rho$: Limitation of Edges in Memory;\\
+\ENSURE ~~\\
+Graph Partitions $G_P^1,G_P^2,...,G_P^k$ on $k$ storage-nodes;\\
+
+\STATE Read the first $\rho$ edges of $E_{seq}$ as an initial graph sample $G_s$;
+\STATE Apply gain-based partitioning algorithm on $G_s$ to obtain $k$ approximate partitioner $G_P^s=\{G_1^s,...,G_k^s\}$;
+\STATE $V_P^i=\emptyset$, $E_P^i=\emptyset$, $i=1...k$;
+\REPEAT
+   \STATE Apply \textit{DBS} to sample the next $\eta$ edges $E'$ and let $E^+$ be the set of selected edge and $E^-$ be the set of substituted edges;
+   \STATE $isRepartition = false$;
+   \FOR {each edge $e^+ = (u, v) \in E'$}
+     \IF {$e^+ \in E^+$}\label{alg-sgl-stream-adjust-partitioner-begin}
+       \STATE Let $e^- \in E^-$ be the edge substitued by $e^+$;
+        \STATE $E_s = E_s\bigcup\{e^+\}/\{e^-\}$;$V_s = V_s \bigcup \{u,v\}$;
+        \STATE $u.sampled = true$;$ v.sampled = true$; 
+        \STATE Check if $G_s$ should be re-partitioned; if yes, set $isRepartition = true$;\label{alg-sgl-stream-adjust-partitioner-end}
+        % //NOTE: Don't remove the incident vertex of zero degree
+     \ELSE
+        \FOR {each $u' \in \{u, v\}$} \label{alg-sgl-stream-allocate-edge-begin}
+            \IF {$\exists{i\in{[1...k]}}, u' \in V_s^i$}
+	            \STATE $u'.partition = i$;
+            \ELSE
+	            \STATE Set $u'.partition=j$ by Eq. \ref{eq-label-vex} and $u'.AC$ ;
+                \STATE $u'.sampled=false$;
+                \STATE $V_s^j = V_s^j\bigcup\{u'\}$;$V_P^j = V_P^j\bigcup\{u'\}$;
+            \ENDIF
+        \ENDFOR
+        \STATE $E_P^{u.partition}=E_P^{u.partition}\bigcup\{e^+\}$;
+        \STATE $E_P^{v.partition}=E_P^{v.partition}\bigcup\{e^+\}$; 
+       \ENDIF \label{alg-sgl-stream-allocate-edge-end}
+      \ENDFOR
+      \IF{ $isRepartition == true$ }\label{alg-sgl-stream-repartition-begin}
+        \STATE Re-partition $G_s$ and update the approximate partitioner $G_P^s$; 
+      \ENDIF \label{alg-sgl-stream-repartition-end}
+\UNTIL {the end of $E_{seq}$}
+\STATE //parallel implementation on each storage node
+\FOR{each storage-site $i\in {[1...k]}$ }
+    \FOR {each vertex $v \in {V_P^i}$}
+        %// $V_P^i$ is the set of vertices of the subgraph on the storage $i$
+        \IF {$v\not\in{V_s^i}$}
+        %//the vertex assigned has been migrated to another partition at the step of adjusting approximate partitioner
+            \STATE $V_P^i=V_P^i/v$; \label {alg-sgl-stream-clean-storage-node}
+        \ELSE
+            \IF {$!v.sampled$ and $\exists v'\in{v.AC}, v''\in{V_s}$, $v'==v'' \wedge v'.partition \neq v''.partition$} \label{alg-sgl-stream-ac-change-begin}
+                %// v is allocated, i.e. it is never sampled into Gs.
+                \STATE Re-allocate $v.partition = j$ by Equation \ref{eq-label-vex};
+                \STATE $V_P^i = V_P^i/v$; $V_P^j=V_P^j\bigcup \{v\}$
+            \ENDIF \label{alg-sgl-stream-ac-change-end}
+        \ENDIF
+    \ENDFOR
+    \FOR{each edge $e=(u,v) \in {E_P^i}$} \label{alg-sgl-stream-fix-EP-begin}
+        \IF{$\exists u'\in\{u,v\}, u'\not\in V_P^i$}
+            \STATE $E_P^i=E_P^i/\{e\}$;
+            \STATE $E_P^{u.partition}=E_P^{u.partition}\bigcup\{e\}$;
+            \STATE $E_P^{v.partition}=E_P^{v.partition}\bigcup\{e\}$;
+        \ENDIF
+    \ENDFOR
+    \STATE $V_P^i=V_P^i\bigcup V_S^i$; $E_P^i=E_P^i\bigcup E_S^i$; \label{alg-sgl-stream-fix-EP-end}
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\subsection {Allocation Context}\label{ch-sgls-ac}
+
+Ideally, allocating the unsampled vertex is based on its locality defined by Definition \ref{def-locality}, which is feasible for \textit{SGLd} regardless of the search order. However, retrieving the locality under DFS or mixture order has to wait for the end of stream for \textit{SGLs}. 
+To this problem, the allocation context is proposed here based on the widely accepted observation in the field of \textit{Random Walk}, which is a random walk started inside a good cluster will mostly stay inside the cluster \cite{DBLP:books/sp/social11}. Here, by a good cluster is meant a cluster with relatively fewer number of cross-edges in comparison with the one inside.
+The search of DFS order is generally considered as a kind of \textit{Self-avoiding Random Walk(SARW)}. The difference between DFS and SARW is that DFS allows the search to trace back when all of neighbors are visited, whereas SARW will stop searching in such case. It means that the vertices in DFS traversal besides the adjacent vertices can make the contribution to the determination of partition in some senses. So, the locality of vertex is expanded to the connected vertices to the unsampled vertex in the traversal, which makes the vertex allocated as early as possible.
+
+%All the adjacent vertices following the unsampled vertex can be visited immediately for the order of BFS, while they can't acquired until all the edges are visited for the order of random or DFS. So,\textit{SGL} have to cache the incident edges for each unsampled vertex, and wait to decide their partitions at the end of sequence.
+
+\begin{definition}\label{def-ac}
+For a unsampled vertex $u_0$, where $u_0\in{e_i}, e_i\in{E_{seq}}$,  the \textit{Allocation Context} of $u_0$, denoted as $AC(u_0)$, is defined as the subgraph 
+$(V_{u_0}, E_{u_0})$, where 
+$V_{u_0}$ is the set of vertices with  the connection to $u_0$ in the following traversal from $u_0$. Formally, $V_{u_0}=\{u | u$ is connected to $u_0, u\in e_{j}, e_{j}\in E_{seq},  j=i+1,...\}$.
+$E_{u_0}$ is the set of edges attached on $V_{u_0}$.
+$|V_{u_0}|=l$, $l$ is the size of \textit{AC}.
+\end{definition}
+
+According to the observation, if $u_0$ belongs to the partition $i$, the other vertices in its $AC$ would stay in the partition $i$ with high probability. Here two factors of the vertex $u$ in \textit{AC} are considered to contributing to the allocation of $u_0$:
+\begin{enumerate}[(1)]
+\item \textit{Influence} to $u_0$ measured by  the distance from $u$ to $u_0$ is the factor that if $u$ is of less distance to $u_0$, it would stay in the same partition to $u_0$ with higher probability. For $u\in{V_{u_0}}$, the influence of $u$ to $u_0$ is 
+\begin{equation}\label{eq-influence}
+influence(u, u_0)=\frac{1}{sp(u, u_0)}
+\end{equation}
+where $sp(u, u_0)$ is the length of shortest path between $u$ and $u_0$ in the graph $AC(u_0)$.
+
+\item \textit{Attraction} to a partition measured by the proportion of its links to the partition is the factor that the more links to the partition is, the higher probability of traversing in the same partition is. For $u\in{V_{u_0}}$, the attraction of $u$ to the partition $i$ is 
+\begin{equation}\label{eq-attraction}
+attraction(u, i)=\frac{d_{u}^{i}}{d_{u}}
+\end{equation}
+where $d_{u}^{i}$ is the number of links of the vertex $u$ to the partition $i$, $d_{u}$ is the degree of $u$.
+\end{enumerate}
+
+The unsampled vertex $u_0$ is allocated by the following equation.
+\begin{equation}\label{eq-label-vex}
+Partition(u_0) = \underset{i\in[1...k]}\arg \max {\{w_i\}}
+\end{equation}
+\begin{equation}\label{eq-assign-weight}
+w_i = \sum_{partition(u_j)=i\bigwedge u_j\in {V_{u_0}}} {influence(u_j, u_0) attraction(u_j, i)}
+\end{equation}
+
+\subsection {Adjusting Approximate Partitioner} \label{ch-sgls-adjust-ap}
+
+When the edge $e^+=(u^+,v^+)$ in $E_{seq}$  is selected to substitute for the edge $e^-=(u^-,v^-)$ in $E_s$, the representative graph $G_s$ should be re-partitioned in case of the gain of associated vertex inverse.
+The procedure of repartitioning needn't start at the root of the binary tree of graph partitioning but at the the internal node $LCA(i, j)$.
+
+For an non-boundary vertex of $G_s$ with adding or removing incident edge, its sign of gain will not change and then it is unnecessary re-partitioning $G_s$. 
+Whereas for an boundary vertex, its sign of gain will be inverse and $G_s$ should be re-partitioned in the following cases.
+\begin{enumerate}[i.]
+\item\label{repartition-cond1}  If $\exists u \in \{u^-, v^-\} \wedge j \in {[1...k]}$, $Partition(u) = i$, $u \in \mathcal{B} \wedge \{u^-, v^-\}\setminus{u} \not\subseteq \mathcal{B} \wedge \delta_{u}^{ij}=0$, where $\delta_{u}^{ij}$ is the gain of $u$ between the partition of $i$ and $j$ before $e^-$ removed, then the partition $i$ and $j$ should be adjusted.
+\item\label{repartition-cond2} If $\{u^+, v^+\} \subseteq \mathcal{B}$, $Partition(u^+)=i$, $Partition(v^+)=j$, $i \neq j$, $\delta_{u^+}^{ij}=0$ or $\delta_{v^+}^{ji}=0$ before $e^+$ added, then the partition $i$ and $j$ should be adjusted.
+\end{enumerate}
+
+As shown by the condition (\ref{repartition-cond1}) and  (\ref{repartition-cond2}) above, the likelihood of adjusting partition is related to the number of boundary vertex of zero gain. 
+The probability that a vertex of degree $d$ becomes the boundary vertex with one link at least to the different partitions is  $1-(1-\frac{1}{k})^d$, and the probability that the boundary vertex is of zero gain is $\frac{1}{d}$. Thus the probability that $G_P^s$ is  adjusted when a edge on sample incident to the boundary vertex of degree $d$ is $\frac{s}{d}(1-(1-\frac{1}{k})^d) p(d)$, where $p(d)$ is the probability that the vertex is of the degree $d$.  A constant $c_1<1$, for  simplicity,  is introduced to substitute for $(1-(1-\frac{1}{k})^d)$. Moreover,  we assume the graph follows a \textit{power law} as most of big graph do in the real world, and then $p(d)=\frac{d^{-\beta}}{\zeta (\beta)}$, where $\zeta (\beta) = \sum_{1\leq d \leq \infty} {d^{-\beta}}$, $\beta > 0$, which $\zeta (\beta)$ is \textit{Riemann Zeta Function} for the purpose of normalized constant. Finally, the probability that $G_P^s$ is  adjusted with a edge sampled is $ \sum_{1\leq d \leq \infty} {s c_1 } \frac{d^{-\beta}}{d \zeta (\beta)}= s c_1\frac{\zeta(\beta+1)}{\zeta (\beta)}$.
+In total, the expectation of the number of adjusting is
+$(1-(1-s c_1\frac{\zeta(\beta+1)}{\zeta (\beta)})^{\eta}) m/\eta$.
+
+Obviously, $G_s$ should be re-partitioned in the case that the new vertex is added with the edge sample, while it maybe not in the case that the sample edge attaches the exists vertices in $G_s$, except that the condition (\ref{repartition-cond1}) and  (\ref{repartition-cond2}) satisfied. As a result, $G_s$  will be re-partitioned frequently at the early phase of \textit{SGLs} until most of vertices of the original graph are observed, because $G_s$ in \textit{SGLs} that allocates unsampled edges comes from the partial graph of the current stream under \textit{BFS} or \textit{DFS} search order, not the global graph as \textit{SGL} does. 
+Hence, the tip recommended here to reduce the times of re-partitioning at the early phase is that the size of $E_s$ in \textit{SGLs} in practice should be larger than the one in \textit{SGL}. 
+\textcolor{red}{it is the better that the analysis on the size of $E_s$ theoretically and the suggestion of size are given.}
+
+Moreover, 
+if an edge wasn't selected by \textit{DBS} in \textit{SGLs}, it should be allocated immediately since the edge stream was never saved persistently at the loader.  
+As the result, the partition of the vertex saved as unsampled in the storage node at early allocation should be re-examined at the end of stream graph, because the vertex itself or the vertex in its $AC$ maybe migrated in the following re-partitioning. 
+The time complexity of the re-allocation in storage node is related to the number of unsampled vertex, that is, $O(\sum_{d=1}^{d_{max}} {d n_d(1-s)^d})$.
+
+
+\section{Experimental Evaluation}
+//We conducted extensive experimental evaluation to discover the performance and trends of stream partitioning heuristics on a variety of graphs.
+
+experiments of edge-cuts and time of SGL(bfs, dfs, random) on disk and kl, min-max etc.
+
+experiments of edge-cuts and time of SGL(bfs, dfs, random) on graph stream and streaming load\cite{Stanton:streampartition}.
+
+experiments of AC size to edge-cuts and time
+
+experiments of sampling ratio to the number of sampled vertex (equal and unequal)
+
+experiments of sampling ratio to edge-cuts and time
+
+experiments of migration times
+
+
+\subsection{Dataset Description}
+
+\subsection{Partition Evaluation}
+
+$cut_ratio = (approx_{cut}-min_{cut})/min_cut$
+
+$size_distribution$
+
+\subsection{Dynamic Partition Evaluation}
+
+\section{Conclusions}
+//We have demonstrated that simple, one-pass streaming graph partitioning heuristics can dramatically improve the edge-cut in distributed graphs.
+\section{Acknowledgments}
+
+\bibliographystyle{abbrv}
+\bibliography{sigproc}
+
+\balancecolumns
+\end{document}
