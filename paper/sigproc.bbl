@@ -1,0 +1,78 @@
+\begin{thebibliography}{10}
+
+\bibitem{DBLP:books/sp/social11}
+C.~C. Aggarwal, editor.
+\newblock {\em Social Network Data Analytics}.
+\newblock Springer, 2011.
+
+\bibitem{Battiti:minmaxgreedy}
+R.~Battiti and A.~A. Bertossi.
+\newblock Greedy, prohibition, and reactive heuristics for graph partitioning.
+\newblock {\em IEEE TRANSACTIONS ON COMPUTERS}, 48:361--385, 1999.
+
+\bibitem{Pavlos:weightedsampling}
+P.~S. Efraimidis and P.~G. Skpirakis.
+\newblock Weighted random sampling with a reservoir.
+\newblock {\em Information Processing Letters}, 97:181--185, 2006.
+
+\bibitem{Fiduccia:klvar}
+C.~Fiduccia and R.~Mattheyses.
+\newblock A linear time heuristics for improving network partitions.
+\newblock In {\em 19th ACM/IEEE Design Automation Conf.}, pages 175--181, 1982.
+
+\bibitem{Dhillon:multilevel}
+I.S.Dhillon, Y.Guan, and B.Kulis.
+\newblock Weighted graph cuts without eigen-vectors: A multilevel approach.
+\newblock {\em IEEE Trans. Pattern Anal. Mach. Intell.}, 29(11):1944--1957,
+  2007.
+
+\bibitem{Karger:mincut}
+D.~R. Karger.
+\newblock Random sampling in graph optimization problems.
+\newblock Technical Report 95-1541, Stanford University, January 1995.
+
+\bibitem{Kernighan:kl}
+B.~Kernighan and S.~Lin.
+\newblock An efficient heuristic procedure for partitioning graphs.
+\newblock {\em The Bell System Technical Journal}, 49:0--0, 1970.
+
+\bibitem{Laguna:greedy}
+M.~Laguna, T.A.Feo, and H.C.Elrod.
+\newblock A greedy randomized adaptive search procedure for the two-partition
+  problem.
+\newblock {\em Operations Research}, 42:677--687, 1994.
+
+\bibitem{Lang:multilevel}
+K.~Lang and S.~Rao.
+\newblock A flow-based method for improving the expansion or conductance of
+  graph cuts.
+\newblock {\em Lecture notes in computer science}, 0:325--337, 2004.
+
+\bibitem{DBLP:conf/kdd/LeskovecF06}
+J.~Leskovec and C.~Faloutsos.
+\newblock Sampling from large graphs.
+\newblock In {\em KDD}, pages 631--636, 2006.
+
+\bibitem{Luxburg:spectralcluster}
+U.~V. Luxburg.
+\newblock A tutorial on spectral clustering.
+\newblock {\em Statistics and Computing}, 17(4):395--416, 2007.
+
+\bibitem{Stanton:streampartition}
+I.~Stanton and G.~Kliot.
+\newblock Streaming graph partitioning for large distributed graphs.
+\newblock Technical Report MSR-TR-2011-121, Microsoft Research Institution,
+  November 2011.
+
+\bibitem{Teng:multilevel}
+S.~Teng.
+\newblock Coarsening, sampling, and smoothing: Elements of the multilevel
+  method.
+\newblock {\em Algorithms for Parallel Processing}, 105:247--276, 1999.
+
+\bibitem{Yves:samplebook}
+Y.~Till, editor.
+\newblock {\em Sampling Algorithms}.
+\newblock Springer, 2006 edition, 2006.
+
+\end{thebibliography}
