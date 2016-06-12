@@ -681,3 +681,36 @@ bool SGPLoader::ReadEdge(EDGE& e)
 	}
 	return false;
 }
+
+//SGLs
+bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
+{
+	_sample_edge_items.clear();
+	_sample_vertex_items.clear();
+	_dbs_edges_cache_to_process.clear();
+	
+	//step1
+	if(ReadInitSamples_DBS() < _edges_limition)
+	{
+		Log::log("the graph is too small!\n");
+		return false;
+	}
+	InitSamples_DBS();
+
+	//step 2
+	doGraphSamplePartition(partition_algorithm);
+
+
+	//step4 to step 30 
+	while(ReadNextEdgesCache_DBS())
+	{
+		UpdateWeightofEdgesInEs();
+		...
+	}
+	
+	//step 31 to step 51
+	...
+	return true;
+
+
+}

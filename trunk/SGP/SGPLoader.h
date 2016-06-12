@@ -107,7 +107,7 @@ public:
 	bool doGraphSampling();
 	//partitioning the graph sample into _partitions_in_memory of k clusters
 	void doGraphSamplePartition(PartitionAlgorithm partition_algorithm);
-	// assign the reminder of edges
+	// assign the reminder of edges for the algorithm of scaning graph on disk twice
 	void doAssignReminderEdges();
 
 	void SetEdgeOrderMode(EdgeOrderMode mode);
@@ -116,7 +116,6 @@ public:
 	void SetSampleRation(float ratio);
 	void SetEdgesLimition(int limit);
 	void SetSampleMode(SampleMode mode);
-	void SetAssignWindowSize(int assign_win_size) {_assign_win_size = assign_win_size;};
 
 	void SetOutputFile(string outfile) {
 		_outfile = outfile; 
@@ -133,6 +132,13 @@ public:
 	void doSGPStatistic();
 	//check if the edge exists
 	bool isEdgeExist(EDGE& e);
+
+	/***********************************************************************************************************************************/
+	//the funtion for streaming load with dbs sampling - SGLs
+	bool doStreamLoadByDBS(PartitionAlgorithm partition_algorithm);
+	void SetAssignWindowSize(int assign_win_size) {_assign_win_size = assign_win_size;};
+	/***********************************************************************************************************************************/
+
 
 };
 
