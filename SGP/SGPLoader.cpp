@@ -455,7 +455,7 @@ bool SGPLoader::SamplingEdgeCache()
 			EdgeID e_id = MakeEdgeID(e._u, e._v);
 			_sample_edge_items.insert(pair<EdgeID, Edge_Item>(e_id, e_item));
 
-			SearchMinimumKey();
+			SearchMinimumKey();//it suffers from low efficiency. to improve it in the future by insert sorting with the index
 		}
 		iter++;
 	}
@@ -695,22 +695,141 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 		Log::log("the graph is too small!\n");
 		return false;
 	}
-	InitSamples_DBS();
+	if(!InitSamples_DBS())
+	{
+		Log::log("init samples error!!!\n");
+		return false;
+	}
 
 	//step 2
 	doGraphSamplePartition(partition_algorithm);
 
 
-	//step4 to step 30 
+	//step 4 to step 30 
 	while(ReadNextEdgesCache_DBS())
 	{
 		UpdateWeightofEdgesInEs();
-		...
+
+		doStreamDBSSample();
+
+		if(isRepartition())
+			RepartitionSampleGraph();
 	}
 	
 	//step 31 to step 51
-	...
+	UpdateStorageNode();
+
 	return true;
 
+
+}
+
+bool SGPLoader::doStreamDBSSample()
+{
+	//the following codes are copied from SamplingEdgeCache
+	vector<EDGE>::iterator iter = _dbs_edges_cache_to_process.begin();
+	while(iter != _dbs_edges_cache_to_process.end())
+	{
+		int min_degree = INT_MAX;
+		EDGE e = *iter;
+		
+		for(int j=0;j<2; j++)
+		{
+			VERTEX vex = (j==0)?e._u:e._v;
+			map<VERTEX, Vertex_Item>::iterator iter_vexs = _sample_vertex_items.find(vex);
+			if(iter_vexs == _sample_vertex_items.end())
+			{
+				Log::log("DBS : get the degree of vertex of edge : read first \\rho edges : error occur!!! ");
+				return false;
+			}
+			else
+			{
+				if(iter_vexs->second.degree < min_degree)
+				{
+					min_degree = iter_vexs->second.degree;
+				}
+			}
+		}
+		double r = randf(0.0f, 1.0f);
+		double key = pow(r, 1.0/min_degree);
+		if(key > _min_weight)//substitute. step 8 - step 12
+		{
+			map<EdgeID, Edge_Item>::iterator iter_edges = _sample_edge_items.find(_min_weight_edge_id);
+			if(iter_edges == _sample_edge_items.end())
+			{
+				Log::log("DBS : doStreamDBSSample : find edges error occur!!! ");
+				return false;
+			}
+			_sample_edge_items.erase(iter_edges);
+			Edge_Item e_item = {min_degree, r, key};
+			EdgeID e_id = MakeEdgeID(e._u, e._v);
+			_sample_edge_items.insert(pair<EdgeID, Edge_Item>(e_id, e_item));
+
+			//for SGLs
+			map<VERTEX, Vertex_Item>::iterator iter_vex = _sample_vertex_items.find(e._u);
+			if(iter_vex == _sample_vertex_items.end())
+			{
+				Log::log("SGLs : doStreamDBSSample : find vertex 1 error occur!!! ");
+				return false;
+			}
+			iter_vex->second._is_sampled = true;
+			iter_vex = _sample_vertex_items.find(e._v);
+			if(iter_vex == _sample_vertex_items.end())
+			{
+				Log::log("SGLs : doStreamDBSSample : find vertex 2 error occur!!! ");
+				return false;
+			}
+			iter_vex->second._is_sampled = true;
+
+			_selected_edges.push_back(e_id);
+			_substituted_edges.push_back(_min_weight_edge_id);
+			//
+
+			SearchMinimumKey();//it suffers from low efficiency. to improve it in the future by insert sorting with the index
+		}
+		else//assign. step 14- step 24
+		{
+			StreamAssignEdge(e);
+		}
+		iter++;
+	}
+
+}
+
+bool SGPLoader::StreamAssignEdge(EDGE e)
+{
+	for(int i=0; i<2; i++)
+	{
+		VERTEX u = i==0?e._u:e._v;
+
+		map<VERTEX, Vertex_Item>::iterator iter_vex = _sample_vertex_items.find(u);
+		if(iter_vex == _sample_vertex_items.end())
+		{
+			Log::log("SGLs : StreamAssignEdge : find vertex error occur!!! ");
+			return false;
+		}
+
+		if(!(iter_vex->second._is_sampled))
+		{
+			// AC?
+			//get AC or create AC
+		}
+	}
+
+
+}
+
+bool SGPLoader::isRepartition()
+{
+	return _is_repartition;
+}
+
+void SGPLoader::RepartitionSampleGraph()
+{
+
+}
+
+bool SGPLoader::UpdateStorageNode()
+{
 
 }
