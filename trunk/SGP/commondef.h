@@ -95,4 +95,7 @@ typedef struct _EDGE_ITEM {
 
 typedef struct _VERTEX_ITEM{
 	int degree;
+	bool _is_sampled;
+	int _partition;
+	vector<VERTEX> _AC;
 } Vertex_Item, PVertex_Item;

@@ -71,7 +71,29 @@ private:
 	//find the minimum key in the current E_s
 	void SearchMinimumKey();
 	/***********************************************************************************************************************************/
+		
+	/***********************************************************************************************************************************/
+	//the data for SGLs
+	//indicator of repartition
+	bool _is_repartition;
+	//cache of selected edges by dbs
+	vector<EdgeID> _selected_edges;
+	//cache of substituted edges by dbs
+	vector<EdgeID> _substituted_edges;
 
+	//the funtion for streaming load with dbs sampling - SGLs
+	// streaming dbs
+	bool doStreamDBSSample();
+	//check if repartition
+	bool isRepartition();
+	//repartition sample graph
+	void RepartitionSampleGraph();
+	//substitute edges in sample graph
+	bool StreamAssignEdge(EDGE e);
+	//update storage node on parallel
+	bool UpdateStorageNode();
+	/***********************************************************************************************************************************/
+	
 	/***********************************************************************************************************************************/
 	//data for uneq sampling
 	int _max_d;//auxiliary variable. NOTE: set the value before sampling
