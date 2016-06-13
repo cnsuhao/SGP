@@ -4,6 +4,8 @@
 #include "Log.h"
 #include <sstream>
 
+using namespace std;
+using namespace stdext; //for hash set
 
 int rand(int range_min, int range_max)
 {
@@ -715,6 +717,7 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 		if(isRepartition())
 			RepartitionSampleGraph();
 	}
+	_assign_manager.Flush();
 	
 	//step 31 to step 51
 	UpdateStorageNode();
@@ -754,6 +757,7 @@ bool SGPLoader::doStreamDBSSample()
 		double key = pow(r, 1.0/min_degree);
 		if(key > _min_weight)//substitute. step 8 - step 12
 		{
+			//for SGLs
 			map<EdgeID, Edge_Item>::iterator iter_edges = _sample_edge_items.find(_min_weight_edge_id);
 			if(iter_edges == _sample_edge_items.end())
 			{
@@ -765,7 +769,7 @@ bool SGPLoader::doStreamDBSSample()
 			EdgeID e_id = MakeEdgeID(e._u, e._v);
 			_sample_edge_items.insert(pair<EdgeID, Edge_Item>(e_id, e_item));
 
-			//for SGLs
+			
 			map<VERTEX, Vertex_Item>::iterator iter_vex = _sample_vertex_items.find(e._u);
 			if(iter_vex == _sample_vertex_items.end())
 			{
@@ -781,8 +785,8 @@ bool SGPLoader::doStreamDBSSample()
 			}
 			iter_vex->second._is_sampled = true;
 
-			_selected_edges.push_back(e_id);
-			_substituted_edges.push_back(_min_weight_edge_id);
+			_selected_edges.insert(e_id);
+			_substituted_edges.insert(_min_weight_edge_id);
 			//
 
 			SearchMinimumKey();//it suffers from low efficiency. to improve it in the future by insert sorting with the index
@@ -798,6 +802,7 @@ bool SGPLoader::doStreamDBSSample()
 
 bool SGPLoader::StreamAssignEdge(EDGE e)
 {
+	bool all_vex_sampled = true;
 	for(int i=0; i<2; i++)
 	{
 		VERTEX u = i==0?e._u:e._v;
@@ -811,17 +816,53 @@ bool SGPLoader::StreamAssignEdge(EDGE e)
 
 		if(!(iter_vex->second._is_sampled))
 		{
-			// AC?
-			//get AC or create AC
+			all_vex_sampled =  false;
 		}
 	}
 
+	_assign_manager.CreateAndAppendContext(
+		e, 
+		&_partitions_in_memory, 
+		&_graph_sample, 
+		_assign_win_size);//!!!check, the partition and graph sample varied.
 
+	_assign_manager.AppendEdge(e);
+	_assign_manager.doManager();
 }
 
-bool SGPLoader::isRepartition()
+bool SGPLoader::CheckRepartition(hash_set<VERTEX>& adjust_vertex)
 {
-	return _is_repartition;
+	hash_set<VERTEX> changed_vertex;
+	//if an edge is in and out, it will not change the partition
+	hash_set<EdgeID>::iterator iter_selected =  _selected_edges.begin();
+	hash_set<EdgeID>::iterator iter_substituted;
+	while(iter_selected != _selected_edges.end())
+	{
+		iter_substituted = _substituted_edges.find(*iter_selected);
+		if(iter_substituted!= _substituted_edges.end())
+		{
+			iter_selected = _selected_edges.erase(iter_selected);
+			_substituted_edges.erase(iter_substituted);
+		}
+		else
+		{
+			EDGE e = GetEdgeofID(*iter_selected);
+			changed_vertex.insert(e._u);
+			changed_vertex.insert(e._v);
+
+			iter_selected++;
+		}
+	}
+	iter_substituted = _substituted_edges.begin();
+	while(iter_substituted!=_substituted_edges.end())
+	{
+		EDGE e = GetEdgeofID(*iter_substituted);
+		changed_vertex.insert(e._u);
+		changed_vertex.insert(e._v);
+		iter_substituted++;
+	}
+
+	return _partitions_in_memory.CheckIfAdjust(changed_vertex, adjust_vertex);
 }
 
 void SGPLoader::RepartitionSampleGraph()

@@ -36,6 +36,7 @@ public:
 	~AssignContextManager();
 
 	void AppendEdge(EDGE& e);
+	//release the context of assigned edge
 	void doManager();
 	void CreateAndAppendContext(EDGE e, Partitioner* partitioner, Graph* graph, int sizelimit);
 	//if reach the end, assign the edge by current cache
