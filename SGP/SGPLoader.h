@@ -4,6 +4,7 @@
 #include "Partitioner.h"
 #include "AssignContext.h"
 #include "commondef.h"
+#include <hash_set>
 
 int rand(int range_min, int range_max);
 float randf(float range_min, float range_max);
@@ -77,15 +78,15 @@ private:
 	//indicator of repartition
 	bool _is_repartition;
 	//cache of selected edges by dbs
-	vector<EdgeID> _selected_edges;
+	hash_set<EdgeID> _selected_edges;
 	//cache of substituted edges by dbs
-	vector<EdgeID> _substituted_edges;
+	hash_set<EdgeID> _substituted_edges;
 
 	//the funtion for streaming load with dbs sampling - SGLs
 	// streaming dbs
 	bool doStreamDBSSample();
-	//check if repartition
-	bool isRepartition();
+	//check if repartition. adjust_vertex contains the vertex ' gain is inversed
+	bool CheckRepartition(hash_set<VERTEX>& adjust_vertex);
 	//repartition sample graph
 	void RepartitionSampleGraph();
 	//substitute edges in sample graph

@@ -4,6 +4,7 @@
 #include <sstream>
 
 using namespace std;
+using namespace stdext;
 
 void Partitioner::ClearPartition()
 {
@@ -641,4 +642,9 @@ int Partitioner::GetAssignedLabelOfVex(VERTEX vex)
 	} 
 
 	return -1;
+}
+
+bool Partitioner::CheckIfAdjust(hash_set<VERTEX>& change_vexs, hash_set<VERTEX>& adjust_vertex)
+{
+...
 }

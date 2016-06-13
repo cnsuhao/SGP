@@ -9,6 +9,7 @@
 #include <map>
 #include <unordered_set>
 #include <set>
+#include <hash_set>
 #include "Graph.h"
 
 // a node in a cluster
@@ -110,7 +111,7 @@ public:
 	//write the edges of each partitioning results into outfile_edges.1
 	void WriteClusterEdgesOfPartitions();
 	//write an cluster edge of u, v belonging to u_cluster and v_cluster repectively. outfile_edges.1
-	void Partitioner::WriteClusterEdge(VERTEX u, int u_cluster, VERTEX v, int v_cluster);
+	void WriteClusterEdge(VERTEX u, int u_cluster, VERTEX v, int v_cluster);
 	//write an assigned edge of u, v belonging to u_cluster and v_cluster repectively. outfile_assign.1
 	void WriteAssignEdge(VERTEX u, int u_cluster, VERTEX v, int v_cluster);
 	//compute the cut value
@@ -121,4 +122,12 @@ public:
 
 	void AppendAssignVertex(VERTEX vex, int partition_id);
 	int GetAssignedLabelOfVex(VERTEX vex);
+	//the check is on the leaf between the siblings. that is, for example, 
+	//for u,v, u and v are siblings with the same parent, and if u or v 's gain is reversed, the partitions of u and v
+	// will adjust.
+	//adjust_vertex contains the vertex to be adjust, i.e the gain is inversed, if null , no adjust.
+	//change_vexs contains the vertex whose edges is changed
+	bool CheckIfAdjust(hash_set<VERTEX>& change_vexs, hash_set<VERTEX>& adjust_vertex);
+	//find LCA of adjust_vertex and repartition
+	void Repartition(hash_set<VERTEX>& adjust_vertex);
 };
