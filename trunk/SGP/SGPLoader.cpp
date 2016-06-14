@@ -757,7 +757,7 @@ bool SGPLoader::doStreamDBSSample()
 		}
 		double r = randf(0.0f, 1.0f);
 		double key = pow(r, 1.0/min_degree);
-		if(key > _min_weight)//substitute. step 8 - step 12
+		if(key > _min_weight)//substitute occur. step 8 - step 12
 		{
 			//for SGLs
 			map<EdgeID, Edge_Item>::iterator iter_edges = _sample_edge_items.find(_min_weight_edge_id);
@@ -793,7 +793,7 @@ bool SGPLoader::doStreamDBSSample()
 
 			SearchMinimumKey();//it suffers from low efficiency. to improve it in the future by insert sorting with the index
 		}
-		else//assign. step 14- step 24
+		else//no substitute occur, then assign edge. step 14- step 24
 		{
 			StreamAssignEdge(e);
 		}
@@ -821,15 +821,22 @@ bool SGPLoader::StreamAssignEdge(EDGE e)
 			all_vex_sampled =  false;
 		}
 	}
+	if(all_vex_sampled)//assign immediately
+	{
+		assign...
+	}
+	else//assigning util AC is full.
+	{
+		_assign_manager.CreateAndAppendContext(
+			e, 
+			&_partitions_in_memory, 
+			&_graph_sample, 
+			_assign_win_size);//!!!check, the partition and graph sample varied.
 
-	_assign_manager.CreateAndAppendContext(
-		e, 
-		&_partitions_in_memory, 
-		&_graph_sample, 
-		_assign_win_size);//!!!check, the partition and graph sample varied.
-
-	_assign_manager.AppendEdge(e);
-	_assign_manager.doManager();
+		_assign_manager.AppendEdge(e);
+		_assign_manager.doManager();
+	}
+	return true;
 }
 
 bool SGPLoader::CheckRepartition(vector<ReAdjustPartitionPair>& adjust_partitions)

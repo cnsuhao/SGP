@@ -646,8 +646,81 @@ int Partitioner::GetAssignedLabelOfVex(VERTEX vex)
 
 bool Partitioner::CheckIfAdjust(hash_set<VERTEX>& change_vexs, vector<ReAdjustPartitionPair>& adjust_partitions)
 {
-...
+	typedef struct {
+		bool isRepartition;
+	} Cluster_Repartition_info;
+
+	int BT_nodes = 2*_k-1; //complete binary tree
+	int BT_height = int(log(float(_k))/log(2.0f))+1;
+
+	vector<Cluster_Repartition_info> cluster_info;
+	for(int i=0; i<BT_nodes; i++)
+	{
+		Cluster_Repartition_info info = {false};
+		cluster_info.push_back(info);
+	}
+
+
+	hash_set<VERTEX>::iterator iter = change_vexs.begin();
+	while(iter!=change_vexs.end())
+	{
+		int level = 2;//from level 2 not root level (1)
+		int cluster_of_changed_vex=-1; //the vex'partition in the level, begin with 1
+		int cluster_sibling = -1;//the sibling of cluster_changed_vex
+		int leaf_of_vex = -1;//the cluster id of changed vex on the leafs
+
+		VERTEX u = *iter;
+		vector<int> partition_u;//the leaf set of the node containing u in BT at the level
+		vector<int> partition_not_u; //the leaf set of the node's sibling
+
+		leaf_of_vex = GetClusterLabelOfVex(u);//here, 0 begin on the level of leaf
+		leaf_of_vex += _k;
+		//find a cluster to adjust at the top level, the following node of the cluster should not be
+		//considered.
+		for(level=2; level<=BT_height; level++)
+		{
+			cluster_of_changed_vex = leaf_of_vex;
+			//find the cluster of vex in the level
+			for(int i = BT_height ; i>level; i++)
+			{
+				cluster_of_changed_vex = floor(cluster_of_changed_vex/2.0f);
+			}
+			
+			cluster_sibling = (cluster_of_changed_vex%2==0)?cluster_of_changed_vex+1:cluster_of_changed_vex-1;
+
+			if(cluster_info[cluster_of_changed_vex-1].isRepartition)
+			{
+				break;
+			}
+
+			//check if adjust
+			partition_u.clear();
+			partition_not_u.clear();
+			int level_delta = BT_height - level;
+			int size = (int)pow(2.0f, level_delta);
+			int start_leaf = cluster_of_changed_vex*size-_k; //begin with 0
+			for(int i = start_leaf; i<size; i++)
+				partition_u.push_back(i);
+			start_leaf = cluster_sibling*size-_k; //begin with 0
+			for(int i = start_leaf; i<size; i++)
+				partition_not_u.push_back(i);
+
+			if(CheckClusterAdjust(u, partition_u, partition_not_u))
+			{
+				cluster_info[cluster_of_changed_vex-1].isRepartition = true;
+			}
+		}
+
+		iter++;
+	}
+
 }
+
+bool Partitioner::CheckClusterAdjust(VERTEX u, vector<int>& partition_u, vector<int>& partition_not_u)
+{
+
+}
+
 
 void Partitioner::Repartition(vector<ReAdjustPartitionPair>& adjust_partitions)
 {
