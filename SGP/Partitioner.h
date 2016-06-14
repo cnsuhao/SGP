@@ -124,7 +124,7 @@ public:
 	int GetAssignedLabelOfVex(VERTEX vex);
 
 	/*********************************************************************************/
-	//SGLs
+	//SGLs:将整个划分过程看做二叉树（完全），但最终只保存了叶子节点，更新实际上在叶子上开始处理的
 	//adjust_partitions contains the partions to be adjust, i.e the gain is inversed, if null , no adjust.
 	//change_vexs contains the vertex whose edges is changed.
 	//NOTE: the number of partition adjusted begin with the root of partitioning binary tree.
@@ -132,6 +132,7 @@ public:
 	//partition_u:the leaf set of the node containing u in BT at the level. begin with 0
 	//partition_not_u:the leaf set of the node's sibling. begin with 0
 	bool CheckClusterAdjust(VERTEX u, vector<int>& partition_u, vector<int>& partition_not_u);
+	int GetConnectionsToClusterSet(VERTEX u, vector<int>& partitions);
 	//repartition
 	void Repartition(vector<ReAdjustPartitionPair>& adjust_partitions);
 };

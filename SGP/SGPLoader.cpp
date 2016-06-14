@@ -145,6 +145,7 @@ bool SGPLoader::AppendEdgeSample_Uneq(EDGE e)
 	Edge_Item e_item = {0,0,0};
 	_sample_edge_items.insert(pair<EdgeID, Edge_Item>(e_id, e_item));
 	UpdateVertexWeight_Uneq(e);
+	return true;
 }
 
 bool SGPLoader::InitEdgeWeightInEs()
@@ -461,6 +462,7 @@ bool SGPLoader::SamplingEdgeCache()
 		}
 		iter++;
 	}
+	return true;
 }
 
 bool SGPLoader::AppendEdgeSample_DBS(EDGE e)
@@ -489,6 +491,7 @@ bool SGPLoader::AppendEdgeSample_DBS(EDGE e)
 			(iter->second).degree++;
 		}
 	}
+	return true;
 }
 
 void SGPLoader::SearchMinimumKey()
@@ -799,7 +802,7 @@ bool SGPLoader::doStreamDBSSample()
 		}
 		iter++;
 	}
-
+	return true;
 }
 
 bool SGPLoader::StreamAssignEdge(EDGE e)
@@ -823,7 +826,7 @@ bool SGPLoader::StreamAssignEdge(EDGE e)
 	}
 	if(all_vex_sampled)//assign immediately
 	{
-		assign...
+		assign...//NOTE: modify the partition!!!! TODO
 	}
 	else//assigning util AC is full.
 	{
@@ -833,7 +836,7 @@ bool SGPLoader::StreamAssignEdge(EDGE e)
 			&_graph_sample, 
 			_assign_win_size);//!!!check, the partition and graph sample varied.
 
-		_assign_manager.AppendEdge(e);
+		_assign_manager.AppendEdge(e);//NOTE: modify the partition!!!! TODO
 		_assign_manager.doManager();
 	}
 	return true;
@@ -881,5 +884,5 @@ void SGPLoader::RepartitionSampleGraph(vector<ReAdjustPartitionPair>& adjust_par
 
 bool SGPLoader::UpdateStorageNode()
 {
-
+	return false;
 }

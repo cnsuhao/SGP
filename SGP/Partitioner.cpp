@@ -2,6 +2,7 @@
 #include "Partitioner.h"
 #include "Log.h"
 #include <sstream>
+#include <queue>
 
 using namespace std;
 using namespace stdext;
@@ -656,7 +657,8 @@ bool Partitioner::CheckIfAdjust(hash_set<VERTEX>& change_vexs, vector<ReAdjustPa
 	vector<Cluster_Repartition_info> cluster_info;
 	for(int i=0; i<BT_nodes; i++)
 	{
-		Cluster_Repartition_info info = {false};
+		Cluster_Repartition_info info;
+		info.isRepartition = false;
 		cluster_info.push_back(info);
 	}
 
@@ -666,16 +668,17 @@ bool Partitioner::CheckIfAdjust(hash_set<VERTEX>& change_vexs, vector<ReAdjustPa
 	{
 		int level = 2;//from level 2 not root level (1)
 		int cluster_of_changed_vex=-1; //the vex'partition in the level, begin with 1
-		int cluster_sibling = -1;//the sibling of cluster_changed_vex
-		int leaf_of_vex = -1;//the cluster id of changed vex on the leafs
+		int cluster_sibling = -1;//the sibling of cluster_changed_vex, begin with 1
+		int leaf_of_vex = -1;//the cluster id of changed vex on the leafs, begin with 1
 
 		VERTEX u = *iter;
 		vector<int> partition_u;//the leaf set of the node containing u in BT at the level
 		vector<int> partition_not_u; //the leaf set of the node's sibling
 
 		leaf_of_vex = GetClusterLabelOfVex(u);//here, 0 begin on the level of leaf
-		leaf_of_vex += _k;
-		//find a cluster to adjust at the top level, the following node of the cluster should not be
+		leaf_of_vex += _k;//begin with 1
+
+		//find a cluster to adjust from the top level, if yes, the following sub-nodes should not be
 		//considered.
 		for(level=2; level<=BT_height; level++)
 		{
@@ -690,7 +693,7 @@ bool Partitioner::CheckIfAdjust(hash_set<VERTEX>& change_vexs, vector<ReAdjustPa
 
 			if(cluster_info[cluster_of_changed_vex-1].isRepartition)
 			{
-				break;
+				break; //the sub-tree needn't to be checked
 			}
 
 			//check if adjust
@@ -698,7 +701,7 @@ bool Partitioner::CheckIfAdjust(hash_set<VERTEX>& change_vexs, vector<ReAdjustPa
 			partition_not_u.clear();
 			int level_delta = BT_height - level;
 			int size = (int)pow(2.0f, level_delta);
-			int start_leaf = cluster_of_changed_vex*size-_k; //begin with 0
+			int start_leaf = cluster_of_changed_vex*size-_k; //the leftest node (leaf) in the sub-tree, begin with 0
 			for(int i = start_leaf; i<size; i++)
 				partition_u.push_back(i);
 			start_leaf = cluster_sibling*size-_k; //begin with 0
@@ -708,20 +711,73 @@ bool Partitioner::CheckIfAdjust(hash_set<VERTEX>& change_vexs, vector<ReAdjustPa
 			if(CheckClusterAdjust(u, partition_u, partition_not_u))
 			{
 				cluster_info[cluster_of_changed_vex-1].isRepartition = true;
+				cluster_info[cluster_sibling-1].isRepartition = true;
 			}
 		}
 
 		iter++;
 	}
 
+	//record all the top partition pair to adjust by level traverse on BT
+	queue<int> temp_queue;
+	temp_queue.push(1);//root node
+	while(!temp_queue.empty())
+	{
+		int next_cluster = temp_queue.front();
+		temp_queue.pop();
+		if(!cluster_info[next_cluster-1].isRepartition)
+		{
+			temp_queue.push(next_cluster*2); //push the left child
+			temp_queue.push(next_cluster*2+1); //push the right child
+		}
+		else
+		{
+			ReAdjustPartitionPair pair;
+			pair._part1 = next_cluster;//must be the left
+			pair._part2 = next_cluster+1;
+
+			adjust_partitions.push_back(pair);
+			temp_queue.pop();//pop the right
+		}
+	}
+
+	return true;
 }
 
 bool Partitioner::CheckClusterAdjust(VERTEX u, vector<int>& partition_u, vector<int>& partition_not_u)
 {
-
+	int inter_connections = GetConnectionsToClusterSet(u, partition_u);
+	int external_connections = GetConnectionsToClusterSet(u, partition_not_u);
+	if(inter_connections - external_connections >=0)
+		return false;
+	else
+		return true;
 }
 
+int Partitioner::GetConnectionsToClusterSet(VERTEX u, vector<int>& partitions)
+{
+	EdgeInfoArray* edge_list =_graph->GetAdjEdgeListofVertex(u);
+	int connections =0;
+	for(int i=0; i<partitions.size(); i++)
+	{
+		Cluster* cluster = _aPartition[partitions[i]];
+		connections += SetIntersectionBetweenEdgeListAndCluster(edge_list, cluster);
+	}
+	return connections;
+}
 
 void Partitioner::Repartition(vector<ReAdjustPartitionPair>& adjust_partitions)
 {
+	for(int i=0; i<adjust_partitions.size(); i++)
+	{
+		ReAdjustPartitionPair pair = adjust_partitions[i];
+
+		//从i开始调整，将调整结果更新到apartition。先将叶子中的顶点合并成两个分区，然后重新划分。
+		//如果知道哪些节点发生变化，则可优化（改动太大，暂时未处理）。
+		
+		Cluster* cluster_left = MergeLeafofNode(pair._part1);
+		Cluster* cluster_right = MergeLeafofNode(pair._part2);
+
+
+	}
 }
