@@ -777,7 +777,38 @@ void Partitioner::Repartition(vector<ReAdjustPartitionPair>& adjust_partitions)
 		
 		Cluster* cluster_left = MergeLeafofNode(pair._part1);
 		Cluster* cluster_right = MergeLeafofNode(pair._part2);
+		//TODO: check
+		vector<Cluster*> temp_clusters;
+		doKLPartition(cluster_left, cluster_right);
+		temp_clusters.push_back(cluster_left);
+		temp_clusters.push_back(cluster_right);
+		int BT_nodes = 2*_k-1; //complete binary tree
+		int BT_height = int(log(float(_k))/log(2.0f))+1;
+		int node_level = int(log(float(bt_node))/log(2.0f))+1;
+		int level_delta = BT_height - node_level;
+		int size = (int)pow(2.0f, level_delta);
 
-
+		doKLPartition(temp_clusters, size);...
 	}
+}
+
+Cluster* Partitioner::MergeLeafofNode(int bt_node)
+{
+	Cluster* merge_cluster = new Cluster();
+	int BT_nodes = 2*_k-1; //complete binary tree
+	int BT_height = int(log(float(_k))/log(2.0f))+1;
+	int node_level = int(log(float(bt_node))/log(2.0f))+1;
+	int level_delta = BT_height - node_level;
+	int size = (int)pow(2.0f, level_delta);
+	int start_leaf = bt_node*size-_k; //the leftest node (leaf) in the sub-tree, begin with 0
+	for(int i = start_leaf; i<size; i++)
+	{
+		for(int j=0; j<_aPartition[i]->_cluster.size(); j++)
+		{
+			AppendClusterNode(merge_cluster, _aPartition[i]->_cluster[j]);
+		}
+		delete _aPartition[i];
+		_aPartition[i] = NULL;
+	}
+	return merge_cluster;
 }
