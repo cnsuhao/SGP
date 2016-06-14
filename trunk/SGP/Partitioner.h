@@ -24,7 +24,7 @@ typedef struct _ClusterNode {
 typedef struct _Cluster { 
 	vector<ClusterNode> _cluster;
 	map<int, int> _cluster_node_idx;//<node_pos_in_adjtable, cluster_node_pos_in_the_cluster>
-	unordered_set<VERTEX> _assign_vex;//the assigned vex, which doesn't exist in adjtable of graph. it is used to sgp algorithm
+	unordered_set<VERTEX> _assign_vex;//the assigned vex, which doesn't exist in adjtable of graph. it is used to sgp algorithm.
 } Cluster;
 
 // a set of cluster
@@ -135,4 +135,6 @@ public:
 	int GetConnectionsToClusterSet(VERTEX u, vector<int>& partitions);
 	//repartition
 	void Repartition(vector<ReAdjustPartitionPair>& adjust_partitions);
+
+	Cluster* MergeLeafofNode(int bt_node);
 };
