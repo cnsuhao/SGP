@@ -122,10 +122,16 @@ public:
 
 	void AppendAssignVertex(VERTEX vex, int partition_id);
 	int GetAssignedLabelOfVex(VERTEX vex);
+
+	/*********************************************************************************/
+	//SGLs
 	//adjust_partitions contains the partions to be adjust, i.e the gain is inversed, if null , no adjust.
 	//change_vexs contains the vertex whose edges is changed.
 	//NOTE: the number of partition adjusted begin with the root of partitioning binary tree.
 	bool CheckIfAdjust(hash_set<VERTEX>& change_vexs, vector<ReAdjustPartitionPair>& adjust_partitions);
+	//partition_u:the leaf set of the node containing u in BT at the level. begin with 0
+	//partition_not_u:the leaf set of the node's sibling. begin with 0
+	bool CheckClusterAdjust(VERTEX u, vector<int>& partition_u, vector<int>& partition_not_u);
 	//repartition
 	void Repartition(vector<ReAdjustPartitionPair>& adjust_partitions);
 };
