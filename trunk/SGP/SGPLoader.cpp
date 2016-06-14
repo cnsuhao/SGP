@@ -708,14 +708,16 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 
 
 	//step 4 to step 30 
+	vector<ReAdjustPartitionPair> adjust_partitions;
 	while(ReadNextEdgesCache_DBS())
 	{
 		UpdateWeightofEdgesInEs();
 
 		doStreamDBSSample();
 
-		if(isRepartition())
-			RepartitionSampleGraph();
+		adjust_partitions.clear();
+		if(CheckRepartition(adjust_partitions))
+			RepartitionSampleGraph(adjust_partitions);
 	}
 	_assign_manager.Flush();
 	
@@ -830,7 +832,7 @@ bool SGPLoader::StreamAssignEdge(EDGE e)
 	_assign_manager.doManager();
 }
 
-bool SGPLoader::CheckRepartition(hash_set<VERTEX>& adjust_vertex)
+bool SGPLoader::CheckRepartition(vector<ReAdjustPartitionPair>& adjust_partitions)
 {
 	hash_set<VERTEX> changed_vertex;
 	//if an edge is in and out, it will not change the partition
@@ -862,12 +864,12 @@ bool SGPLoader::CheckRepartition(hash_set<VERTEX>& adjust_vertex)
 		iter_substituted++;
 	}
 
-	return _partitions_in_memory.CheckIfAdjust(changed_vertex, adjust_vertex);
+	return _partitions_in_memory.CheckIfAdjust(changed_vertex, adjust_partitions);
 }
 
-void SGPLoader::RepartitionSampleGraph()
+void SGPLoader::RepartitionSampleGraph(vector<ReAdjustPartitionPair>& adjust_partitions)
 {
-
+	_partitions_in_memory.Repartition(adjust_partitions);
 }
 
 bool SGPLoader::UpdateStorageNode()

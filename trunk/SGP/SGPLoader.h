@@ -85,10 +85,10 @@ private:
 	//the funtion for streaming load with dbs sampling - SGLs
 	// streaming dbs
 	bool doStreamDBSSample();
-	//check if repartition. adjust_vertex contains the vertex ' gain is inversed
-	bool CheckRepartition(hash_set<VERTEX>& adjust_vertex);
+	//check if repartition. adjust_partitions contains the adjust partition.
+	bool CheckRepartition(vector<ReAdjustPartitionPair>& adjust_partitions);
 	//repartition sample graph
-	void RepartitionSampleGraph();
+	void RepartitionSampleGraph(vector<ReAdjustPartitionPair>& adjust_partitions);
 	//substitute edges in sample graph
 	bool StreamAssignEdge(EDGE e);
 	//update storage node on parallel

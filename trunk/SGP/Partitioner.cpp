@@ -644,7 +644,11 @@ int Partitioner::GetAssignedLabelOfVex(VERTEX vex)
 	return -1;
 }
 
-bool Partitioner::CheckIfAdjust(hash_set<VERTEX>& change_vexs, hash_set<VERTEX>& adjust_vertex)
+bool Partitioner::CheckIfAdjust(hash_set<VERTEX>& change_vexs, vector<ReAdjustPartitionPair>& adjust_partitions)
 {
 ...
+}
+
+void Partitioner::Repartition(vector<ReAdjustPartitionPair>& adjust_partitions)
+{
 }
