@@ -122,12 +122,10 @@ public:
 
 	void AppendAssignVertex(VERTEX vex, int partition_id);
 	int GetAssignedLabelOfVex(VERTEX vex);
-	//the check is on the leaf between the siblings. that is, for example, 
-	//for u,v, u and v are siblings with the same parent, and if u or v 's gain is reversed, the partitions of u and v
-	// will adjust.
-	//adjust_vertex contains the vertex to be adjust, i.e the gain is inversed, if null , no adjust.
-	//change_vexs contains the vertex whose edges is changed
-	bool CheckIfAdjust(hash_set<VERTEX>& change_vexs, hash_set<VERTEX>& adjust_vertex);
-	//find LCA of adjust_vertex and repartition
-	void Repartition(hash_set<VERTEX>& adjust_vertex);
+	//adjust_partitions contains the partions to be adjust, i.e the gain is inversed, if null , no adjust.
+	//change_vexs contains the vertex whose edges is changed.
+	//NOTE: the number of partition adjusted begin with the root of partitioning binary tree.
+	bool CheckIfAdjust(hash_set<VERTEX>& change_vexs, vector<ReAdjustPartitionPair>& adjust_partitions);
+	//repartition
+	void Repartition(vector<ReAdjustPartitionPair>& adjust_partitions);
 };

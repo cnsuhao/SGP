@@ -97,3 +97,14 @@ typedef struct _VERTEX_ITEM{
 	int degree;
 	bool _is_sampled;
 } Vertex_Item, PVertex_Item;
+
+//for SGLs - repartitioning the sample graph
+//the whole steps of partitioning can be considered as a binary tree. so for the k=2^h partitions,
+//the root's index is 0, and so on. if two partitions should be repartitioned, they should be siblings
+//that is, their index satisfies floor(_part1/2) == floor(_part2/2).
+typedef struct _ReAdjustPartitionPair {
+	int _part1;
+	int _part2;
+	vector<VERTEX> _part1_changed_vex;
+	vector<VERTEX> _part2_changed_vex;
+} ReAdjustPartitionPair;
