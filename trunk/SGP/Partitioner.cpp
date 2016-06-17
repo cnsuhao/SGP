@@ -89,6 +89,7 @@ void Partitioner::doKL()
 	}
 }
 
+
 void Partitioner::doKLPartition(Cluster* aCluster, Cluster* bCluster)
 {
 	bool exchanged = false;
@@ -766,8 +767,11 @@ int Partitioner::GetConnectionsToClusterSet(VERTEX u, vector<int>& partitions)
 	return connections;
 }
 
-void Partitioner::Repartition(vector<ReAdjustPartitionPair>& adjust_partitions)
+void Partitioner::RepartitionKL(vector<ReAdjustPartitionPair>& adjust_partitions)
 {
+	int BT_nodes = 2*_k-1; //complete binary tree
+	int BT_height = int(log(float(_k))/log(2.0f))+1;
+
 	for(int i=0; i<adjust_partitions.size(); i++)
 	{
 		ReAdjustPartitionPair pair = adjust_partitions[i];
@@ -777,19 +781,66 @@ void Partitioner::Repartition(vector<ReAdjustPartitionPair>& adjust_partitions)
 		
 		Cluster* cluster_left = MergeLeafofNode(pair._part1);
 		Cluster* cluster_right = MergeLeafofNode(pair._part2);
-		//TODO: check
-		vector<Cluster*> temp_clusters;
 		doKLPartition(cluster_left, cluster_right);
-		temp_clusters.push_back(cluster_left);
-		temp_clusters.push_back(cluster_right);
-		int BT_nodes = 2*_k-1; //complete binary tree
-		int BT_height = int(log(float(_k))/log(2.0f))+1;
+
+		queue<Cluster*> cluster_to_split;
+		cluster_to_split.push(cluster_left);
+		cluster_to_split.push(cluster_right);
+
+		int bt_node = pair._part1;
 		int node_level = int(log(float(bt_node))/log(2.0f))+1;
+		int subtree_height = BT_height - node_level+1;
+		int split_number = (int)pow(2.0f, subtree_height)-2;//2^(h-l+1)-2
+		
+		Log::log("Repartition : \n");
+		for(int k=1; k<=split_number; k++)
+		{
+			Log::log("spliting phase : ");
+			Log::log(k);
+			Log::log("\n");
+
+			//split a cluster
+			Cluster* pSplitCluster =cluster_to_split.front();
+			cluster_to_split.pop();
+			Cluster* pNewClusterA = pSplitCluster;
+			Cluster* pNewClusterB = new Cluster();
+			int vertex_number_before_split = pSplitCluster->_cluster.size();
+			int vertex_number_of_a_cluster = vertex_number_before_split/2;
+
+			Log::log("create splited cluster... \n");
+			for(int i=vertex_number_of_a_cluster; i<vertex_number_before_split; i++)
+			{
+				AppendClusterNode(pNewClusterB,pSplitCluster->_cluster.at(i));
+				map<int, int>::iterator iter_cluster_node_idx = 
+					pNewClusterA->_cluster_node_idx.find(pSplitCluster->_cluster.at(i)._pos);
+				pNewClusterA->_cluster_node_idx.erase(iter_cluster_node_idx);
+			}
+			vector<ClusterNode>::iterator iter = pNewClusterA->_cluster.begin();
+			pNewClusterA->_cluster.erase(iter+vertex_number_of_a_cluster, iter+vertex_number_before_split);
+
+			Log::log("do partitioning...\n");
+			//partitioning the splitted cluster
+			doKLPartition(pNewClusterA, pNewClusterB);
+
+			//push the clusters
+			cluster_to_split.push(pNewClusterA);
+			cluster_to_split.push(pNewClusterB);
+		}
+
+		//update the corresponding leafs
 		int level_delta = BT_height - node_level;
 		int size = (int)pow(2.0f, level_delta);
-
-		doKLPartition(temp_clusters, size);...
+		int start_leaf = bt_node*size-_k; //the leftest node (leaf) in the sub-tree, begin with 0
+		for(int i= start_leaf; i<2*size; i++)//注意：2*size，每个子树的叶子数为size
+		{
+			_aPartition[i] = cluster_to_split.front();
+			cluster_to_split.pop();
+		}
 	}
+}
+
+void Partitioner::RepartitionMaxMin(vector<ReAdjustPartitionPair>& adjust_partitions)
+{
 }
 
 Cluster* Partitioner::MergeLeafofNode(int bt_node)

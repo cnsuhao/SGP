@@ -134,7 +134,8 @@ public:
 	bool CheckClusterAdjust(VERTEX u, vector<int>& partition_u, vector<int>& partition_not_u);
 	int GetConnectionsToClusterSet(VERTEX u, vector<int>& partitions);
 	//repartition
-	void Repartition(vector<ReAdjustPartitionPair>& adjust_partitions);
+	void RepartitionKL(vector<ReAdjustPartitionPair>& adjust_partitions);
+	void RepartitionMaxMin(vector<ReAdjustPartitionPair>& adjust_partitions);
 
 	Cluster* MergeLeafofNode(int bt_node);
 };
