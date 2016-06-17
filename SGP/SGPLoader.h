@@ -88,7 +88,7 @@ private:
 	//check if repartition. adjust_partitions contains the adjust partition.
 	bool CheckRepartition(vector<ReAdjustPartitionPair>& adjust_partitions);
 	//repartition sample graph
-	void RepartitionSampleGraph(vector<ReAdjustPartitionPair>& adjust_partitions);
+	void RepartitionSampleGraph(vector<ReAdjustPartitionPair>& adjust_partitions, PartitionAlgorithm partition_algorithm);
 	//substitute edges in sample graph
 	bool StreamAssignEdge(EDGE e);
 	//update storage node on parallel

@@ -721,7 +721,7 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 		adjust_partitions.clear();
 
 		if(CheckRepartition(adjust_partitions))
-			RepartitionSampleGraph(adjust_partitions);
+			RepartitionSampleGraph(adjust_partitions, partition_algorithm);
 
 		_selected_edges.clear();
 		_substituted_edges.clear();
@@ -884,9 +884,21 @@ bool SGPLoader::CheckRepartition(vector<ReAdjustPartitionPair>& adjust_partition
 	return _partitions_in_memory.CheckIfAdjust(changed_vertex, adjust_partitions);
 }
 
-void SGPLoader::RepartitionSampleGraph(vector<ReAdjustPartitionPair>& adjust_partitions)
+void SGPLoader::RepartitionSampleGraph(vector<ReAdjustPartitionPair>& adjust_partitions,PartitionAlgorithm partition_algorithm)
 {
-	_partitions_in_memory.Repartition(adjust_partitions);
+	switch(partition_algorithm)
+	{
+	case KL:
+		{
+			_partitions_in_memory.RepartitionKL(adjust_partitions);
+			break;
+		}
+	case MaxMin:
+		{
+			_partitions_in_memory.RepartitionMaxMin(adjust_partitions);
+			break;
+		}
+	}
 }
 
 bool SGPLoader::UpdateStorageNode()
