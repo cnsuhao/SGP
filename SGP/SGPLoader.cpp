@@ -719,8 +719,12 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 		doStreamDBSSample();
 
 		adjust_partitions.clear();
+
 		if(CheckRepartition(adjust_partitions))
 			RepartitionSampleGraph(adjust_partitions);
+
+		_selected_edges.clear();
+		_substituted_edges.clear();
 	}
 	_assign_manager.Flush();
 	
@@ -762,7 +766,7 @@ bool SGPLoader::doStreamDBSSample()
 		double key = pow(r, 1.0/min_degree);
 		if(key > _min_weight)//substitute occur. step 8 - step 12
 		{
-			//for SGLs
+			//for SGLs 
 			map<EdgeID, Edge_Item>::iterator iter_edges = _sample_edge_items.find(_min_weight_edge_id);
 			if(iter_edges == _sample_edge_items.end())
 			{
@@ -802,6 +806,9 @@ bool SGPLoader::doStreamDBSSample()
 		}
 		iter++;
 	}
+
+	_graph_sample.UpdateSampleGraph(_selected_edges, _substituted_edges);//- ×¢Òâ£ºÍ¼ÐÞ¸Ä£¡£¡£¡£¡
+
 	return true;
 }
 

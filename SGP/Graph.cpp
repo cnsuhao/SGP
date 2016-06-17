@@ -544,3 +544,21 @@ void Graph::doGraphStatistic()
 	Log::logln(log_str.str());
 	Log::logln("====================Graph Statistic======================");
 }
+
+void Graph::UpdateSampleGraph(hash_set<EdgeID> add_set, hash_set<EdgeID> delete_set)
+{
+	hash_set<EdgeID>::iterator iter_add = add_set.begin();
+	while(iter_add!=add_set.end())
+	{
+		EDGE e = GetEdgeofID(*iter_add);
+		InsertEdge(e);
+	}
+
+	hash_set<EdgeID>::iterator iter_del = delete_set.begin();
+	while(iter_del!=delete_set.end())
+	{
+		EDGE e = GetEdgeofID(*iter_del);
+		DeleteEdge(e);
+	}
+
+}

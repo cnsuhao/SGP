@@ -9,7 +9,7 @@
 #include <map>
 #include <unordered_set>
 #include <set>
-
+#include <hash_set>
 #include "commondef.h"
 
 class Graph {
@@ -63,6 +63,9 @@ public:
 
 	//log the statistic of graph
 	void doGraphStatistic();
+
+	//update sample graph. add_set: add edges; delete_set delete edges
+	void UpdateSampleGraph(hash_set<EdgeID> add_set, hash_set<EdgeID> delete_set);
 
 
 };
