@@ -558,7 +558,14 @@ void Graph::UpdateSampleGraph(hash_set<EdgeID> add_set, hash_set<EdgeID> delete_
 	while(iter_del!=delete_set.end())
 	{
 		EDGE e = GetEdgeofID(*iter_del);
-		DeleteEdge(e);
+		DeleteEdgeAndRemoveVertex(e);
 	}
+	RemoveDeletedVertex();//可能存在bug，见RemoveDeletedVertex注释
+}
 
+void Graph::DeleteEdgeAndRemoveVertex(EDGE& e)
+{
+	DeleteEdge(e);
+	DeleteVertex(e._u);
+	DeleteVertex(e._v);
 }

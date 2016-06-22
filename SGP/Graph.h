@@ -66,6 +66,8 @@ public:
 
 	//update sample graph. add_set: add edges; delete_set delete edges
 	void UpdateSampleGraph(hash_set<EdgeID> add_set, hash_set<EdgeID> delete_set);
+	//remove the edge and if the degree of endpoints is zero, delete the endpoint(just tag as REMOVE).
+	void DeleteEdgeAndRemoveVertex(EDGE& e);
 
 
 };
