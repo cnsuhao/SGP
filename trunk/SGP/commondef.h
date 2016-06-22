@@ -95,7 +95,8 @@ typedef struct _EDGE_ITEM {
 
 typedef struct _VERTEX_ITEM{
 	int degree;
-	bool _is_sampled;
+	int cur_degree;//for SGLd and SGLs.
+	//bool _is_sampled;
 } Vertex_Item, PVertex_Item;
 
 //for SGLs - repartitioning the sample graph

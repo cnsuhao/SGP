@@ -345,7 +345,7 @@ bool SGPLoader::ReadNextEdgesCache_DBS()
 		_dbs_edges_cache_to_process.push_back(e);
 
 		//update the degree
-		Vertex_Item v_item = {0};
+		Vertex_Item v_item;
 		map<VERTEX, Vertex_Item>::iterator iter;
 		for(int j=0;j<2; j++)
 		{
@@ -354,6 +354,7 @@ bool SGPLoader::ReadNextEdgesCache_DBS()
 			if(iter == _sample_vertex_items.end())
 			{
 				v_item.degree = 1;
+				v_item.cur_degree = 0;//not sampled now
 				_sample_vertex_items.insert(pair<VERTEX, Vertex_Item>(vex, v_item));
 			}
 			else
@@ -432,7 +433,7 @@ bool SGPLoader::SamplingEdgeCache()
 			map<VERTEX, Vertex_Item>::iterator iter_vexs = _sample_vertex_items.find(vex);
 			if(iter_vexs == _sample_vertex_items.end())
 			{
-				Log::log("DBS : get the degree of vertex of edge : read first \\rho edges : error occur!!! ");
+				Log::log("DBS : SamplingEdgeCache 1:get the degree of vertex of edge : read first \\rho edges : error occur!!! ");
 				return false;
 			}
 			else
@@ -447,24 +448,56 @@ bool SGPLoader::SamplingEdgeCache()
 		double key = pow(r, 1.0/min_degree);
 		if(key > _min_weight)
 		{
+			//update the cur_degree of vertex of removed edge
+			EDGE e_remove = GetEdgeofID(_min_weight_edge_id);
+			map<VERTEX, Vertex_Item>::iterator iter_v = _sample_vertex_items.find(e_remove._u);
+			if(iter_v == _sample_vertex_items.end())
+			{
+				Log::log("DBS : SamplingEdgeCache 2: error occur!!! ");
+				return false;
+			}
+			iter_v->second.cur_degree --;
+			iter_v = _sample_vertex_items.find(e_remove._v);
+			if(iter_v == _sample_vertex_items.end())
+			{
+				Log::log("DBS : SamplingEdgeCache 3: error occur!!! ");
+				return false;
+			}
+			iter_v->second.cur_degree --;
+			//remove the substituted edge
 			map<EdgeID, Edge_Item>::iterator iter_edges = _sample_edge_items.find(_min_weight_edge_id);
 			if(iter_edges == _sample_edge_items.end())
 			{
-				Log::log("DBS : SamplingEdgeCache : error occur!!! ");
+				Log::log("DBS : SamplingEdgeCache 4: error occur!!! ");
 				return false;
 			}
 			_sample_edge_items.erase(iter_edges);
+			//add the selected edge and update the vertex
 			Edge_Item e_item = {min_degree, r, key};
 			EdgeID e_id = MakeEdgeID(e._u, e._v);
 			_sample_edge_items.insert(pair<EdgeID, Edge_Item>(e_id, e_item));
-
+			map<VERTEX, Vertex_Item>::iterator iter_add_v = _sample_vertex_items.find(e._u);
+			if(iter_add_v == _sample_vertex_items.end())
+			{
+				Log::log("DBS : SamplingEdgeCache 5: error occur!!! ");
+				return false;
+			}
+			iter_add_v->second.cur_degree++;
+			iter_add_v = _sample_vertex_items.find(e._v);
+			if(iter_add_v == _sample_vertex_items.end())
+			{
+				Log::log("DBS : SamplingEdgeCache 6: error occur!!! ");
+				return false;
+			}
+			iter_add_v->second.cur_degree++;
+			//update key list
 			SearchMinimumKey();//it suffers from low efficiency. to improve it in the future by insert sorting with the index
 		}
 		iter++;
 	}
 	return true;
 }
-
+//NOTE: the function should be called at the initialization phase
 bool SGPLoader::AppendEdgeSample_DBS(EDGE e)
 {
 	EdgeID e_id = MakeEdgeID(e._u,e._v);
@@ -472,7 +505,7 @@ bool SGPLoader::AppendEdgeSample_DBS(EDGE e)
 		return false; //edge exits
 
 	Edge_Item e_item = {0,0,0};
-	Vertex_Item v_item = {0};
+	Vertex_Item v_item = {0,0};
 
 	_sample_edge_items.insert(pair<EdgeID, Edge_Item>(e_id, e_item));
 
@@ -484,11 +517,13 @@ bool SGPLoader::AppendEdgeSample_DBS(EDGE e)
 		if(iter == _sample_vertex_items.end())
 		{
 			v_item.degree = 1;
+			v_item.cur_degree = 1;
 			_sample_vertex_items.insert(pair<VERTEX, Vertex_Item>(vex, v_item));
 		}
 		else
 		{
 			(iter->second).degree++;
+			(iter->second).cur_degree++;
 		}
 	}
 	return true;
@@ -751,7 +786,7 @@ bool SGPLoader::doStreamDBSSample()
 			map<VERTEX, Vertex_Item>::iterator iter_vexs = _sample_vertex_items.find(vex);
 			if(iter_vexs == _sample_vertex_items.end())
 			{
-				Log::log("DBS : get the degree of vertex of edge : read first \\rho edges : error occur!!! ");
+				Log::log("DBS :doStreamDBSSample 1: get the degree of vertex of edge : read first \\rho edges : error occur!!! ");
 				return false;
 			}
 			else
@@ -767,37 +802,53 @@ bool SGPLoader::doStreamDBSSample()
 		if(key > _min_weight)//substitute occur. step 8 - step 12
 		{
 			//for SGLs 
+			//update the cur_degree of vertex of removed edge
+			EDGE e_remove = GetEdgeofID(_min_weight_edge_id);
+			map<VERTEX, Vertex_Item>::iterator iter_v = _sample_vertex_items.find(e_remove._u);
+			if(iter_v == _sample_vertex_items.end())
+			{
+				Log::log("DBS : doStreamDBSSample 2: error occur!!! ");
+				return false;
+			}
+			iter_v->second.cur_degree --;
+			iter_v = _sample_vertex_items.find(e_remove._v);
+			if(iter_v == _sample_vertex_items.end())
+			{
+				Log::log("DBS : doStreamDBSSample 3: error occur!!! ");
+				return false;
+			}
+			iter_v->second.cur_degree --;
+			//remove the substituted edge
 			map<EdgeID, Edge_Item>::iterator iter_edges = _sample_edge_items.find(_min_weight_edge_id);
 			if(iter_edges == _sample_edge_items.end())
 			{
-				Log::log("DBS : doStreamDBSSample : find edges error occur!!! ");
+				Log::log("DBS : doStreamDBSSample 4: error occur!!! ");
 				return false;
 			}
 			_sample_edge_items.erase(iter_edges);
+			//add the selected edge and update the vertex
 			Edge_Item e_item = {min_degree, r, key};
 			EdgeID e_id = MakeEdgeID(e._u, e._v);
 			_sample_edge_items.insert(pair<EdgeID, Edge_Item>(e_id, e_item));
-
+			map<VERTEX, Vertex_Item>::iterator iter_add_v = _sample_vertex_items.find(e._u);
+			if(iter_add_v == _sample_vertex_items.end())
+			{
+				Log::log("DBS : doStreamDBSSample 5: error occur!!! ");
+				return false;
+			}
+			iter_add_v->second.cur_degree++;
+			iter_add_v = _sample_vertex_items.find(e._v);
+			if(iter_add_v == _sample_vertex_items.end())
+			{
+				Log::log("DBS : doStreamDBSSample 6: error occur!!! ");
+				return false;
+			}
+			iter_add_v->second.cur_degree++;
 			
-			map<VERTEX, Vertex_Item>::iterator iter_vex = _sample_vertex_items.find(e._u);
-			if(iter_vex == _sample_vertex_items.end())
-			{
-				Log::log("SGLs : doStreamDBSSample : find vertex 1 error occur!!! ");
-				return false;
-			}
-			iter_vex->second._is_sampled = true;
-			iter_vex = _sample_vertex_items.find(e._v);
-			if(iter_vex == _sample_vertex_items.end())
-			{
-				Log::log("SGLs : doStreamDBSSample : find vertex 2 error occur!!! ");
-				return false;
-			}
-			iter_vex->second._is_sampled = true;
-
 			_selected_edges.insert(e_id);
 			_substituted_edges.insert(_min_weight_edge_id);
-			//
 
+			//update key list
 			SearchMinimumKey();//it suffers from low efficiency. to improve it in the future by insert sorting with the index
 		}
 		else//no substitute occur, then assign edge. step 14- step 24
@@ -807,7 +858,7 @@ bool SGPLoader::doStreamDBSSample()
 		iter++;
 	}
 
-	_graph_sample.UpdateSampleGraph(_selected_edges, _substituted_edges);//- 注意：图修改！！！！
+	_graph_sample.UpdateSampleGraph(_selected_edges, _substituted_edges);//- 注意：删除度为0的节点可能存在bug，见UpdateSampleGraph。
 
 	return true;
 }
@@ -826,7 +877,7 @@ bool SGPLoader::StreamAssignEdge(EDGE e)
 			return false;
 		}
 
-		if(!(iter_vex->second._is_sampled))
+		if(iter_vex->second.cur_degree <=0)
 		{
 			all_vex_sampled =  false;
 		}
