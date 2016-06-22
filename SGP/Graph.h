@@ -15,7 +15,7 @@
 class Graph {
 private:
 	AdjTable _graph_data;
-	//record the vexs labeled as REMOVED
+	//record the vexs labeled as REMOVED.一旦节点被标记为删除，则_graph_data中对应的节点-位置索引项将被删除。
 	RemoveVertexList _removed_vex_list;
 public:
 	Graph(){};
@@ -40,7 +40,7 @@ public:
 	bool isConnect(VERTEX v1, VERTEX v2);
 	//NOTE: to ensure the u does't exist by calling getvertexpos.
 	int InsertVertex(VERTEX u);
-	//the vertex u will set as REMOVED, and its idx will be kept
+	//the vertex u will set as REMOVED。位置索引中的项删除，相关邻接点修改。出于效率考虑，最好对度为0的进行删除。
 	void DeleteVertex(VERTEX& u);
 	//if the e exists, do nothing
 	void InsertEdge(EDGE e);
