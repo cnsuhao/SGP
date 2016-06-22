@@ -22,6 +22,8 @@ EDGE GetEdgeofID(EdgeID eid)
 void Graph::ClearGraph()
 {
 	_graph_data._vex_table.clear();
+	_graph_data._vertex_to_pos_idx.clear();
+	_removed_vex_list.clear();
 }
 
 int Graph::GetEdgesNumber()
@@ -29,7 +31,11 @@ int Graph::GetEdgesNumber()
 	int e_num = 0;
 	for(int i=0; i<_graph_data._vex_table.size(); i++)
 	{
-		EdgeInfoArray& edges = _graph_data._vex_table.at(i)._edge_list;
+		VertexInfo v_info = _graph_data._vex_table.at(i);
+		if(v_info._indicator != NORM)
+			continue;
+
+		EdgeInfoArray& edges = v_info._edge_list;
 		e_num+=edges.size();
 	}
 	return e_num/2;
@@ -38,12 +44,15 @@ int Graph::GetEdgesNumber()
 EdgeInfoArray* Graph::GetAdjEdgeListofVertex(VERTEX& u)
 {
 	int pos = GetVertexPos(u);
-	return GetAdjEdgeListofPos(pos);
+	if(pos == -1)
+		return NULL;
+	else
+		return GetAdjEdgeListofPos(pos);
 }
 
 EdgeInfoArray* Graph::GetAdjEdgeListofPos(int pos)
 {
-	if(pos < 0)
+	if(pos < 0 || _graph_data._vex_table.at(pos)._indicator != NORM)
 		return NULL;
 	else
 		return &(GetAdjTableRef()->_vex_table.at(pos)._edge_list);
@@ -52,7 +61,10 @@ EdgeInfoArray* Graph::GetAdjEdgeListofPos(int pos)
 VertexInfo* Graph::GetVertexInfoofVertex(VERTEX& u)
 {
 	int u_pos = GetVertexPos(u);
-	return GetVertexInfoofPos(u_pos);
+	if(u_pos == -1) 
+		return NULL;
+	else
+		return GetVertexInfoofPos(u_pos);
 }
 
 VertexInfo* Graph::GetVertexInfoofPos(int pos)
@@ -94,7 +106,10 @@ bool Graph::isConnect(VERTEX v1, VERTEX v2)
 {
 	int v1_pos = GetVertexPos(v1);
 	int v2_pos = GetVertexPos(v2);
-	return isConnectbyPos(v1_pos, v2_pos);
+	if(v1_pos == -1 || v2_pos == -1)
+		return false;
+	else
+		return isConnectbyPos(v1_pos, v2_pos);
 }
 
 int Graph::InsertVertex(VERTEX u)
@@ -125,7 +140,32 @@ int Graph::InsertVertex(VERTEX u)
 void Graph::DeleteVertex(VERTEX& u)
 {
 	int u_pos = GetVertexPos(u);
+	if(u_pos == -1) return;
+
 	VertexInfo* v_info = GetVertexInfoofVertex(u);
+	
+	EdgeInfoArray::iterator iter_e = v_info->_edge_list.begin();
+	while(iter_e != v_info->_edge_list.end())
+	{
+		//对邻接点的边列表进行相应处理
+		int adj_pos = (*iter_e)._adj_vex_pos;
+		VertexInfo* adj_info = GetVertexInfoofPos(adj_pos);
+		if(adj_info->_indicator != NORM)
+			continue;
+
+		EdgeInfoArray::iterator iter_adj = adj_info->_edge_list.begin();
+		while(iter_adj != adj_info->_edge_list.end() &&
+			(*iter_adj)._adj_vex_pos != u_pos)
+			iter_adj++;
+		if(iter_adj != adj_info->_edge_list.end())//找到，删除
+		{
+			adj_info->_edge_list.erase(iter_adj);
+			adj_info->_degree--;
+		}
+
+		iter_e++;
+	}
+
 	v_info->_indicator = REMOVED;
 	v_info->_degree = -1;
 	v_info->_edge_list.clear();
@@ -192,7 +232,7 @@ void Graph::DeleteEdge(EDGE& e)
 	GetVertexInfoofPos(v_pos)->_degree--;
 }
 
-/*
+/*建议不用
 this function has some errors I think, the edgelist of vertex taged as REMOVED has been deleted at the function of DeleteVertex
 */
 void Graph::RemoveDeletedVertex()
@@ -208,7 +248,7 @@ void Graph::RemoveDeletedVertex()
 			EdgeInfoArray* v_edges = GetAdjEdgeListofPos(v_pos);
 			for(EdgeInfoArray::iterator iter_v = v_edges->begin();iter_v!=v_edges->end(); iter_v++)
 			{
-				if(iter_v->_adj_vex_pos = u_pos)
+				if(iter_v->_adj_vex_pos == u_pos)
 				{
 					v_edges->erase(iter_v);
 					break;
@@ -459,7 +499,7 @@ void Graph::ComputeShortestPathsFromVertex(VERTEX u, vector<int>& shortest_path_
 			shortest_path_lens.push_back(1);
 			shortest_path_indicator.push_back(false);
 		}
-		else
+		else//节点存在但没有边，或者，节点已被删除
 		{
 			shortest_path_lens.push_back(INT_MAX);
 			shortest_path_indicator.push_back(false);
@@ -560,12 +600,19 @@ void Graph::UpdateSampleGraph(hash_set<EdgeID> add_set, hash_set<EdgeID> delete_
 		EDGE e = GetEdgeofID(*iter_del);
 		DeleteEdgeAndRemoveVertex(e);
 	}
-	RemoveDeletedVertex();//可能存在bug，见RemoveDeletedVertex注释
+	//不用remove。已标记为REMOVE。提高些效率
+	//RemoveDeletedVertex();//可能存在bug，见RemoveDeletedVertex注释
 }
 
 void Graph::DeleteEdgeAndRemoveVertex(EDGE& e)
 {
 	DeleteEdge(e);
-	DeleteVertex(e._u);
-	DeleteVertex(e._v);
+
+	int u_pos = GetVertexPos(e._u);
+	if(u_pos != -1 && GetVertexInfoofPos(u_pos)->_degree == 0)
+		DeleteVertex(e._u);
+
+	int v_pos = GetVertexPos(e._v);
+	if(v_pos!=-1 && GetVertexInfoofPos(v_pos)->_degree == 0)
+		DeleteVertex(e._v);
 }
