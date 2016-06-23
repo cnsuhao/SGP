@@ -747,7 +747,7 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 
 	//step 4 to step 30 
 	vector<ReAdjustPartitionPair> adjust_partitions;
-	while(ReadNextEdgesCache_DBS())
+	while(ReadNextEdgesCache_DBS())//已将所有读到的顶点添加到Vs中，如果采样选中，则curdegree大于零
 	{
 		UpdateWeightofEdgesInEs();
 
@@ -866,25 +866,29 @@ bool SGPLoader::doStreamDBSSample()
 bool SGPLoader::StreamAssignEdge(EDGE e)
 {
 	bool all_vex_sampled = true;
-	for(int i=0; i<2; i++)
+	int cluster_u, cluster_v;
+	cluster_u = _partitions_in_memory.GetClusterLabelOfVex(e._u);
+	if(cluster_u == -1)
 	{
-		VERTEX u = i==0?e._u:e._v;
-
-		map<VERTEX, Vertex_Item>::iterator iter_vex = _sample_vertex_items.find(u);
-		if(iter_vex == _sample_vertex_items.end())
+		cluster_u = _partitions_in_memory.GetAssignedLabelOfVex(e._u);
+		if(cluster_u == -1)
 		{
-			Log::log("SGLs : StreamAssignEdge : find vertex error occur!!! ");
-			return false;
-		}
-
-		if(iter_vex->second.cur_degree <=0)
-		{
-			all_vex_sampled =  false;
+			all_vex_sampled = false;
 		}
 	}
-	if(all_vex_sampled)//assign immediately
+	cluster_v = _partitions_in_memory.GetClusterLabelOfVex(e._v);
+	if(cluster_v == -1)
 	{
-		assign...//NOTE: modify the partition!!!! TODO
+		cluster_v = _partitions_in_memory.GetAssignedLabelOfVex(e._v);
+		if(cluster_v == -1)
+		{
+			all_vex_sampled = false;
+		}
+	}
+
+	if(all_vex_sampled)//两个顶点都已划分assign or partition
+	{
+		_partitions_in_memory.WriteAssignEdge(e._u, cluster_u, e._v, cluster_v);
 	}
 	else//assigning util AC is full.
 	{
