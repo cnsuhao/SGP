@@ -3,6 +3,7 @@
 #include <time.h>
 #include "Log.h"
 #include <sstream>
+#include <windows.h>
 
 using namespace std;
 using namespace stdext; //for hash set
@@ -956,7 +957,78 @@ void SGPLoader::RepartitionSampleGraph(vector<ReAdjustPartitionPair>& adjust_par
 	}
 }
 
+DWORD WINAPI UpdateStorageThread( LPVOID lpParam );
+//UpdateStorageThread param
+typedef struct _update_storage_param{
+	SGPLoader* _loader;
+	int _partition_number;
+} Update_Storage_Param;
+
 bool SGPLoader::UpdateStorageNode()
 {
-	return false;
+	DWORD dwThreadId;
+	HANDLE* hThreads = new HANDLE[_k];
+	Update_Storage_Param* param = new Update_Storage_Param[_k];
+	for(int i=0; i<_k; i++)
+	{
+		param[i]._loader = this;
+		param[i]._partition_number = i;
+		
+		hThreads[i] = CreateThread( 
+        NULL,                       // default security attributes 
+        0,                          // use default stack size  
+        UpdateStorageThread,        // thread function 
+        param,						// argument to thread function 
+        0,                          // use default creation flags 
+        &dwThreadId); 
+		if(hThreads[i] == NULL)
+		{
+			Log::logln("SGP: SteamLoader: UpdateStorageNode: Create Thread Error!!");
+			for(int j=0; j<i; j++)
+			{
+				TerminateThread(hThreads[j], 0);//the target thread has no chance to execute any user-mode code and its initial stack is not deallocated
+			}
+			delete hThreads;
+			delete param;
+			return false;
+		}
+		else
+		{
+			CloseHandle(hThreads[i]);//Closing a thread handle does not terminate the associated thread. Just reduce the reference count of thread
+		}
+	}
+	DWORD dwEvent;
+	dwEvent = WaitForMultipleObjects( 
+    _k,           // number of objects in array
+    hThreads,     // array of objects
+    TRUE,       // wait for all
+    INFINITE);   // indefinite wait
+
+	if(dwEvent == WAIT_OBJECT_0)//succeed
+	{
+		delete hThreads;
+		delete param;
+		return true;
+
+	}
+	else
+	{
+		delete hThreads;
+		delete param;
+		Log::logln("SGP: SteamLoader: UpdateStorageNode: Wait for Thread Termination Error!!");
+		return false;
+	}
+	
+}
+
+DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
+{
+	Update_Storage_Param* param = (Update_Storage_Param*)lpParam;
+
+	SGPLoader* loader = param->_loader;
+	int partition = param->_partition_number;
+	//find the assigned vertex that the assigned partition is differed from the one in the sampling partitions, and remove it from the assigned file
+	loader->GetPartitioner().UpdateAssignVertices(partition);//NOTE: since the threads access the distinct variables, the synchronization isn't required.
+
+
 }

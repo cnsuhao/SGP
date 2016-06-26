@@ -62,7 +62,7 @@ void AssignContext::Assign()
 			{
 				assign_info[i].cluster = EvaluateVexCluster(cache_graph, vex_to_partition);
 				_partitioner->AppendAssignVertex(assign_info[i].vex, assign_info[i].cluster);
-				//statistic
+				//statistic: 注意此部分的统计数据有可能被writeassignverticeofpartitions函数覆盖。
 				_partitioner->SetAssignVertexStat(assign_info[i].cluster);
 			}
 		}

@@ -1,0 +1,2 @@
+1、对于sgls，当节点被删除后，cluster中对应的节点（记录的顶点位置）应该相应删除。而新节点应该添加到当前那个cluster？
+2. 对于sgls，assign节点应在assign时被写入文件，另外，如果sample graph中节点被删除，其应转变为assign节点。
