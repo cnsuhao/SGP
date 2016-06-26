@@ -587,6 +587,33 @@ void Partitioner::WriteClusterEdge(VERTEX u, int u_cluster, VERTEX v, int v_clus
 	}
 }
 
+void Partitioner::WriteAssignVerticesOfPartitions()
+{
+	Partition::iterator iter = _aPartition.begin();
+	for(int i=0; iter!=_aPartition.end(); iter++, i++)
+	{
+		stringstream out;
+		out<<_outfile<<"_cluster_assigned_vertices."<<i;
+		ofstream ofs(out.str());
+		
+		stringstream log_str;
+		log_str<<" writing the assigned vertices of the partition " <<i<<" into "<<out.str()<<"\n";
+		Log::log(log_str.str());
+		
+		for(unordered_set<VERTEX>::iterator iter_vex = (*iter)->_assign_vex.begin();iter_vex!=(*iter)->_assign_vex.end(); iter_vex++)
+		{
+			ofs<<(*iter_vex)<<endl;
+		}
+		log_str.str("");
+		log_str<<" the number of assigned vertices of the partition "<<i<<" : "<<(*iter)->_assign_vex.size()<<"\n";
+		Log::log(log_str.str());
+
+		//statistic
+		_partitions_statistic.at(i)._assign_vex_number = (*iter)->_assign_vex.size();
+	}
+
+}
+
 int Partitioner::ComputeCutValue()
 {
 	int cut=0;
@@ -863,3 +890,38 @@ Cluster* Partitioner::MergeLeafofNode(int bt_node)
 	}
 	return merge_cluster;
 }
+
+void Partitioner::UpdateAssignVertices(int partition)
+{
+	Cluster* cluster = _aPartition.at(partition);
+	if(cluster == NULL)
+	{
+		Log::logln("Partitioner:UpdateAssignVertices:cluster is null");
+		return;
+	}
+
+	unordered_set<VERTEX>::iterator iter_assign_vex = cluster->_assign_vex.begin();
+	while(iter_assign_vex != cluster->_assign_vex.end())
+	{
+		VERTEX u = *iter_assign_vex;
+		int u_pos = _graph->GetVertexPos(u);
+		if(u_pos == -1)
+		{
+			Log::logln("Partitioner:UpdateAssignVertices: the vex not found");
+			return;
+		}
+
+		ClusterNode node;
+		node._pos = u_pos;
+
+		if(GetClusterNode(cluster, node) != -1)
+		{
+			cluster->_assign_vex.erase(iter_assign_vex);
+		}
+		iter_assign_vex++;
+	}
+}
+
+
+	
+

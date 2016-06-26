@@ -63,6 +63,7 @@ public:
 	vector<PartitionStatisticInfo>& GetPartitionStatistic() {return _partitions_statistic;};
 	//increase the number of assigned vertex in the partition of cluster_id
 	void SetAssignVertexStat(int cluster_id);
+	Partition& GetPartition(){return _aPartition;};
 
 	void ClearPartition();
 	void ResetPartitionStatistic();
@@ -112,6 +113,9 @@ public:
 	void WriteClusterEdgesOfPartitions();
 	//write an cluster edge of u, v belonging to u_cluster and v_cluster repectively. outfile_edges.1
 	void WriteClusterEdge(VERTEX u, int u_cluster, VERTEX v, int v_cluster);
+	//write the assigned vertices that saved in the _assign_vex of cluster. NOTE: for SGLs, the vex in _assign_vex maybe sampled and partitioned after it assigned. So, SGLs will 
+	//re-adjust the vex in the assigned file according to the corresponding cluster.
+	void WriteAssignVerticesOfPartitions();
 	//write an assigned edge of u, v belonging to u_cluster and v_cluster repectively. outfile_assign.1
 	void WriteAssignEdge(VERTEX u, int u_cluster, VERTEX v, int v_cluster);
 	//compute the cut value
@@ -138,4 +142,7 @@ public:
 	void RepartitionMaxMin(vector<ReAdjustPartitionPair>& adjust_partitions);
 
 	Cluster* MergeLeafofNode(int bt_node);
+	//if the vex in _assign_vex of the partition is also in the cluster, the vex will be removed from _assign_vex since it has been selected and partitioned
+	//To sure that the partition number is in the legal range, the function doesn't check the parameter.
+	void UpdateAssignVertices(int partition);
 };
