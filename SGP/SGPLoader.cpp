@@ -355,7 +355,7 @@ bool SGPLoader::ReadNextEdgesCache_DBS()
 			if(iter == _sample_vertex_items.end())
 			{
 				v_item.degree = 1;
-				v_item.cur_degree = 0;//not sampled now
+				v_item.cur_degree = -1;//new vex and not sampled now
 				_sample_vertex_items.insert(pair<VERTEX, Vertex_Item>(vex, v_item));
 			}
 			else
@@ -483,14 +483,22 @@ bool SGPLoader::SamplingEdgeCache()
 				Log::log("DBS : SamplingEdgeCache 5: error occur!!! ");
 				return false;
 			}
-			iter_add_v->second.cur_degree++;
+			if(iter_add_v->second.cur_degree <= 0 )
+				iter_add_v->second.cur_degree = 1; //the vex is sampled first or removed after substituted
+			else
+				iter_add_v->second.cur_degree ++; //the sampled vex
+
 			iter_add_v = _sample_vertex_items.find(e._v);
 			if(iter_add_v == _sample_vertex_items.end())
 			{
 				Log::log("DBS : SamplingEdgeCache 6: error occur!!! ");
 				return false;
 			}
-			iter_add_v->second.cur_degree++;
+			if(iter_add_v->second.cur_degree <= 0 )
+				iter_add_v->second.cur_degree = 1; //the vex is sampled first or removed after substituted
+			else
+				iter_add_v->second.cur_degree ++; //the sampled vex
+
 			//update key list
 			SearchMinimumKey();//it suffers from low efficiency. to improve it in the future by insert sorting with the index
 		}
@@ -756,7 +764,7 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 
 		adjust_partitions.clear();
 
-		if(CheckRepartition(adjust_partitions))
+		if(UpdateAndCheckRepartition(adjust_partitions))
 			RepartitionSampleGraph(adjust_partitions, partition_algorithm);
 
 		_selected_edges.clear();
@@ -802,7 +810,7 @@ bool SGPLoader::doStreamDBSSample()
 		double key = pow(r, 1.0/min_degree);
 		if(key > _min_weight)//substitute occur. step 8 - step 12
 		{
-			//for SGLs 
+			//for SGLs - update Es and Vs
 			//update the cur_degree of vertex of removed edge
 			EDGE e_remove = GetEdgeofID(_min_weight_edge_id);
 			map<VERTEX, Vertex_Item>::iterator iter_v = _sample_vertex_items.find(e_remove._u);
@@ -837,14 +845,21 @@ bool SGPLoader::doStreamDBSSample()
 				Log::log("DBS : doStreamDBSSample 5: error occur!!! ");
 				return false;
 			}
-			iter_add_v->second.cur_degree++;
+			if(iter_add_v->second.cur_degree <= 0 )
+				iter_add_v->second.cur_degree = 1; //the vex is sampled first or removed after substituted
+			else
+				iter_add_v->second.cur_degree ++; //the sampled vex
+
 			iter_add_v = _sample_vertex_items.find(e._v);
 			if(iter_add_v == _sample_vertex_items.end())
 			{
 				Log::log("DBS : doStreamDBSSample 6: error occur!!! ");
 				return false;
 			}
-			iter_add_v->second.cur_degree++;
+			if(iter_add_v->second.cur_degree <= 0 )
+				iter_add_v->second.cur_degree = 1; //the vex is sampled first or removed after substituted
+			else
+				iter_add_v->second.cur_degree ++; //the sampled vex
 			
 			_selected_edges.insert(e_id);
 			_substituted_edges.insert(_min_weight_edge_id);
@@ -859,7 +874,7 @@ bool SGPLoader::doStreamDBSSample()
 		iter++;
 	}
 
-	_graph_sample.UpdateSampleGraph(_selected_edges, _substituted_edges);//- 注意：删除度为0的节点可能存在bug，见UpdateSampleGraph。
+	_graph_sample.UpdateSampleGraph(_selected_edges, _substituted_edges);//- 注意：删除度为0的节点可能存在bug，见UpdateSampleGraph
 
 	return true;
 }
@@ -905,9 +920,9 @@ bool SGPLoader::StreamAssignEdge(EDGE e)
 	return true;
 }
 
-bool SGPLoader::CheckRepartition(vector<ReAdjustPartitionPair>& adjust_partitions)
+bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_partitions)
 {
-	hash_set<VERTEX> changed_vertex;
+	hash_set<VERTEX> changed_vertex, new_vex, removed_vex;
 	//if an edge is in and out, it will not change the partition
 	hash_set<EdgeID>::iterator iter_selected =  _selected_edges.begin();
 	hash_set<EdgeID>::iterator iter_substituted;
@@ -937,6 +952,39 @@ bool SGPLoader::CheckRepartition(vector<ReAdjustPartitionPair>& adjust_partition
 		iter_substituted++;
 	}
 
+	for(hash_set<VERTEX>::iterator iter_changed = changed_vertex.begin(); iter_changed != changed_vertex.end(); iter_changed++)
+	{
+		VERTEX v = *iter_changed;
+		map<VERTEX, Vertex_Item>::iterator iter_item = _sample_vertex_items.find(v);
+		if(iter_item == _sample_vertex_items.end())
+		{
+			Log::logln("SGLs : UpdateAndCheckRepartition : find vex error. the vex should exist. NOTE: the process will be continued. but you should check");
+		}
+		else
+		{
+			switch(iter_item->second.cur_degree)
+			{
+			case -1://new vex
+				{
+					new_vex.insert(v);
+					break;
+				}
+			case 0://removed vex
+				{
+					removed_vex.insert(v);
+					break;
+				}
+			default:
+				{
+					break;
+				}
+			}
+		}
+	}
+
+	//删除与添加的影响未考虑。。。。
+
+	...
 	return _partitions_in_memory.CheckIfAdjust(changed_vertex, adjust_partitions);
 }
 

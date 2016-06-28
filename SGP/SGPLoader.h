@@ -35,8 +35,8 @@ private:
 
 	/***********************************************************************************************************************************/
 	//data structure for sampling
-	map<VERTEX, Vertex_Item>		_sample_vertex_items;//vertex --> degree; Vertex_Item represents V_s
-	map<EdgeID, Edge_Item>			_sample_edge_items;//edgeid --> weight, rand, key; Edge_Item represents E_s
+	map<VERTEX, Vertex_Item>		_sample_vertex_items;//vertex --> degree, cur_degree; V_s. cur_degree represents the current degree and if not zero, the vex is selected. degree is the total degree up to now
+	map<EdgeID, Edge_Item>			_sample_edge_items;//edgeid --> weight, rand, key; E_s.
 	/***********************************************************************************************************************************/
 
 	/***********************************************************************************************************************************/
@@ -85,8 +85,9 @@ private:
 	//the funtion for streaming load with dbs sampling - SGLs
 	// streaming dbs
 	bool doStreamDBSSample();
-	//check if repartition. adjust_partitions contains the adjust partition.
-	bool CheckRepartition(vector<ReAdjustPartitionPair>& adjust_partitions);
+	//after Vs changed, update the partition. that is to insert new vex and delete the removed vex, 
+	//and then check if repartition. adjust_partitions contains the adjust partition.
+	bool UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_partitions);
 	//repartition sample graph
 	void RepartitionSampleGraph(vector<ReAdjustPartitionPair>& adjust_partitions, PartitionAlgorithm partition_algorithm);
 	//substitute edges in sample graph
