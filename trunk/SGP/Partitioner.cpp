@@ -922,6 +922,28 @@ void Partitioner::UpdateAssignVertices(int partition)
 	}
 }
 
+void Partitioner::RemoveClusterNode(hash_set<VERTEX>& vexs)
+{
+	for(hash_set<VERTEX>::iterator iter_v = vexs.begin(); iter_v!=vexs.end(); iter_v++)
+	{
+		VERTEX v = *iter_v;
+		int k = GetClusterLabelOfVex(v);
+		if( k == -1)
+		{
+			Log::logln("Partitioner:RemoveClusterNode: the cluster of vex not found : NOTE: the process will not be terminated, you should check it");
+		}
+		Cluster* cluster = _aPartition.at(k);
+		int pos = _graph->GetVertexPos(v); //TODO:检查一下是否修改sample graph邻接表，如真正删除顶点
+		if( pos == -1)
+		{
+			Log::logln("Partitioner:RemoveClusterNode: the pos of vex not found : NOTE: the process will not be terminated, you should check it");
+		}
+		DeleteClusterNodeAtPos(cluster, pos);
+	}
+}
 
-	
+void Partitioner::RandomInsertNewVertices(hash_set<VERTEX>& vexs)
+{
+
+}
 
