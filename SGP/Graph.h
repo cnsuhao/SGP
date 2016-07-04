@@ -46,7 +46,7 @@ public:
 	void InsertEdge(EDGE e);
 	//the edge will be deleted, but the ends will be kept
 	void DeleteEdge(EDGE& e);
-	//remove all the nodes labeled by REMOVED
+	//remove all the nodes labeled by REMOVED。在物理上删除，请慎用，因为partition中clusternode以顶点在邻接表中位置表示
 	void RemoveDeletedVertex();
 
 	void BuildGraphFromDir(string& dir);

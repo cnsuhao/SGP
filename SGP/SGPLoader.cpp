@@ -764,11 +764,10 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 
 		adjust_partitions.clear();
 
-		if(UpdateAndCheckRepartition(adjust_partitions))
-			RepartitionSampleGraph(adjust_partitions, partition_algorithm);
+		_graph_sample.UpdateSampleGraph(_selected_edges, _substituted_edges);//- 注意：删除度为0的节点可能存在bug，见UpdateSampleGraph
 
-		_selected_edges.clear();
-		_substituted_edges.clear();
+		if(UpdateAndCheckRepartition(adjust_partitions))//更新划分中的节点，并检查是否需要重新划分
+			RepartitionSampleGraph(adjust_partitions, partition_algorithm);
 	}
 	_assign_manager.Flush();
 	
@@ -782,6 +781,8 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 
 bool SGPLoader::doStreamDBSSample()
 {
+	_selected_edges.clear();
+	_substituted_edges.clear();
 	//the following codes are copied from SamplingEdgeCache
 	vector<EDGE>::iterator iter = _dbs_edges_cache_to_process.begin();
 	while(iter != _dbs_edges_cache_to_process.end())
@@ -874,8 +875,6 @@ bool SGPLoader::doStreamDBSSample()
 		iter++;
 	}
 
-	_graph_sample.UpdateSampleGraph(_selected_edges, _substituted_edges);//- 注意：删除度为0的节点可能存在bug，见UpdateSampleGraph
-
 	return true;
 }
 
@@ -951,7 +950,7 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 		changed_vertex.insert(e._v);
 		iter_substituted++;
 	}
-
+	//获得删除和添加节点集合
 	for(hash_set<VERTEX>::iterator iter_changed = changed_vertex.begin(); iter_changed != changed_vertex.end(); iter_changed++)
 	{
 		VERTEX v = *iter_changed;
@@ -981,11 +980,12 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 			}
 		}
 	}
-
-	//删除与添加的影响未考虑。。。。
-
+	//删除划分中的节点
+	_partitions_in_memory.RemoveClusterNode(removed_vex);
+	//将新节点添加到最小划分中，如果大小一样，随机
+	_partitions_in_memory.RandomInsertNewVertices(new_vex);
 	...
-	return _partitions_in_memory.CheckIfAdjust(changed_vertex, adjust_partitions);
+	return _partitions_in_memory.CheckIfAdjust(changed_vertex, adjust_partitions);//删除与添加的影响未考虑。。。。
 }
 
 void SGPLoader::RepartitionSampleGraph(vector<ReAdjustPartitionPair>& adjust_partitions,PartitionAlgorithm partition_algorithm)
@@ -1078,5 +1078,5 @@ DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
 	//find the assigned vertex that the assigned partition is differed from the one in the sampling partitions, and remove it from the assigned file
 	loader->GetPartitioner().UpdateAssignVertices(partition);//NOTE: since the threads access the distinct variables, the synchronization isn't required.
 
-
+	...
 }

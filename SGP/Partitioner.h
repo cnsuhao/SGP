@@ -145,4 +145,9 @@ public:
 	//if the vex in _assign_vex of the partition is also in the cluster, the vex will be removed from _assign_vex since it has been selected and partitioned
 	//To sure that the partition number is in the legal range, the function doesn't check the parameter.
 	void UpdateAssignVertices(int partition);
+	//For current partitions, remove and insert vex. NOTE: for inserted vertices, the smaller size of partition will be preferred, otherwise, if all equal, random
+	//the following functions will be used on one sampling process finished, and affect the partitioned vertices, not assigned vertices
+	void RemoveClusterNode(hash_set<VERTEX>& vexs);
+	void RandomInsertNewVertices(hash_set<VERTEX>& vexs);
+
 };
