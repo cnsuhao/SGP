@@ -149,5 +149,6 @@ public:
 	//the following functions will be used on one sampling process finished, and affect the partitioned vertices, not assigned vertices
 	void RemoveClusterNode(hash_set<VERTEX>& vexs);
 	void RandomInsertNewVertices(hash_set<VERTEX>& vexs);
-
+	//insert a vertex into cluster. to be sure the vex exists in adj-table of sample graph
+	void InsertNewVertexInCluster(Cluster* cluster, VERTEX& vex);
 };
