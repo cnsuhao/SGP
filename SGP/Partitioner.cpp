@@ -933,17 +933,54 @@ void Partitioner::RemoveClusterNode(hash_set<VERTEX>& vexs)
 			Log::logln("Partitioner:RemoveClusterNode: the cluster of vex not found : NOTE: the process will not be terminated, you should check it");
 		}
 		Cluster* cluster = _aPartition.at(k);
-		int pos = _graph->GetVertexPos(v); //TODO:检查一下是否修改sample graph邻接表，如真正删除顶点
-		if( pos == -1)
+		int pos_in_sample = _graph->GetVertexPos(v); //TODO:检查一下是否修改sample graph邻接表，如真正删除顶点
+		if( pos_in_sample == -1)
 		{
-			Log::logln("Partitioner:RemoveClusterNode: the pos of vex not found : NOTE: the process will not be terminated, you should check it");
+			Log::logln("Partitioner:RemoveClusterNode: the pos of vex in the sample graph not found : NOTE: the process will not be terminated, you should check it");
 		}
-		DeleteClusterNodeAtPos(cluster, pos);
+		ClusterNode node;
+		node._pos = pos_in_sample;
+		int pos_in_cluster = GetClusterNode(cluster, node);
+		if( pos_in_cluster == -1)
+		{
+			Log::logln("Partitioner:RemoveClusterNode: the pos of vex in the cluster not found : NOTE: the process will not be terminated, you should check it");
+		}
+		DeleteClusterNodeAtPos(cluster, pos_in_cluster);
 	}
 }
 
 void Partitioner::RandomInsertNewVertices(hash_set<VERTEX>& vexs)
 {
+	for(hash_set<VERTEX>::iterator iter_v = vexs.begin(); iter_v!=vexs.end(); iter_v++)
+	{
+		VERTEX vex = *iter_v;
+		int min = INT_MAX;
+		Cluster* min_size_cluster;
+		for(Partition::iterator iter_cluster = _aPartition.begin(); iter_cluster != _aPartition.end(); iter_cluster++)
+		{
+			Cluster* cluster = *iter_cluster;
+			if(cluster->_cluster.size() <= min )
+			{
+				min_size_cluster = cluster;
+				min = cluster->_cluster.size();
+			}
+		}
 
+		InsertNewVertexInCluster(min_size_cluster, vex);
+	}
 }
 
+void Partitioner::InsertNewVertexInCluster(Cluster* cluster, VERTEX& vex)
+{
+	int pos = _graph->GetVertexPos(vex); //TODO:检查一下是否修改sample graph邻接表，如真正删除顶点
+	if( pos == -1)
+	{
+		Log::logln("Partitioner:InsertNewVertexInCluster: the pos of vex in the sample graph not found : NOTE: the process will not be terminated, you should check it");
+	}
+
+	ClusterNode node; 
+	node._pos = pos;
+	node._visited = 0;
+
+	AppendClusterNode(cluster, node);
+}

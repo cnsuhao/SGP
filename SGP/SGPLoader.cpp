@@ -984,7 +984,7 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 	_partitions_in_memory.RemoveClusterNode(removed_vex);
 	//将新节点添加到最小划分中，如果大小一样，随机
 	_partitions_in_memory.RandomInsertNewVertices(new_vex);
-	...
+
 	return _partitions_in_memory.CheckIfAdjust(changed_vertex, adjust_partitions);//删除与添加的影响未考虑。。。。
 }
 
@@ -1079,4 +1079,6 @@ DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
 	loader->GetPartitioner().UpdateAssignVertices(partition);//NOTE: since the threads access the distinct variables, the synchronization isn't required.
 
 	...
+
+	return 1;
 }
