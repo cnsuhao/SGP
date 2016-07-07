@@ -360,7 +360,7 @@ bool SGPLoader::ReadNextEdgesCache_DBS()
 			}
 			else
 			{
-				(iter->second).degree++;
+				(iter->second).degree++;//don't change the cur_degree
 			}
 		}
 		iread++;
@@ -756,7 +756,7 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 
 	//step 4 to step 30 
 	vector<ReAdjustPartitionPair> adjust_partitions;
-	while(ReadNextEdgesCache_DBS())//已将所有读到的顶点添加到Vs中，如果采样选中，则curdegree大于零
+	while(ReadNextEdgesCache_DBS())//已将所有读到的顶点添加到Vs中，如果采样选中，则curdegree大于零.注意：这里Vs是采样顶点的超集，即也包含了未采样顶点。
 	{
 		UpdateWeightofEdgesInEs();
 
