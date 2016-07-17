@@ -673,7 +673,7 @@ int Partitioner::GetAssignedLabelOfVex(VERTEX vex)
 	return -1;
 }
 
-bool Partitioner::CheckIfAdjust(hash_set<VERTEX>& change_vexs, vector<ReAdjustPartitionPair>& adjust_partitions)
+bool Partitioner::CheckIfAdjust(hash_set<VERTEX>& change_vexs, vector<int>& partitions_change_vex, vector<ReAdjustPartitionPair>& adjust_partitions)
 {
 	typedef struct {
 		bool isRepartition;
@@ -692,6 +692,7 @@ bool Partitioner::CheckIfAdjust(hash_set<VERTEX>& change_vexs, vector<ReAdjustPa
 
 
 	hash_set<VERTEX>::iterator iter = change_vexs.begin();
+	int  j=0;
 	while(iter!=change_vexs.end())
 	{
 		int level = 2;//from level 2 not root level (1)
@@ -703,8 +704,9 @@ bool Partitioner::CheckIfAdjust(hash_set<VERTEX>& change_vexs, vector<ReAdjustPa
 		vector<int> partition_u;//the leaf set of the node containing u in BT at the level
 		vector<int> partition_not_u; //the leaf set of the node's sibling
 
-		leaf_of_vex = GetClusterLabelOfVex(u);//here, 0 begin on the level of leaf
-		leaf_of_vex += _k;//begin with 1
+		leaf_of_vex = partitions_change_vex[j];
+		//leaf_of_vex = GetClusterLabelOfVex(u);//here, 0 begin on the level of leaf. 注意：如果被删除了？(solved)
+		leaf_of_vex += 1;// //begin with 1 //leaf_of_vex += _k; - ????
 
 		//find a cluster to adjust from the top level, if yes, the following sub-nodes should not be
 		//considered.
@@ -743,7 +745,7 @@ bool Partitioner::CheckIfAdjust(hash_set<VERTEX>& change_vexs, vector<ReAdjustPa
 			}
 		}
 
-		iter++;
+		iter++; j++;
 	}
 
 	//record all the top partition pair to adjust by level traverse on BT

@@ -922,6 +922,7 @@ bool SGPLoader::StreamAssignEdge(EDGE e)
 bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_partitions)
 {
 	hash_set<VERTEX> changed_vertex, new_vex, removed_vex;
+	vector<int> partitions_changed_vertex;
 	//if an edge is in and out, it will not change the partition
 	hash_set<EdgeID>::iterator iter_selected =  _selected_edges.begin();
 	hash_set<EdgeID>::iterator iter_substituted;
@@ -938,6 +939,25 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 			EDGE e = GetEdgeofID(*iter_selected);
 			changed_vertex.insert(e._u);
 			changed_vertex.insert(e._v);
+			
+			int partition = _partitions_in_memory.GetClusterLabelOfVex(e._u);
+			if(partition == -1)
+			{
+				Log::logln("SGLs : UpdateAndCheckRepartition : find the cluster of vex error. NOTE: the process will be continued. but you should check");
+			}
+			else
+			{
+				partitions_changed_vertex.push_back(partition);
+			}
+			partition = _partitions_in_memory.GetClusterLabelOfVex(e._v);
+			if(partition == -1)
+			{
+				Log::logln("SGLs : UpdateAndCheckRepartition : find the cluster of vex error. NOTE: the process will be continued. but you should check");
+			}
+			else
+			{
+				partitions_changed_vertex.push_back(partition);
+			}
 
 			iter_selected++;
 		}
@@ -948,6 +968,26 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 		EDGE e = GetEdgeofID(*iter_substituted);
 		changed_vertex.insert(e._u);
 		changed_vertex.insert(e._v);
+
+		int partition = _partitions_in_memory.GetClusterLabelOfVex(e._u);
+		if(partition == -1)
+		{
+			Log::logln("SGLs : UpdateAndCheckRepartition : find the cluster of vex error. NOTE: the process will be continued. but you should check");
+		}
+		else
+		{
+			partitions_changed_vertex.push_back(partition);
+		}
+		partition = _partitions_in_memory.GetClusterLabelOfVex(e._v);
+		if(partition == -1)
+		{
+			Log::logln("SGLs : UpdateAndCheckRepartition : find the cluster of vex error. NOTE: the process will be continued. but you should check");
+		}
+		else
+		{
+			partitions_changed_vertex.push_back(partition);
+		}
+
 		iter_substituted++;
 	}
 	//获得删除和添加节点集合
@@ -984,8 +1024,9 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 	_partitions_in_memory.RemoveClusterNode(removed_vex);
 	//将新节点添加到最小划分中，如果大小一样，随机
 	_partitions_in_memory.RandomInsertNewVertices(new_vex);
-
-	return _partitions_in_memory.CheckIfAdjust(changed_vertex, adjust_partitions);//删除与添加的影响未考虑。。。。
+	//将变化顶点对应划分传递过去，解决删除节点问题。
+	bool repartition = _partitions_in_memory.CheckIfAdjust(changed_vertex, partitions_changed_vertex,adjust_partitions);//删除与添加的影响未考虑(通过partitions_changed_vertex解决)
+	return repartition;
 }
 
 void SGPLoader::RepartitionSampleGraph(vector<ReAdjustPartitionPair>& adjust_partitions,PartitionAlgorithm partition_algorithm)
