@@ -61,6 +61,10 @@ void AssignContext::Assign()
 			if(assign_info[i].cluster == -1)
 			{
 				assign_info[i].cluster = EvaluateVexCluster(cache_graph, vex_to_partition);
+				//将assign的顶点及其partition保存在manager中，不保存AC。如果sampled，则标记。在最终阶段assign节点不在重新评估，可能cut会变大，但均值不会太高，因为绝大多数顶点会被采样。
+
+				...
+
 				_partitioner->AppendAssignVertex(assign_info[i].vex, assign_info[i].cluster);
 				//statistic: 注意此部分的统计数据有可能被writeassignverticeofpartitions函数覆盖。
 				_partitioner->SetAssignVertexStat(assign_info[i].cluster);
