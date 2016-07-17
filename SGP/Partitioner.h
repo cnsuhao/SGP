@@ -24,7 +24,7 @@ typedef struct _ClusterNode {
 typedef struct _Cluster { 
 	vector<ClusterNode> _cluster;
 	map<int, int> _cluster_node_idx;//<node_pos_in_adjtable, cluster_node_pos_in_the_cluster>
-	unordered_set<VERTEX> _assign_vex;//the assigned vex, which doesn't exist in adjtable of graph. it is used to sgp algorithm.
+	//unordered_set<VERTEX> _assign_vex;//the assigned vex, which doesn't exist in adjtable of graph. it is used to sgp algorithm.
 } Cluster;
 
 // a set of cluster
@@ -124,15 +124,15 @@ public:
 	int ComputeLinkstoClusterFromVex(VERTEX vex, int cluster_pos);
 
 
-	void AppendAssignVertex(VERTEX vex, int partition_id);
-	int GetAssignedLabelOfVex(VERTEX vex);
+	/*void AppendAssignVertex(VERTEX vex, int partition_id);*/
+	/*int GetAssignedLabelOfVex(VERTEX vex);*/
 
 	/*********************************************************************************/
 	//SGLs:将整个划分过程看做二叉树（完全），但最终只保存了叶子节点，更新实际上在叶子上开始处理的
 	//adjust_partitions contains the partions to be adjust, i.e the gain is inversed, if null , no adjust.
 	//change_vexs contains the vertex whose edges is changed.partitions_change_vex is the partition of vex that begin with 0
 	//NOTE: the number of partition adjusted begin with the root of partitioning binary tree.
-	bool CheckIfAdjust(hash_set<VERTEX>& change_vexs, vector<int>& partitions_change_vex,vector<ReAdjustPartitionPair>& adjust_partitions);
+	bool CheckIfAdjust(vector<VERTEX>& change_vexs, vector<int>& partitions_change_vex,vector<ReAdjustPartitionPair>& adjust_partitions);
 	//partition_u:the leaf set of the node containing u in BT at the level. begin with 0
 	//partition_not_u:the leaf set of the node's sibling. begin with 0
 	bool CheckClusterAdjust(VERTEX u, vector<int>& partition_u, vector<int>& partition_not_u);
@@ -147,8 +147,8 @@ public:
 	void UpdateAssignVertices(int partition);
 	//For current partitions, remove and insert vex. NOTE: for inserted vertices, the smaller size of partition will be preferred, otherwise, if all equal, random
 	//the following functions will be used on one sampling process finished, and affect the partitioned vertices, not assigned vertices
-	void RemoveClusterNode(hash_set<VERTEX>& vexs);
-	void RandomInsertNewVertices(hash_set<VERTEX>& vexs);
+	void RemoveClusterNode(vector<VERTEX>& vexs);
+	void RandomInsertNewVertices(vector<VERTEX>& vexs);
 	//insert a vertex into cluster. to be sure the vex exists in adj-table of sample graph
 	void InsertNewVertexInCluster(Cluster* cluster, VERTEX& vex);
 };
