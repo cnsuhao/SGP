@@ -57,15 +57,13 @@ void AssignContext::Assign()
 		assign_info[i].cluster = _partitioner->GetClusterLabelOfVex(vex_to_partition);
 		if(assign_info[i].cluster == -1)
 		{
-			assign_info[i].cluster = _partitioner->GetAssignedLabelOfVex(vex_to_partition);
+			assign_info[i].cluster = AssignContextManager::GetAssignManager()->GetAssignVertexPartition(vex_to_partition);
 			if(assign_info[i].cluster == -1)
 			{
 				assign_info[i].cluster = EvaluateVexCluster(cache_graph, vex_to_partition);
 				//将assign的顶点及其partition保存在manager中，不保存AC。如果sampled，则标记。在最终阶段assign节点不在重新评估，可能cut会变大，但均值不会太高，因为绝大多数顶点会被采样。
-
-				...
-
-				_partitioner->AppendAssignVertex(assign_info[i].vex, assign_info[i].cluster);
+				AssignContextManager::GetAssignManager()->SaveAssignVertex(vex_to_partition, assign_info[i].cluster);
+				//_partitioner->AppendAssignVertex(assign_info[i].vex, assign_info[i].cluster);
 				//statistic: 注意此部分的统计数据有可能被writeassignverticeofpartitions函数覆盖。
 				_partitioner->SetAssignVertexStat(assign_info[i].cluster);
 			}
@@ -201,4 +199,38 @@ void AssignContextManager::Flush()
 		delete (*iter);
 		iter = _assign_context_list.erase(iter);
 	}
+}
+
+
+int AssignContextManager::GetAssignVertexPartition(VERTEX& vex)
+{
+	map<VERTEX, int>::iterator iter = _assign_vex_info.find(vex);
+	if(iter != _assign_vex_info.end())
+		return iter->second;
+	else
+		return -1;
+}
+
+void AssignContextManager::SaveAssignVertex(VERTEX& vex, int partition)
+{
+	_assign_vex_info.insert(pair<VERTEX, int>(vex, partition));
+}
+
+bool AssignContextManager::LabelAssignVertexUnsample(VERTEX& vex)
+{
+	map<VERTEX, int>::iterator iter = _assign_vex_info.find(vex);
+	if(iter != _assign_vex_info.end())
+	{
+		iter->second = -1;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+AssignContextManager* AssignContextManager::GetAssignManager()
+{
+	return &_assign_manager;
 }

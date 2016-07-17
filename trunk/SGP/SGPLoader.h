@@ -28,7 +28,7 @@ private:
 	Partitioner				_partitions_in_memory;
 	
 	//assign context data
-	AssignContextManager	_assign_manager;
+	AssignContextManager*	_assign_manager;
 	int                     _assign_win_size;
 
 	SampleMode				_sample_mode;
@@ -94,6 +94,8 @@ private:
 	bool StreamAssignEdge(EDGE e);
 	//update storage node on parallel
 	bool UpdateStorageNode();
+	//the sub-routine for dealing the changed vertex after sampling once, called by UpdateAndCheckRepartition only
+	void doChangedVertex(VERTEX v, vector<VERTEX>& new_vex, vector<VERTEX>& removed_vex, vector<int>& partitions_changed_vertex);
 	/***********************************************************************************************************************************/
 	
 	/***********************************************************************************************************************************/

@@ -652,28 +652,28 @@ void Partitioner::SetAssignVertexStat(int cluster_id)
 	_partitions_statistic.at(cluster_id)._assign_vex_number ++;
 }
 
-void Partitioner::AppendAssignVertex(VERTEX vex, int partition_id)
-{
-	Cluster* cluster = _aPartition.at(partition_id);
-	cluster->_assign_vex.insert(vex);
-}
+//void Partitioner::AppendAssignVertex(VERTEX vex, int partition_id)
+//{
+//	Cluster* cluster = _aPartition.at(partition_id);
+//	cluster->_assign_vex.insert(vex);
+//}
 
 
-int Partitioner::GetAssignedLabelOfVex(VERTEX vex)
-{
-	for(int i=0; i<_aPartition.size(); i++)
-	{
-		Cluster* cluster = _aPartition.at(i);
-		unordered_set<VERTEX>& assign_vex = cluster->_assign_vex;
-		unordered_set<VERTEX>::const_iterator iter = assign_vex.find(vex);
-		if(iter != assign_vex.end())
-			return i;
-	} 
+//int Partitioner::GetAssignedLabelOfVex(VERTEX vex)
+//{
+//	for(int i=0; i<_aPartition.size(); i++)
+//	{
+//		Cluster* cluster = _aPartition.at(i);
+//		unordered_set<VERTEX>& assign_vex = cluster->_assign_vex;
+//		unordered_set<VERTEX>::const_iterator iter = assign_vex.find(vex);
+//		if(iter != assign_vex.end())
+//			return i;
+//	} 
+//
+//	return -1;
+//}
 
-	return -1;
-}
-
-bool Partitioner::CheckIfAdjust(hash_set<VERTEX>& change_vexs, vector<int>& partitions_change_vex, vector<ReAdjustPartitionPair>& adjust_partitions)
+bool Partitioner::CheckIfAdjust(vector<VERTEX>& change_vexs, vector<int>& partitions_change_vex, vector<ReAdjustPartitionPair>& adjust_partitions)
 {
 	typedef struct {
 		bool isRepartition;
@@ -691,7 +691,7 @@ bool Partitioner::CheckIfAdjust(hash_set<VERTEX>& change_vexs, vector<int>& part
 	}
 
 
-	hash_set<VERTEX>::iterator iter = change_vexs.begin();
+	vector<VERTEX>::iterator iter = change_vexs.begin();
 	int  j=0;
 	while(iter!=change_vexs.end())
 	{
@@ -924,9 +924,9 @@ void Partitioner::UpdateAssignVertices(int partition)
 	}
 }
 
-void Partitioner::RemoveClusterNode(hash_set<VERTEX>& vexs)
+void Partitioner::RemoveClusterNode(vector<VERTEX>& vexs)
 {
-	for(hash_set<VERTEX>::iterator iter_v = vexs.begin(); iter_v!=vexs.end(); iter_v++)
+	for(vector<VERTEX>::iterator iter_v = vexs.begin(); iter_v!=vexs.end(); iter_v++)
 	{
 		VERTEX v = *iter_v;
 		int k = GetClusterLabelOfVex(v);
@@ -951,9 +951,9 @@ void Partitioner::RemoveClusterNode(hash_set<VERTEX>& vexs)
 	}
 }
 
-void Partitioner::RandomInsertNewVertices(hash_set<VERTEX>& vexs)
+void Partitioner::RandomInsertNewVertices(vector<VERTEX>& vexs)
 {
-	for(hash_set<VERTEX>::iterator iter_v = vexs.begin(); iter_v!=vexs.end(); iter_v++)
+	for(vector<VERTEX>::iterator iter_v = vexs.begin(); iter_v!=vexs.end(); iter_v++)
 	{
 		VERTEX vex = *iter_v;
 		int min = INT_MAX;

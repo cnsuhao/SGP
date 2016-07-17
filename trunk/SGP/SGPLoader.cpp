@@ -20,6 +20,7 @@ float randf(float range_min, float range_max)
 
 SGPLoader::SGPLoader(void)
 {
+	_assign_manager = AssignContextManager::GetAssignManager();
 }
 
 SGPLoader::~SGPLoader(void)
@@ -602,10 +603,10 @@ void SGPLoader::doAssignReminderEdges()
 		int cluster_u, cluster_v;
 		cluster_u = _partitions_in_memory.GetClusterLabelOfVex(u);
 		if(cluster_u == -1)
-			cluster_u = _partitions_in_memory.GetAssignedLabelOfVex(u);
+			cluster_u = _assign_manager->GetAssignVertexPartition(u);
 		cluster_v = _partitions_in_memory.GetClusterLabelOfVex(v);
 		if(cluster_v == -1)
-			cluster_v = _partitions_in_memory.GetAssignedLabelOfVex(v);
+			cluster_v = _assign_manager->GetAssignVertexPartition(v);
 
 		if(cluster_u != -1 && cluster_v != -1)
 		{
@@ -613,13 +614,13 @@ void SGPLoader::doAssignReminderEdges()
 		}
 		else
 		{
-			_assign_manager.CreateAndAppendContext(e, &_partitions_in_memory, &_graph_sample, _assign_win_size);
-			_assign_manager.AppendEdge(e);
-			_assign_manager.doManager();
+			_assign_manager->CreateAndAppendContext(e, &_partitions_in_memory, &_graph_sample, _assign_win_size);
+			_assign_manager->AppendEdge(e);
+			_assign_manager->doManager();
 		}
 	}
 
-	_assign_manager.Flush();
+	_assign_manager->Flush();
 }
 
 void SGPLoader::SetEdgeOrderMode(EdgeOrderMode mode)
@@ -767,9 +768,12 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 		_graph_sample.UpdateSampleGraph(_selected_edges, _substituted_edges);//- 注意：删除度为0的节点可能存在bug，见UpdateSampleGraph
 
 		if(UpdateAndCheckRepartition(adjust_partitions))//更新划分中的节点，并检查是否需要重新划分
+		{
+			//重新划分
 			RepartitionSampleGraph(adjust_partitions, partition_algorithm);
+		}
 	}
-	_assign_manager.Flush();
+	_assign_manager->Flush();
 	
 	//step 31 to step 51
 	UpdateStorageNode();
@@ -885,7 +889,7 @@ bool SGPLoader::StreamAssignEdge(EDGE e)
 	cluster_u = _partitions_in_memory.GetClusterLabelOfVex(e._u);
 	if(cluster_u == -1)
 	{
-		cluster_u = _partitions_in_memory.GetAssignedLabelOfVex(e._u);
+		cluster_u = _assign_manager->GetAssignVertexPartition(e._u);
 		if(cluster_u == -1)
 		{
 			all_vex_sampled = false;
@@ -894,7 +898,7 @@ bool SGPLoader::StreamAssignEdge(EDGE e)
 	cluster_v = _partitions_in_memory.GetClusterLabelOfVex(e._v);
 	if(cluster_v == -1)
 	{
-		cluster_v = _partitions_in_memory.GetAssignedLabelOfVex(e._v);
+		cluster_v = _assign_manager->GetAssignVertexPartition(e._v);
 		if(cluster_v == -1)
 		{
 			all_vex_sampled = false;
@@ -907,21 +911,21 @@ bool SGPLoader::StreamAssignEdge(EDGE e)
 	}
 	else//assigning util AC is full.
 	{
-		_assign_manager.CreateAndAppendContext(
+		_assign_manager->CreateAndAppendContext(
 			e, 
 			&_partitions_in_memory, 
 			&_graph_sample, 
 			_assign_win_size);//!!!check, the partition and graph sample varied.
 
-		_assign_manager.AppendEdge(e);//NOTE: modify the partition!!!! TODO
-		_assign_manager.doManager();
+		_assign_manager->AppendEdge(e);//NOTE: modify the partition!!!! TODO
+		_assign_manager->doManager();
 	}
 	return true;
 }
 
 bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_partitions)
 {
-	hash_set<VERTEX> changed_vertex, new_vex, removed_vex;
+	vector<VERTEX> changed_vertex, new_vex, removed_vex;
 	vector<int> partitions_changed_vertex;
 	//if an edge is in and out, it will not change the partition
 	hash_set<EdgeID>::iterator iter_selected =  _selected_edges.begin();
@@ -937,27 +941,10 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 		else
 		{
 			EDGE e = GetEdgeofID(*iter_selected);
-			changed_vertex.insert(e._u);
-			changed_vertex.insert(e._v);
-			
-			int partition = _partitions_in_memory.GetClusterLabelOfVex(e._u);
-			if(partition == -1)
-			{
-				Log::logln("SGLs : UpdateAndCheckRepartition : find the cluster of vex error. NOTE: the process will be continued. but you should check");
-			}
-			else
-			{
-				partitions_changed_vertex.push_back(partition);
-			}
-			partition = _partitions_in_memory.GetClusterLabelOfVex(e._v);
-			if(partition == -1)
-			{
-				Log::logln("SGLs : UpdateAndCheckRepartition : find the cluster of vex error. NOTE: the process will be continued. but you should check");
-			}
-			else
-			{
-				partitions_changed_vertex.push_back(partition);
-			}
+			changed_vertex.push_back(e._u);
+			doChangedVertex(e._u, new_vex, removed_vex, partitions_changed_vertex);
+			changed_vertex.push_back(e._v);
+			doChangedVertex(e._v, new_vex, removed_vex, partitions_changed_vertex);
 
 			iter_selected++;
 		}
@@ -966,67 +953,68 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 	while(iter_substituted!=_substituted_edges.end())
 	{
 		EDGE e = GetEdgeofID(*iter_substituted);
-		changed_vertex.insert(e._u);
-		changed_vertex.insert(e._v);
-
-		int partition = _partitions_in_memory.GetClusterLabelOfVex(e._u);
-		if(partition == -1)
-		{
-			Log::logln("SGLs : UpdateAndCheckRepartition : find the cluster of vex error. NOTE: the process will be continued. but you should check");
-		}
-		else
-		{
-			partitions_changed_vertex.push_back(partition);
-		}
-		partition = _partitions_in_memory.GetClusterLabelOfVex(e._v);
-		if(partition == -1)
-		{
-			Log::logln("SGLs : UpdateAndCheckRepartition : find the cluster of vex error. NOTE: the process will be continued. but you should check");
-		}
-		else
-		{
-			partitions_changed_vertex.push_back(partition);
-		}
-
+		changed_vertex.push_back(e._u);
+		doChangedVertex(e._u, new_vex, removed_vex, partitions_changed_vertex);
+		changed_vertex.push_back(e._v);
+		doChangedVertex(e._v, new_vex, removed_vex, partitions_changed_vertex);
+		
 		iter_substituted++;
-	}
-	//获得删除和添加节点集合
-	for(hash_set<VERTEX>::iterator iter_changed = changed_vertex.begin(); iter_changed != changed_vertex.end(); iter_changed++)
-	{
-		VERTEX v = *iter_changed;
-		map<VERTEX, Vertex_Item>::iterator iter_item = _sample_vertex_items.find(v);
-		if(iter_item == _sample_vertex_items.end())
-		{
-			Log::logln("SGLs : UpdateAndCheckRepartition : find vex error. the vex should exist. NOTE: the process will be continued. but you should check");
-		}
-		else
-		{
-			switch(iter_item->second.cur_degree)
-			{
-			case -1://new vex
-				{
-					new_vex.insert(v);
-					break;
-				}
-			case 0://removed vex
-				{
-					removed_vex.insert(v);
-					break;
-				}
-			default:
-				{
-					break;
-				}
-			}
-		}
 	}
 	//删除划分中的节点
 	_partitions_in_memory.RemoveClusterNode(removed_vex);
 	//将新节点添加到最小划分中，如果大小一样，随机
 	_partitions_in_memory.RandomInsertNewVertices(new_vex);
 	//将变化顶点对应划分传递过去，解决删除节点问题。
-	bool repartition = _partitions_in_memory.CheckIfAdjust(changed_vertex, partitions_changed_vertex,adjust_partitions);//删除与添加的影响未考虑(通过partitions_changed_vertex解决)
+	bool repartition = _partitions_in_memory.CheckIfAdjust(changed_vertex, partitions_changed_vertex, adjust_partitions);//删除与添加的影响未考虑(通过partitions_changed_vertex解决)
 	return repartition;
+}
+
+void SGPLoader::doChangedVertex(VERTEX v, vector<VERTEX>& new_vex, vector<VERTEX>& removed_vex, vector<int>& partitions_changed_vertex)
+{
+	//记录节点划分，主要用于被删除节点的划分。与changed_vertex一一对应
+	int partition = _partitions_in_memory.GetClusterLabelOfVex(v);
+	if(partition == -1)
+	{
+		Log::logln("SGLs : UpdateAndCheckRepartition : find the cluster of vex error. NOTE: the process will be continued. but you should check");
+	}
+	else
+	{
+		partitions_changed_vertex.push_back(partition);
+	}
+	//获得删除和添加节点集合
+	map<VERTEX, Vertex_Item>::iterator iter_item = _sample_vertex_items.find(v);
+	if(iter_item == _sample_vertex_items.end())
+	{
+		Log::logln("SGLs : UpdateAndCheckRepartition : find vex error. the vex should exist. NOTE: the process will be continued. but you should check");
+	}
+	else
+	{
+		switch(iter_item->second.cur_degree)
+		{
+		case -1://new vex
+			{
+				new_vex.push_back(v);
+				//对新增加的sample节点，检查assign context中的相应vertex，是否存在，如果是则标记。
+				_assign_manager->LabelAssignVertexUnsample(v);
+				break;
+			}
+		case 0://removed vex
+			{
+				removed_vex.push_back(v);
+				//对unsample节点，添加到assign context中并用unsample前的partition作为初始partition，其有可能在后序assign中更新。
+				for(vector<VERTEX>::iterator iter_remove = removed_vex.begin(); iter_remove != removed_vex.end(); iter_remove++)
+				{
+					VERTEX v = *iter_remove;
+					_assign_manager->SaveAssignVertex(v, partition);
+				}
+				break;
+			}
+		default:
+			{
+				break;
+			}
+		}
+	}
 }
 
 void SGPLoader::RepartitionSampleGraph(vector<ReAdjustPartitionPair>& adjust_partitions,PartitionAlgorithm partition_algorithm)
