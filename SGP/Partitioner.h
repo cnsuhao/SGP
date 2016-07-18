@@ -60,6 +60,7 @@ public:
 	void SetPartitionNumber(int k);
 	int GetPartitionNumber(){return _k;};
 	void SetOutFile(string outfile){_outfile = outfile;};
+	string GetOutFile(){return _outfile;};
 	vector<PartitionStatisticInfo>& GetPartitionStatistic() {return _partitions_statistic;};
 	//increase the number of assigned vertex in the partition of cluster_id
 	void SetAssignVertexStat(int cluster_id);
@@ -142,9 +143,11 @@ public:
 	void RepartitionMaxMin(vector<ReAdjustPartitionPair>& adjust_partitions);
 
 	Cluster* MergeLeafofNode(int bt_node);
+	
 	//if the vex in _assign_vex of the partition is also in the cluster, the vex will be removed from _assign_vex since it has been selected and partitioned
 	//To sure that the partition number is in the legal range, the function doesn't check the parameter.
-	void UpdateAssignVertices(int partition);
+	//void UpdateAssignVertices(int partition);
+	
 	//For current partitions, remove and insert vex. NOTE: for inserted vertices, the smaller size of partition will be preferred, otherwise, if all equal, random
 	//the following functions will be used on one sampling process finished, and affect the partitioned vertices, not assigned vertices
 	void RemoveClusterNode(vector<VERTEX>& vexs);

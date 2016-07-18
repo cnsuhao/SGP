@@ -1,7 +1,13 @@
 1、（已修改）对于sgls，当节点被删除后，cluster中对应的节点（记录的顶点位置）应该相应删除。而新节点应该添加到当前那个cluster？
-2. 对于sgls，assign节点应在assign时被写入文件
+
+2. (OK)对于sgls，assign节点应在assign时被写入文件: 只写边，不写节点，所有assign的最终结果都保存在AC manager中。
+
 3. （OK）//将assign的顶点及其partition保存在manager中，不保存AC。manger保存所有assign顶点信息，不在cluster中保存了。如果sampled，则标记。在最终阶段assign节点不在重新评估，可能cut会变大，但均值不会太高，因为绝大多数顶点会被采样。
-4.在最后阶段，对每个分区中的顶点，检查是否在cluster中，如果不在是否在assign列表中，来确定最终划分。
+
+4. 在最后阶段，对每个分区中的顶点，检查是否在cluster中，如果不在是否在assign列表中，来确定最终划分。
+
 5. （已解决，在删除前保存所有变化节点的划分）当划分中节点通过采样发生变化，检查是否重新划分中，删除节点如何获得划分。
+
 6.检查MergeLeafofNode等划分编号正确性
-7. 已将Cluster中_assign_vex删除，但对应引用未改，包括WriteAssignVerticesOfPartitions，UpdateAssignVertices
+
+7. (OK)已将Cluster中_assign_vex删除，但对应引用未改，包括WriteAssignVerticesOfPartitions，UpdateAssignVertices
