@@ -90,7 +90,6 @@ void Partitioner::doKL()
 	}
 }
 
-
 void Partitioner::doKLPartition(Cluster* aCluster, Cluster* bCluster)
 {
 	bool exchanged = false;
