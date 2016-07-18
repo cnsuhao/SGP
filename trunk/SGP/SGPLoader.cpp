@@ -74,7 +74,7 @@ bool SGPLoader::doGraphSamplingByFixMemEq()
 			int replace = rand(1, _edges_limition);
 			_sample_reserior.at(replace) = MakeEdgeID(e._u, e._v);
 		}
- 	}
+	}
 
 	vector<EdgeID>::iterator iter = _sample_reserior.begin();
 	Edge_Item e_item = {0,0,0};
@@ -115,12 +115,12 @@ bool SGPLoader::doGraphSamplingByFixMemUneq()
 		if(isEdgeExist(e)) 	continue;
 
 		UpdateVertexWeight_Uneq(e);
-		
+
 		int i = rand(1, iread);
 		if(i>_edges_limition) continue;
 
 		SelectNewEdge_Uneq(e);
- 	}
+	}
 	return true;
 }
 
@@ -176,7 +176,7 @@ bool SGPLoader::InitEdgeWeightInEs()
 				}
 			}
 		}
-		
+
 		iter_edges->second._weight = _max_d - min_degree;
 		_sum_weight += iter_edges->second._weight;
 		iter_edges++;
@@ -258,7 +258,7 @@ bool SGPLoader::doGraphSamplingByDBS()
 	_sample_edge_items.clear();
 	_sample_vertex_items.clear();
 	_dbs_edges_cache_to_process.clear();
-	
+
 	//step1 - step 5. read the first \rho edges
 	if(ReadInitSamples_DBS() < _edges_limition)
 	{
@@ -319,7 +319,7 @@ bool SGPLoader::InitSamples_DBS()
 				}
 			}
 		}
-		
+
 		iter_edges->second._weight = min_degree;
 		iter_edges->second._random = randf(0.0f, 1.0f);
 		iter_edges->second._key = pow(iter_edges->second._random, 1.0/iter_edges->second._weight);
@@ -402,7 +402,7 @@ void SGPLoader::UpdateWeightofEdgesInEs()
 				}
 			}
 		}
-		
+
 		if(iter_edges->second._weight != min_degree)
 		{
 			iter_edges->second._weight = min_degree;
@@ -428,7 +428,7 @@ bool SGPLoader::SamplingEdgeCache()
 	{
 		int min_degree = INT_MAX;
 		EDGE e = *iter;
-		
+
 		for(int j=0;j<2; j++)
 		{
 			VERTEX vex = (j==0)?e._u:e._v;
@@ -719,7 +719,7 @@ bool SGPLoader::ReadEdge(EDGE& e)
 	while(getline(_ifs, buf))//empty line maybe exists
 	{	
 		if(buf.empty()) continue;
-		
+
 		int idx = buf.find_first_of(" ");
 		string temp = buf.substr(0, idx);
 		int u = stoi(temp);
@@ -731,14 +731,13 @@ bool SGPLoader::ReadEdge(EDGE& e)
 	}
 	return false;
 }
-
 //SGLs
 bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 {
 	_sample_edge_items.clear();
 	_sample_vertex_items.clear();
 	_dbs_edges_cache_to_process.clear();
-	
+
 	//step1
 	if(ReadInitSamples_DBS() < _edges_limition)
 	{
@@ -774,7 +773,7 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 		}
 	}
 	_assign_manager->Flush();
-	
+
 	//step 31 to step 51
 	UpdateStorageNode();
 
@@ -793,7 +792,7 @@ bool SGPLoader::doStreamDBSSample()
 	{
 		int min_degree = INT_MAX;
 		EDGE e = *iter;
-		
+
 		for(int j=0;j<2; j++)
 		{
 			VERTEX vex = (j==0)?e._u:e._v;
@@ -865,7 +864,7 @@ bool SGPLoader::doStreamDBSSample()
 				iter_add_v->second.cur_degree = 1; //the vex is sampled first or removed after substituted
 			else
 				iter_add_v->second.cur_degree ++; //the sampled vex
-			
+
 			_selected_edges.insert(e_id);
 			_substituted_edges.insert(_min_weight_edge_id);
 
@@ -957,7 +956,7 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 		doChangedVertex(e._u, new_vex, removed_vex, partitions_changed_vertex);
 		changed_vertex.push_back(e._v);
 		doChangedVertex(e._v, new_vex, removed_vex, partitions_changed_vertex);
-		
+
 		iter_substituted++;
 	}
 	//删除划分中的节点
@@ -1039,25 +1038,43 @@ DWORD WINAPI UpdateStorageThread( LPVOID lpParam );
 typedef struct _update_storage_param{
 	SGPLoader* _loader;
 	int _partition_number;
+	ifstream ifs;
+	ofstream ofs;
+	HANDLE hMutex;
 } Update_Storage_Param;
+
+Update_Storage_Param* thread_param = NULL;
 
 bool SGPLoader::UpdateStorageNode()
 {
+	thread_param = new Update_Storage_Param[_k];
+
 	DWORD dwThreadId;
 	HANDLE* hThreads = new HANDLE[_k];
-	Update_Storage_Param* param = new Update_Storage_Param[_k];
 	for(int i=0; i<_k; i++)
 	{
-		param[i]._loader = this;
-		param[i]._partition_number = i;
-		
+		thread_param[i]._loader = this;
+		thread_param[i]._partition_number = i;
+
+		stringstream str;
+		str<<GetPartitioner().GetOutFile()<<"_assign_edge."<<i;
+		thread_param[i].ifs.open(str.str());
+		str.str("");
+		str<<GetPartitioner().GetOutFile()<<"_assign_edge_tmp."<<i;
+		thread_param[i].ofs.open(str.str());
+
+		thread_param[i].hMutex = CreateMutex( 
+			NULL,                       // default security attributes
+			FALSE,                      // initially not owned
+			NULL);                      // unnamed mutex
+
 		hThreads[i] = CreateThread( 
-        NULL,                       // default security attributes 
-        0,                          // use default stack size  
-        UpdateStorageThread,        // thread function 
-        param,						// argument to thread function 
-        0,                          // use default creation flags 
-        &dwThreadId); 
+			NULL,                       // default security attributes 
+			0,                          // use default stack size  
+			UpdateStorageThread,        // thread function 
+			&thread_param[i],						// argument to thread function 
+			0,                          // use default creation flags 
+			&dwThreadId); 
 		if(hThreads[i] == NULL)
 		{
 			Log::logln("SGP: SteamLoader: UpdateStorageNode: Create Thread Error!!");
@@ -1066,7 +1083,7 @@ bool SGPLoader::UpdateStorageNode()
 				TerminateThread(hThreads[j], 0);//the target thread has no chance to execute any user-mode code and its initial stack is not deallocated
 			}
 			delete hThreads;
-			delete param;
+			delete thread_param;
 			return false;
 		}
 		else
@@ -1076,26 +1093,46 @@ bool SGPLoader::UpdateStorageNode()
 	}
 	DWORD dwEvent;
 	dwEvent = WaitForMultipleObjects( 
-    _k,           // number of objects in array
-    hThreads,     // array of objects
-    TRUE,       // wait for all
-    INFINITE);   // indefinite wait
+		_k,           // number of objects in array
+		hThreads,     // array of objects
+		TRUE,       // wait for all
+		INFINITE);   // indefinite wait
 
 	if(dwEvent == WAIT_OBJECT_0)//succeed
 	{
 		delete hThreads;
-		delete param;
+		delete thread_param;
 		return true;
 
 	}
 	else
 	{
 		delete hThreads;
-		delete param;
+		delete thread_param;
 		Log::logln("SGP: SteamLoader: UpdateStorageNode: Wait for Thread Termination Error!!");
 		return false;
 	}
-	
+
+}
+
+void ReWriteAssignEdgeToPartition(int to_partition, VERTEX u, int u_partition, VERTEX v, int v_partition)
+{
+	DWORD dwWaitResult; 
+	// Request ownership of mutex.
+	dwWaitResult = WaitForSingleObject(thread_param[to_partition].hMutex,INFINITE);
+	if(dwWaitResult == WAIT_OBJECT_0)
+	{
+		// The thread got mutex ownership, write the edge
+		thread_param[to_partition].ofs<<u<<" "<<u_partition<<" "<<v<<" "<<v_partition;
+		//realse the mutex
+		if (!ReleaseMutex(thread_param[to_partition].hMutex))
+		{
+			stringstream str;
+			str.str("");
+			str<<"SGP: SteamLoader: ReWriteAssignEdgeToPartition: "<<to_partition<< " Error in relasing Mutex "<<endl;
+			Log::logln(str.str());
+		}
+	}
 }
 
 DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
@@ -1104,30 +1141,32 @@ DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
 
 	SGPLoader* loader = param->_loader;
 	int partition = param->_partition_number;
-	
+
 	//find the assigned vertex that the assigned partition is differed from the one in the sampling partitions, and remove it from the assigned file
-	
-	//loader->GetPartitioner().UpdateAssignVertices(partition);//NOTE: since the threads access the distinct variables, the synchronization isn't required. NO HELPFUL
-
-	
-	stringstream str;
-	str<<loader->GetPartitioner().GetOutFile()<<"_assign_edge."<<partition;
-	ifstream ifs(str.str());
-	str.str("");
-	str<<loader->GetPartitioner().GetOutFile()<<"_assign_edge_tmp."<<partition;
-	ofstream ofs(str.str());
-
 	string buf;
-	while(getline(ifs, buf))
+	stringstream str;
+	while(getline(param->ifs, buf))
 	{
 		if(buf.empty()) continue;
 
-		int idx = buf.find_first_of(" ");
-		string temp = buf.substr(0, idx);
+		int idx =0;
+		int idx_next = buf.find_first_of(" ", idx);
+		string temp = buf.substr(idx, idx_next-idx);
 		VERTEX u = stoi(temp);
-		temp = buf.substr(idx+1, buf.length()-idx-1);
+
+		idx = ++idx_next;
+		idx_next = buf.find_first_of(" ", idx);
+		temp = buf.substr(idx, idx_next-idx);
+		int u_assign_partition = stoi(temp);
+
+		idx = ++idx_next;
+		idx_next = buf.find_first_of(" ", idx);
+		temp = buf.substr(idx, idx_next-idx);
 		VERTEX v= stoi(temp);
-		
+
+		temp = buf.substr(idx_next+1, buf.length()-idx_next-1);
+		int v_assign_partition = stoi(temp);
+
 		AssignContextManager* acm = AssignContextManager::GetAssignManager();
 		int u_partition = acm->GetAssignVertexPartition(u);
 		if(u_partition == -1)//sampled already
@@ -1152,23 +1191,18 @@ DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
 			}
 		}
 
-		if(u_partition == partition && v_partition == partition)//a
+		if(partition<=u_assign_partition && partition<= v_assign_partition)//由划分小的来处理跨区边
 		{
-			ofs<<u<<" "<<v<<endl;
+			if(u_partition == partition &&  v_partition == partition)
+			{
+				ReWriteAssignEdgeToPartition(partition, u, u_partition, v, v_partition);
+			}
+			else
+			{
+				ReWriteAssignEdgeToPartition(u_partition, u, u_partition, v, v_partition);
+				ReWriteAssignEdgeToPartition(v_partition, u, u_partition, v, v_partition);
+			}
 		}
-		else if(u_partition == partition && v_partition != partition)//b 只要有一个结点属于本分区，则保存。另一个如果不属于，在其所对应的线程里处理。因为跨区边在各自分区都存储。
-		{
-
-		}
-		else if(u_partition != partition && v_partition == partition)//c 只要有一个结点属于本分区，则保存。另一个如果不属于，在其所对应的线程里处理。因为跨区边在各自分区都存储。
-		{
-
-		}
-		else if(u_partition != partition && v_partition != partition)//d 都不属于，则有两种情况：1 两个顶点划分都变了； 2 原来属于本分区的顶点划分变了，但另一个没变； d与b和c重合
-		{
-
-		}
-	}
-
+	}//end while
 	return 1;
 }

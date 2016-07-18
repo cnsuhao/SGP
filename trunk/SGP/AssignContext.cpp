@@ -201,7 +201,6 @@ void AssignContextManager::Flush()
 	}
 }
 
-
 int AssignContextManager::GetAssignVertexPartition(VERTEX& vex)
 {
 	map<VERTEX, int>::iterator iter = _assign_vex_info.find(vex);
