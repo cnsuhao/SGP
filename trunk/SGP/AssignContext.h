@@ -51,6 +51,8 @@ public:
 	void SaveAssignVertex(VERTEX& vex, int partition);
 	//Label the vertex as unsample. that is, partition is -1; if not found, return false;
 	bool LabelAssignVertexUnsample(VERTEX& vex);
+	//get and set
+	map<VERTEX, int>* GetAssignVexInfo() {return &_assign_vex_info;};
 
 	static AssignContextManager* GetAssignManager();
 	

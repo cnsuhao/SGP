@@ -70,7 +70,7 @@ void AssignContext::Assign()
 		}
 	}
 
-	_partitioner->WriteAssignEdge(assign_info[0].vex, assign_info[0].cluster,assign_info[1].vex, assign_info[1].cluster);
+	_partitioner->WriteAssignEdge(assign_info[0].vex, assign_info[0].cluster, assign_info[1].vex, assign_info[1].cluster);
 }
 
 int AssignContext::EvaluateVexCluster(Graph& cache_graph, VERTEX& vex_to_partition)

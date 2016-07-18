@@ -1104,10 +1104,71 @@ DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
 
 	SGPLoader* loader = param->_loader;
 	int partition = param->_partition_number;
+	
 	//find the assigned vertex that the assigned partition is differed from the one in the sampling partitions, and remove it from the assigned file
-	loader->GetPartitioner().UpdateAssignVertices(partition);//NOTE: since the threads access the distinct variables, the synchronization isn't required.
+	
+	//loader->GetPartitioner().UpdateAssignVertices(partition);//NOTE: since the threads access the distinct variables, the synchronization isn't required. NO HELPFUL
 
-	...
+	
+	stringstream str;
+	str<<loader->GetPartitioner().GetOutFile()<<"_assign_edge."<<partition;
+	ifstream ifs(str.str());
+	str.str("");
+	str<<loader->GetPartitioner().GetOutFile()<<"_assign_edge_tmp."<<partition;
+	ofstream ofs(str.str());
+
+	string buf;
+	while(getline(ifs, buf))
+	{
+		if(buf.empty()) continue;
+
+		int idx = buf.find_first_of(" ");
+		string temp = buf.substr(0, idx);
+		VERTEX u = stoi(temp);
+		temp = buf.substr(idx+1, buf.length()-idx-1);
+		VERTEX v= stoi(temp);
+		
+		AssignContextManager* acm = AssignContextManager::GetAssignManager();
+		int u_partition = acm->GetAssignVertexPartition(u);
+		if(u_partition == -1)//sampled already
+		{
+			u_partition = loader->GetPartitioner().GetClusterLabelOfVex(u);
+			if(u_partition == -1)
+			{
+				str.str("");
+				str<<"SGP: SteamLoader: UpdateStorageNode: Thread of Partition : "<<partition<< " Error!! : Cannot find the partition of Vex " <<u<<endl;
+				Log::logln(str.str());
+			}
+		}
+		int v_partition = acm->GetAssignVertexPartition(v);
+		if(v_partition == -1)//sampled already
+		{
+			v_partition = loader->GetPartitioner().GetClusterLabelOfVex(v);
+			if(v_partition == -1)
+			{
+				str.str("");
+				str<<"SGP: SteamLoader: UpdateStorageNode: Thread of Partition : "<<partition<< " Error!! : Cannot find the partition of Vex " <<v<<endl;
+				Log::logln(str.str());
+			}
+		}
+
+		if(u_partition == partition && v_partition == partition)//a
+		{
+			ofs<<u<<" "<<v<<endl;
+		}
+		else if(u_partition == partition && v_partition != partition)//b 只要有一个结点属于本分区，则保存。另一个如果不属于，在其所对应的线程里处理。因为跨区边在各自分区都存储。
+		{
+
+		}
+		else if(u_partition != partition && v_partition == partition)//c 只要有一个结点属于本分区，则保存。另一个如果不属于，在其所对应的线程里处理。因为跨区边在各自分区都存储。
+		{
+
+		}
+		else if(u_partition != partition && v_partition != partition)//d 都不属于，则有两种情况：1 两个顶点划分都变了； 2 原来属于本分区的顶点划分变了，但另一个没变； d与b和c重合
+		{
+
+		}
+	}
 
 	return 1;
 }

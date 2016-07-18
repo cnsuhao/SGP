@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.2.2)  12 JUN 2016 13:33
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.2.2)  18 JUL 2016 09:41
 entering extended mode
-**E:/study/big*graph*partition/paper/sigproc.tex
-("E:/study/big graph partition/paper/sigproc.tex"
+**E:/study/big*graph*partition/experiment/code/paper/sigproc.tex
+("E:/study/big graph partition/experiment/code/paper/sigproc.tex"
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for loaded.
-("E:\study\big graph partition\paper\sig-alternate-2013.cls"
+("E:\study\big graph partition\experiment\code\paper\sig-alternate-2013.cls"
 (C:\CTEX\MiKTeX\tex\latex\graphics\epsfig.sty
 Package: epsfig 1999/02/16 v1.7a (e)psfig emulation (SPQR)
 
@@ -242,7 +242,7 @@ Package: verbatim 2003/08/22 v1.5q LaTeX2e package for verbatim enhancements
 Package: enumerate 1999/03/05 v3.00 enumerate extensions (DPC)
 \@enLab=\toks41
 )
-("E:\study\big graph partition\paper\sigproc.aux")
+("E:\study\big graph partition\experiment\code\paper\sigproc.aux")
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
 LaTeX Font Info:    ... okay on input line 10.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 10.
@@ -350,33 +350,33 @@ Overfull \hbox (15.69513pt too wide) in paragraph at lines 525--529
 T1/cmr/m/n/9 ([][] [])$\T1/aer/m/n/9 . 
  []
 
-[8] ("E:\study\big graph partition\paper\sigproc.bbl") [9] [10
+[8] ("E:\study\big graph partition\experiment\code\paper\sigproc.bbl") [9]
+[10
 
-]
-("E:\study\big graph partition\paper\sigproc.aux") ) 
+] ("E:\study\big graph partition\experiment\code\paper\sigproc.aux") ) 
 Here is how much of TeX's memory you used:
  3281 strings out of 495354
- 38513 string characters out of 3183860
+ 38689 string characters out of 3183860
  124048 words of memory out of 3000000
  6383 multiletter control sequences out of 15000+200000
  51329 words of font info for 70 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
- 41i,11n,35p,1785b,734s stack positions out of 5000i,500n,10000p,200000b,50000s
-{C:/CTEX/MiKTeX/fonts/enc/d
-vips/fontname/8r.enc}<C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmbx9.pfb><
-C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/CTEX/MiKTeX/fonts
-/type1/public/amsfonts/cmextra/cmex7.pfb><C:/CTEX/MiKTeX/fonts/type1/public/ams
-fonts/cmextra/cmex9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi5.pf
-b><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/CTEX/MiKTeX/font
-s/type1/public/amsfonts/cm/cmmi9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfont
-s/cm/cmr5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/CTEX/
-MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/CTEX/MiKTeX/fonts/type1/publ
-ic/amsfonts/cm/cmsy5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.p
-fb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:/CTEX/MiKTeX/fon
-ts/type1/public/amsfonts/cm/cmti9.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/
-uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/CTEX/MiKTeX/
-fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/times/utmr8a.p
-fb>
+ 41i,11n,35p,1801b,734s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/CTEX/
+MiKTeX/fonts/enc/dvips/fontname/8r.enc}<C:/CTEX/MiKTeX/fonts/type1/public/amsfo
+nts/cm/cmbx9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:
+/CTEX/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmex7.pfb><C:/CTEX/MiKTeX/font
+s/type1/public/amsfonts/cmextra/cmex9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/am
+sfonts/cm/cmmi5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C
+:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/CTEX/MiKTeX/fonts/ty
+pe1/public/amsfonts/cm/cmr5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/
+cmr6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/CTEX/MiKTe
+X/fonts/type1/public/amsfonts/cm/cmsy5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/a
+msfonts/cm/cmsy6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9.pfb><
+C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/CTEX/MiKTeX/fonts/t
+ype1/urw/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pf
+b><C:/CTEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/
+urw/times/utmr8a.pfb>
 Output written on sigproc.pdf (10 pages, 299299 bytes).
 PDF statistics:
  108 PDF objects out of 1000 (max. 8388607)
