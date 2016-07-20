@@ -3,6 +3,7 @@
 #include <time.h>
 #include "Log.h"
 #include <sstream>
+#include "TimeTicket.h"
 #include <windows.h>
 
 using namespace std;
@@ -759,27 +760,52 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 	while(ReadNextEdgesCache_DBS())//已将所有读到的顶点添加到Vs中，如果采样选中，则curdegree大于零.注意：这里Vs是采样顶点的超集，即也包含了未采样顶点。
 	{
 		UpdateWeightofEdgesInEs();
+		Log::log("UpdateWeightofEdgesInEs elapse : \t");
+		Log::logln(TimeTicket::check());
 
 		doStreamDBSSample();
+		Log::log("doStreamDBSSample elapse : \t");
+		Log::logln(TimeTicket::check());
 
 		adjust_partitions.clear();
 
 		_graph_sample.UpdateSampleGraph(_selected_edges, _substituted_edges);//- 注意：删除度为0的节点可能存在bug，见UpdateSampleGraph
+		Log::log("UpdateSampleGraph elapse : \t");
+		Log::logln(TimeTicket::check());
 
 		if(UpdateAndCheckRepartition(adjust_partitions))//更新划分中的节点，并检查是否需要重新划分
 		{
 			//重新划分
 			RepartitionSampleGraph(adjust_partitions, partition_algorithm);
 		}
+		else
+		{
+			Log::log("No RepartitionSampleGraph : \t");
+		}
+		Log::log("RepartitionSampleGraph elapse : \t");
+		Log::logln(TimeTicket::check());
 	}
 	_assign_manager->Flush();
 
 	//step 31 to step 51
 	UpdateStorageNode();
+	Log::log("UpdateStorageNode elapse : \t");
+	Log::logln(TimeTicket::check());
+
+	GetPartitioner().WriteAssignVerticesOfPartitions();
+	Log::log("WriteAssignVerticesOfPartitions elapse : \t");
+	Log::logln(TimeTicket::check());
+
+	GetPartitioner().WriteVerticesOfPartitions();
+	Log::log("WriteVerticesOfPartitions elapse : \t");
+	Log::logln(TimeTicket::check());
+
+	GetPartitioner().WriteClusterEdgesOfPartitions();
+	Log::log("WriteClusterEdgesOfPartitions elapse : \t");
+	Log::logln(TimeTicket::check());
+
 
 	return true;
-
-
 }
 
 bool SGPLoader::doStreamDBSSample()
@@ -1045,8 +1071,28 @@ typedef struct _update_storage_param{
 
 Update_Storage_Param* thread_param = NULL;
 
+void ClearThreadParam(int k)
+{
+	for(int i=0; i<k; i++)
+	{
+		thread_param[i].ifs.close();
+		thread_param[i].ofs.close();
+		CloseHandle(thread_param[i].hMutex);
+	}
+	delete thread_param;
+	return;
+}
+
 bool SGPLoader::UpdateStorageNode()
 {
+	//clear the statistic of assign info that set by writeassignedge. the final statistic will be caculated on writing the vertices of clusters and assigned
+	vector<PartitionStatisticInfo>& stats = GetPartitioner().GetPartitionStatistic();
+	for(vector<PartitionStatisticInfo>::iterator iter = stats.begin(); iter!=stats.end(); iter++)
+	{
+		iter->_internal_links = 0;
+		iter->_external_links = 0;
+	}
+
 	thread_param = new Update_Storage_Param[_k];
 
 	DWORD dwThreadId;
@@ -1083,7 +1129,7 @@ bool SGPLoader::UpdateStorageNode()
 				TerminateThread(hThreads[j], 0);//the target thread has no chance to execute any user-mode code and its initial stack is not deallocated
 			}
 			delete hThreads;
-			delete thread_param;
+			ClearThreadParam(_k);
 			return false;
 		}
 		else
@@ -1101,21 +1147,21 @@ bool SGPLoader::UpdateStorageNode()
 	if(dwEvent == WAIT_OBJECT_0)//succeed
 	{
 		delete hThreads;
-		delete thread_param;
+		ClearThreadParam(_k);
 		return true;
 
 	}
 	else
 	{
 		delete hThreads;
-		delete thread_param;
+		ClearThreadParam(_k);
 		Log::logln("SGP: SteamLoader: UpdateStorageNode: Wait for Thread Termination Error!!");
 		return false;
 	}
 
 }
 
-void ReWriteAssignEdgeToPartition(int to_partition, VERTEX u, int u_partition, VERTEX v, int v_partition)
+void ReWriteAssignEdgeToPartition(int to_partition, VERTEX u, int u_partition, VERTEX v, int v_partition, SGPLoader* loader)
 {
 	DWORD dwWaitResult; 
 	// Request ownership of mutex.
@@ -1124,6 +1170,17 @@ void ReWriteAssignEdgeToPartition(int to_partition, VERTEX u, int u_partition, V
 	{
 		// The thread got mutex ownership, write the edge
 		thread_param[to_partition].ofs<<u<<" "<<u_partition<<" "<<v<<" "<<v_partition;
+
+		// update statistic
+		if(u_partition == v_partition)
+		{
+			loader->GetPartitioner().GetPartitionStatistic().at(u_partition)._internal_links++;
+		}
+		else
+		{
+			loader->GetPartitioner().GetPartitionStatistic().at(u_partition)._external_links++;
+		}
+
 		//realse the mutex
 		if (!ReleaseMutex(thread_param[to_partition].hMutex))
 		{
@@ -1195,12 +1252,12 @@ DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
 		{
 			if(u_partition == partition &&  v_partition == partition)
 			{
-				ReWriteAssignEdgeToPartition(partition, u, u_partition, v, v_partition);
+				ReWriteAssignEdgeToPartition(partition, u, u_partition, v, v_partition, loader);
 			}
 			else
 			{
-				ReWriteAssignEdgeToPartition(u_partition, u, u_partition, v, v_partition);
-				ReWriteAssignEdgeToPartition(v_partition, u, u_partition, v, v_partition);
+				ReWriteAssignEdgeToPartition(u_partition, u, u_partition, v, v_partition, loader);
+				ReWriteAssignEdgeToPartition(v_partition, u, u_partition, v, v_partition, loader);
 			}
 		}
 	}//end while
