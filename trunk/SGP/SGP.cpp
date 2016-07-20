@@ -31,16 +31,16 @@ string usage =
 	"params: -i <inputfile> -o <outputdir> -k <clusters num> -log <log file>\n"
 	"SGPKL:\n"
 	"partitioning a graph by sgp of kl algorithm.\n"
-	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs>\n"
+	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs> -maxd <max degree if sample mode is uneq>\n"
 	"SGPMaxMin:\n"
 	"partitioning a graph by sgp of max-min algorithm\n"
-	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs>\n"
+	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs> -maxd <max degree if sample mode is uneq>\n"
 	"SGPStreamKL:\n"
 	"partitioning a graph by stream sgp of kl algorithm.\n"
-	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs>\n"
+	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs> -maxd <max degree if sample mode is uneq> -ec <edge cache size for dbs>\n"
 	"SGPStreamMaxMin:\n"
 	"partitioning a graph by stream sgp  of max-min algorithm.\n"
-	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs>\n"
+	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs> -maxd <max degree if sample mode is uneq>\n"
 	"Test:\n"
 	"do a test!!!!"
 	"params: -i <input file> -log <log file>";
@@ -83,7 +83,7 @@ wstring c2w(const char *pc)
 	wchar_t * pw  = new wchar_t[size_of_wc];
 	mbstowcs(pw,pc,size_of_wc);
 	val = pw;
-	delete pw;
+	delete[] pw;
 	return val;
 }
 /*
@@ -109,7 +109,7 @@ string w2c(const wchar_t * pw)
 		return val;
 	}
 	val = pc;
-	delete pc;
+	delete[] pc;
 	return val;
 }
 
@@ -190,7 +190,7 @@ void doMaxMinPartitioning(string inputfile, string outputfile, int k, string log
 {
 }
 
-void doSGPKLPartitioning(string inputfile, string outputfile, int k, string logfile,EdgeOrderMode ordermode, int assign_win_size, int edges_limits, SampleMode sample_mode)
+void doSGPKLPartitioning(string inputfile, string outputfile, int k, string logfile,EdgeOrderMode ordermode, int assign_win_size, int edges_limits, SampleMode sample_mode, int max_d)
 {
 	TimeTicket::reset();
 	Log::CreateLog(logfile);
@@ -203,7 +203,8 @@ void doSGPKLPartitioning(string inputfile, string outputfile, int k, string logf
 	loader.SetGraphFile(inputfile);
 	loader.SetK(k);
 	loader.SetSampleMode(sample_mode);
-	
+	loader.SetMaxDegree(max_d);
+
 	Log::logln("do graph sampling...");
 	loader.doGraphSampling();
 	Log::log("do graph sampling elapse : \t");
@@ -238,12 +239,12 @@ void doSGPKLPartitioning(string inputfile, string outputfile, int k, string logf
 
 }
 
-void doSGPMaxMinPartitioning(string inputfile, string outputfile, int k, string logfile,EdgeOrderMode ordermode, int assign_win_size, int edges_limits, SampleMode sample_mode)
+void doSGPMaxMinPartitioning(string inputfile, string outputfile, int k, string logfile,EdgeOrderMode ordermode, int assign_win_size, int edges_limits, SampleMode sample_mode, int max_d)
 {
 	
 }
 
-void doSGPStreamKLPartitioning(string inputfile, string outputfile, int k, string logfile,EdgeOrderMode ordermode, int assign_win_size, int edges_limits, SampleMode sample_mode)
+void doSGPStreamKLPartitioning(string inputfile, string outputfile, int k, string logfile,EdgeOrderMode ordermode, int assign_win_size, int edges_limits, SampleMode sample_mode, int max_d, int edge_cache_size)
 {
 	TimeTicket::reset();
 	Log::CreateLog(logfile);
@@ -256,7 +257,9 @@ void doSGPStreamKLPartitioning(string inputfile, string outputfile, int k, strin
 	loader.SetGraphFile(inputfile);
 	loader.SetK(k);
 	loader.SetSampleMode(sample_mode);
-	
+	loader.SetMaxDegree(max_d);
+	loader.SetEdgeCacheSize(edge_cache_size);
+
 	Log::logln("do graph loading...");
 	loader.doStreamLoadByDBS(KL);
 	Log::log("do graph loading elapse : \t");
@@ -265,7 +268,7 @@ void doSGPStreamKLPartitioning(string inputfile, string outputfile, int k, strin
 	loader.doSGPStatistic();
 }
 
-void doSGPStreamMaxMinPartitioning(string inputfile, string outputfile, int k, string logfile,EdgeOrderMode ordermode, int assign_win_size, int edges_limits, SampleMode sample_mode)
+void doSGPStreamMaxMinPartitioning(string inputfile, string outputfile, int k, string logfile,EdgeOrderMode ordermode, int assign_win_size, int edges_limits, SampleMode sample_mode, int max_d)
 {
 }
 
@@ -410,7 +413,7 @@ bool ParseCommand(map<string, string> &command_params)
 	if(cmd == "sgpkl")
 	{
 		//inputfile, outputfile
-		string inputfile, outputfile, logfile, k_str, order_mode, assign_win, edges_limit, sample_mode;
+		string inputfile, outputfile, logfile, k_str, order_mode, assign_win, edges_limit, sample_mode, max_d_str;
 		if(GetParam(command_params, string("-i"), inputfile) && 
 			GetParam(command_params, string("-o"), outputfile) &&
 			GetParam(command_params, string("-log"), logfile)&&
@@ -434,7 +437,14 @@ bool ParseCommand(map<string, string> &command_params)
 			if(order_mode.compare("bfs") == 0) ordermode = BFS;
 			if(order_mode.compare("random") == 0) ordermode = RANDOM;
 
-			doSGPKLPartitioning(inputfile, outputfile, k, logfile, ordermode, aw_size, ew_size, mode);
+			int max_d = 0;
+			if(mode == FIX_MEM_UNEQ)
+			{
+				GetParam(command_params, string("-maxd"), max_d_str);
+				max_d = stoi(max_d_str);
+			}
+
+			doSGPKLPartitioning(inputfile, outputfile, k, logfile, ordermode, aw_size, ew_size, mode, max_d);
 			return true;
 		}
 		else
@@ -446,7 +456,7 @@ bool ParseCommand(map<string, string> &command_params)
 	if(cmd == "sgpmaxmin")
 	{
 		//inputfile, outputfile
-		string inputfile, outputfile, logfile, k_str, order_mode, assign_win, edges_limit, sample_mode;
+		string inputfile, outputfile, logfile, k_str, order_mode, assign_win, edges_limit, sample_mode, max_d_str;
 		if(GetParam(command_params, string("-i"), inputfile) && 
 			GetParam(command_params, string("-o"), outputfile) &&
 			GetParam(command_params, string("-log"), logfile)&&
@@ -470,7 +480,15 @@ bool ParseCommand(map<string, string> &command_params)
 			if(order_mode.compare("bfs") == 0) ordermode = BFS;
 			if(order_mode.compare("random") == 0) ordermode = RANDOM;
 
-			doSGPMaxMinPartitioning(inputfile, outputfile, k, logfile, ordermode, aw_size, ew_size, mode);
+			int max_d = 0;
+			if(mode == FIX_MEM_UNEQ)
+			{
+				GetParam(command_params, string("-maxd"), max_d_str);
+				max_d = stoi(max_d_str);
+			}
+
+
+			doSGPMaxMinPartitioning(inputfile, outputfile, k, logfile, ordermode, aw_size, ew_size, mode, max_d);
 			return true;
 		}
 		else
@@ -482,7 +500,7 @@ bool ParseCommand(map<string, string> &command_params)
 	if(cmd == "sgpstreamkl")
 	{
 		//inputfile, outputfile
-		string inputfile, outputfile, logfile, k_str, order_mode, assign_win, edges_limit, sample_mode;
+		string inputfile, outputfile, logfile, k_str, order_mode, assign_win, edges_limit, sample_mode, max_d_str, edge_cache_size_str;
 		if(GetParam(command_params, string("-i"), inputfile) && 
 			GetParam(command_params, string("-o"), outputfile) &&
 			GetParam(command_params, string("-log"), logfile)&&
@@ -506,7 +524,20 @@ bool ParseCommand(map<string, string> &command_params)
 			if(order_mode.compare("bfs") == 0) ordermode = BFS;
 			if(order_mode.compare("random") == 0) ordermode = RANDOM;
 
-			doSGPStreamKLPartitioning(inputfile, outputfile, k, logfile, ordermode, aw_size, ew_size, mode);
+			int max_d = 0;
+			if(mode == FIX_MEM_UNEQ)
+			{
+				GetParam(command_params, string("-maxd"), max_d_str);
+				max_d = stoi(max_d_str);
+			}
+			int edge_cache_size = 0;
+			if(mode == RESERVOIR_DBS)
+			{
+				GetParam(command_params, string("-ec"), edge_cache_size_str);
+				edge_cache_size = stoi(edge_cache_size_str);
+			}
+
+			doSGPStreamKLPartitioning(inputfile, outputfile, k, logfile, ordermode, aw_size, ew_size, mode, max_d,edge_cache_size);
 			return true;
 		}
 		else
@@ -518,7 +549,7 @@ bool ParseCommand(map<string, string> &command_params)
 	if(cmd == "sgpstreammaxmin")
 	{
 		//inputfile, outputfile
-		string inputfile, outputfile, logfile, k_str, order_mode,assign_win, edges_limit, sample_mode;
+		string inputfile, outputfile, logfile, k_str, order_mode,assign_win, edges_limit, sample_mode, max_d_str;
 		if(GetParam(command_params, string("-i"), inputfile) && 
 			GetParam(command_params, string("-o"), outputfile) &&
 			GetParam(command_params, string("-log"), logfile)&&
@@ -542,7 +573,14 @@ bool ParseCommand(map<string, string> &command_params)
 			if(order_mode.compare("bfs") == 0) ordermode = BFS;
 			if(order_mode.compare("random") == 0) ordermode = RANDOM;
 
-			doSGPStreamMaxMinPartitioning(inputfile, outputfile, k, logfile, ordermode, aw_size, ew_size, mode);
+			int max_d = 0;
+			if(mode == FIX_MEM_UNEQ)
+			{
+				GetParam(command_params, string("-maxd"), max_d_str);
+				max_d = stoi(max_d_str);
+			}
+
+			doSGPStreamMaxMinPartitioning(inputfile, outputfile, k, logfile, ordermode, aw_size, ew_size, mode, max_d);
 			return true;
 		}
 		else
