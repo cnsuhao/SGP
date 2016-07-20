@@ -568,13 +568,17 @@ void Graph::doGraphStatistic()
 			iter_dist->second++;
 		}
 	}
+
+	log_str.str("");
+	log_str<<"degree:\t count:";
+	Log::logln(log_str.str());
 	float total_d=0;
 	for(map<int, int>::iterator iter_dist = degree_distribution.begin();
 		iter_dist!=degree_distribution.end();
 		iter_dist++)
 	{
 		log_str.str("");
-		log_str<<"degree:\t"<<iter_dist->first<<"\t count:\t"<<iter_dist->second;
+		log_str<<iter_dist->first<<"\t"<<iter_dist->second;
 		Log::logln(log_str.str());
 
 		total_d+=iter_dist->first*iter_dist->second;
