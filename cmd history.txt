@@ -10,4 +10,6 @@
 
 ==================
 -cmd dfs -i D:\workspace\data\*.*  -o D:\workspace\data\20119746_dfs.graph -log D:\workspace\out\log_20119746_dfs.txt
--cmd sgpkl -i D:\workspace\data\20119746_dfs.graph  -o D:\workspace\out\ -log D:\workspace\out\log_20119746_dfs_sgpkl_uneq.txt -k 4 -m random -aw 20 -ew 1000 -sm uneq
+-cmd sgpkl -i D:\workspace\data\20119746_dfs.graph  -o D:\workspace\out\20119746_dfs -log D:\workspace\out\log_20119746_dfs_sgpkl_uneq.txt -k 4 -m dfs -aw 20 -ew 1000 -sm uneq -maxd 200
+-cmd kl -i D:\workspace\data\*.*  -o D:\workspace\out\20119746_dfs -log D:\workspace\out\log_20119746_dfs_sgpkl_uneq.txt -k 4 
+-cmd sgpkl -i D:\workspace\data\20119746_dfs.graph  -o D:\workspace\out\20119746_dfs -log D:\workspace\out\log_20119746_dfs_sgpkl_uneq.txt -k 4 -m dfs -aw 20 -ew 1000 -sm uneq -maxd 200 -ec 500

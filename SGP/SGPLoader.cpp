@@ -739,6 +739,8 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 	_sample_vertex_items.clear();
 	_dbs_edges_cache_to_process.clear();
 
+	_ifs.open(_graph_file.c_str());
+
 	//step1
 	if(ReadInitSamples_DBS() < _edges_limition)
 	{
@@ -1079,7 +1081,7 @@ void ClearThreadParam(int k)
 		thread_param[i].ofs.close();
 		CloseHandle(thread_param[i].hMutex);
 	}
-	delete thread_param;
+	delete[] thread_param;
 	return;
 }
 
@@ -1103,6 +1105,7 @@ bool SGPLoader::UpdateStorageNode()
 		thread_param[i]._partition_number = i;
 
 		stringstream str;
+		str.str("");
 		str<<GetPartitioner().GetOutFile()<<"_assign_edge."<<i;
 		thread_param[i].ifs.open(str.str());
 		str.str("");
@@ -1128,7 +1131,7 @@ bool SGPLoader::UpdateStorageNode()
 			{
 				TerminateThread(hThreads[j], 0);//the target thread has no chance to execute any user-mode code and its initial stack is not deallocated
 			}
-			delete hThreads;
+			delete[] hThreads;
 			ClearThreadParam(_k);
 			return false;
 		}
@@ -1144,20 +1147,24 @@ bool SGPLoader::UpdateStorageNode()
 		TRUE,       // wait for all
 		INFINITE);   // indefinite wait
 
-	if(dwEvent == WAIT_OBJECT_0)//succeed
-	{
-		delete hThreads;
-		ClearThreadParam(_k);
-		return true;
+	delete[] hThreads;
+	ClearThreadParam(_k);
+	return true;
 
-	}
-	else
-	{
-		delete hThreads;
-		ClearThreadParam(_k);
-		Log::logln("SGP: SteamLoader: UpdateStorageNode: Wait for Thread Termination Error!!");
-		return false;
-	}
+	//if(dwEvent == WAIT_OBJECT_0)//succeed
+	//{
+	//	delete[] hThreads;
+	//	ClearThreadParam(_k);
+	//	return true;
+
+	//}
+	//else
+	//{
+	//	delete[] hThreads;
+	//	ClearThreadParam(_k);
+	//	Log::logln("SGP: SteamLoader: UpdateStorageNode: Wait for Thread Termination Error!!");
+	//	return false;
+	//}
 
 }
 
@@ -1182,11 +1189,11 @@ void ReWriteAssignEdgeToPartition(int to_partition, VERTEX u, int u_partition, V
 		}
 
 		//realse the mutex
-		if (!ReleaseMutex(thread_param[to_partition].hMutex))
+		if (0==ReleaseMutex(thread_param[to_partition].hMutex))
 		{
 			stringstream str;
 			str.str("");
-			str<<"SGP: SteamLoader: ReWriteAssignEdgeToPartition: "<<to_partition<< " Error in relasing Mutex "<<endl;
+			str<<"SGP: SteamLoader: ReWriteAssignEdgeToPartition: "<<to_partition<< " Error in releasing Mutex, ERROR Code: "<<GetLastError()<<endl;
 			Log::logln(str.str());
 		}
 	}

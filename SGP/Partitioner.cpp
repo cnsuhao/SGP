@@ -621,7 +621,7 @@ void Partitioner::WriteAssignVerticesOfPartitions()
 		ofs_arry[i].flush();
 		ofs_arry[i].close();
 	}
-	delete ofs_arry;
+	delete[] ofs_arry;
 }
 
 int Partitioner::ComputeCutValue()

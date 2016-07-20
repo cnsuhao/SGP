@@ -113,7 +113,6 @@ private:
 	bool InitEdgeWeightInEs();
 	bool UpdateVertexWeight_Uneq(EDGE e);
 	bool SelectNewEdge_Uneq(EDGE e);
-	void SetMaxDegree(int d) {_max_d = d;};
 	/***********************************************************************************************************************************/
 
 	bool doGraphSamplingByFixRatioMode();
@@ -142,12 +141,12 @@ public:
 	void SetSampleRation(float ratio);
 	void SetEdgesLimition(int limit);
 	void SetSampleMode(SampleMode mode);
-
+	void SetMaxDegree(int d) {_max_d = d;};
 	void SetOutputFile(string outfile) {
 		_outfile = outfile; 
 		_partitions_in_memory.SetOutFile(_outfile);
 	};
-
+	void SetEdgeCacheSize(int edge_cache_size){_edges_cache_limitation = edge_cache_size;};
 	//if not found, return -1.
 	int GetEdgePosInCache(EDGE e);
 	int GetEdgePosInCache(EdgeID e_id);
