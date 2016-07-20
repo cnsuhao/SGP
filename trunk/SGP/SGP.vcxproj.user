@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>-cmd SGPStreamKL -i D:\workspace\data\20119746_dfs.graph  -o D:\workspace\out\20119746_dfs -log D:\workspace\out\log_20119746_dfs_sgpstreamkl_uneq.txt -k 4 -m dfs -aw 20 -ew 1000 -sm dbs -maxd 200 -ec 500</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-cmd SGPStreamKL -i D:\workspace\data\20119746_dfs.graph  -o D:\workspace\out\20119746_dfs -log D:\workspace\out\log_20119746_dfs_sgpstreamkl_dbs.txt -k 4 -m dfs -aw 20 -ew 1000 -sm dbs -maxd 200 -ec 500</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

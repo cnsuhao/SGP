@@ -596,6 +596,7 @@ void Graph::UpdateSampleGraph(hash_set<EdgeID> add_set, hash_set<EdgeID> delete_
 	{
 		EDGE e = GetEdgeofID(*iter_add);
 		InsertEdge(e);
+		iter_add++;
 	}
 
 	hash_set<EdgeID>::iterator iter_del = delete_set.begin();
@@ -603,6 +604,7 @@ void Graph::UpdateSampleGraph(hash_set<EdgeID> add_set, hash_set<EdgeID> delete_
 	{
 		EDGE e = GetEdgeofID(*iter_del);
 		DeleteEdgeAndRemoveVertex(e);
+		iter_del++;
 	}
 	//不用remove。已标记为REMOVE。提高些效率
 	//RemoveDeletedVertex();//可能存在bug，见RemoveDeletedVertex注释

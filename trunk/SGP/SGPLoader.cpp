@@ -341,7 +341,7 @@ bool SGPLoader::ReadNextEdgesCache_DBS()
 	{
 		//check if e has exists in E_s
 		EdgeID e_id = MakeEdgeID(e._u,e._v);
-		if(_sample_edge_items.find(e_id) == _sample_edge_items.end())
+		if(_sample_edge_items.find(e_id) != _sample_edge_items.end())
 			continue;
 
 		//save e in the edge cache
@@ -578,7 +578,7 @@ void SGPLoader::doGraphSamplePartition(PartitionAlgorithm partition_algorithm)
 	BuildSampleGraph();
 	_partitions_in_memory.SetGraph(&_graph_sample);
 
-	_graph_sample.doGraphStatistic();
+	//_graph_sample.doGraphStatistic();
 
 	switch(partition_algorithm)
 	{
@@ -1002,7 +1002,7 @@ void SGPLoader::doChangedVertex(VERTEX v, vector<VERTEX>& new_vex, vector<VERTEX
 	int partition = _partitions_in_memory.GetClusterLabelOfVex(v);
 	if(partition == -1)
 	{
-		Log::logln("SGLs : UpdateAndCheckRepartition : find the cluster of vex error. NOTE: the process will be continued. but you should check");
+		Log::logln("SGLs : UpdateAndCheckRepartition : doChangedVertex 1: find the cluster of vex error. NOTE: the process will be continued. but you should check");
 	}
 	else
 	{
@@ -1012,7 +1012,7 @@ void SGPLoader::doChangedVertex(VERTEX v, vector<VERTEX>& new_vex, vector<VERTEX
 	map<VERTEX, Vertex_Item>::iterator iter_item = _sample_vertex_items.find(v);
 	if(iter_item == _sample_vertex_items.end())
 	{
-		Log::logln("SGLs : UpdateAndCheckRepartition : find vex error. the vex should exist. NOTE: the process will be continued. but you should check");
+		Log::logln("SGLs : UpdateAndCheckRepartition : doChangedVertex 2: find vex error. the vex should exist. NOTE: the process will be continued. but you should check");
 	}
 	else
 	{

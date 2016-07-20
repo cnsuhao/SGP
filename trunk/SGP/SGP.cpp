@@ -630,6 +630,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	if(!ParseCommand(command_params))
 		cout<<usage<<endl;
 
+	getchar();
+
 	return 0;
 }
 
