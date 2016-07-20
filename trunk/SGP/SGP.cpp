@@ -219,15 +219,20 @@ void doSGPKLPartitioning(string inputfile, string outputfile, int k, string logf
 	Log::log("do assigning edges : \t");
 	Log::logln(TimeTicket::check());
 
-	Log::log(" partitioning the graph finished! elapse time: ");
-	Log::log(TimeTicket::total_elapse());
-	Log::log(" sec\n");
 
 	Log::logln(" writing the vertices of each partition in memory ");
 	loader.GetPartitioner().WriteVerticesOfPartitions();
+	Log::log("do WriteVerticesOfPartitions : \t");
+	Log::logln(TimeTicket::check());
 
 	Log::logln(" writing the edges of each partition in memory ");
 	loader.GetPartitioner().WriteClusterEdgesOfPartitions();
+	Log::log("do WriteClusterEdgesOfPartitions : \t");
+	Log::logln(TimeTicket::check());
+
+	Log::log(" partitioning the graph finished! elapse time: ");
+	Log::log(TimeTicket::total_elapse());
+	Log::log(" sec\n");
 
 	loader.doSGPStatistic();
 
@@ -235,10 +240,29 @@ void doSGPKLPartitioning(string inputfile, string outputfile, int k, string logf
 
 void doSGPMaxMinPartitioning(string inputfile, string outputfile, int k, string logfile,EdgeOrderMode ordermode, int assign_win_size, int edges_limits, SampleMode sample_mode)
 {
+	
 }
 
 void doSGPStreamKLPartitioning(string inputfile, string outputfile, int k, string logfile,EdgeOrderMode ordermode, int assign_win_size, int edges_limits, SampleMode sample_mode)
 {
+	TimeTicket::reset();
+	Log::CreateLog(logfile);
+	Log::logln("Streamingly loading the graph"+inputfile+" by SGPs KL");
+	SGPLoader loader;
+	loader.SetEdgeOrderMode(ordermode);
+	loader.SetAssignWindowSize(assign_win_size);
+	loader.SetOutputFile(outputfile);
+	loader.SetEdgesLimition(edges_limits);
+	loader.SetGraphFile(inputfile);
+	loader.SetK(k);
+	loader.SetSampleMode(sample_mode);
+	
+	Log::logln("do graph loading...");
+	loader.doStreamLoadByDBS(KL);
+	Log::log("do graph loading elapse : \t");
+	Log::logln(TimeTicket::total_elapse());
+
+	loader.doSGPStatistic();
 }
 
 void doSGPStreamMaxMinPartitioning(string inputfile, string outputfile, int k, string logfile,EdgeOrderMode ordermode, int assign_win_size, int edges_limits, SampleMode sample_mode)
