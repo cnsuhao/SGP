@@ -195,7 +195,7 @@ bool SGPLoader::UpdateVertexWeight_Uneq(EDGE e)
 		iter = _sample_vertex_items.find(vex);
 		if(iter == _sample_vertex_items.end())
 		{
-			Vertex_Item v_item = {1};
+			Vertex_Item v_item = {1,0};
 			_sample_vertex_items.insert(pair<VERTEX, Vertex_Item>(vex, v_item));
 		}
 		else

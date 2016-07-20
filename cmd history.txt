@@ -8,3 +8,6 @@
 
 -cmd sgpkl -i D:\workspace\SGP\data\graph.test -o D:\workspace\SGP\out\sgpkl -log D:\workspace\SGP\out\log_sgpkl_uneq.txt -k 4 -m random -aw 20 -ew 1000 -sm uneq
 
+==================
+-cmd dfs -i D:\workspace\data\*.*  -o D:\workspace\data\20119746_dfs.graph -log D:\workspace\out\log_20119746_dfs.txt
+-cmd sgpkl -i D:\workspace\data\20119746_dfs.graph  -o D:\workspace\out\ -log D:\workspace\out\log_20119746_dfs_sgpkl_uneq.txt -k 4 -m random -aw 20 -ew 1000 -sm uneq
