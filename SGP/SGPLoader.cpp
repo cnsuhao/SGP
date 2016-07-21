@@ -1015,7 +1015,7 @@ void SGPLoader::doChangedVertex(VERTEX v, vector<VERTEX>& new_vex, vector<VERTEX
 			{
 				new_vex.push_back(v);
 				//对新增加的sample节点，检查assign context中的相应vertex，是否存在，如果是则标记。
-				_assign_manager->LabelAssignVertexUnsample(v);
+				_assign_manager->LabelAssignVertexSample(v);
 				partitions_changed_vertex.push_back(partition);
 				break;
 			}
@@ -1025,14 +1025,17 @@ void SGPLoader::doChangedVertex(VERTEX v, vector<VERTEX>& new_vex, vector<VERTEX
 				{
 					Log::logln("SGLs : UpdateAndCheckRepartition : doChangedVertex 2: find the partition of removed vex error. the partition should exist. NOTE: the process will be continued. but you should check");
 				}
-
+				partitions_changed_vertex.push_back(partition);
 				removed_vex.push_back(v);
-				//对unsample节点，添加到assign context中并用unsample前的partition作为初始partition，其有可能在后序assign中更新。
-				for(vector<VERTEX>::iterator iter_remove = removed_vex.begin(); iter_remove != removed_vex.end(); iter_remove++)
+				
+				/*for(vector<VERTEX>::iterator iter_remove = removed_vex.begin(); iter_remove != removed_vex.end(); iter_remove++)
 				{
 					VERTEX v = *iter_remove;
 					_assign_manager->SaveAssignVertex(v, partition);
-				}
+				}*/
+
+				//对unsample节点，添加到assign context中并用unsample前的partition作为初始partition，其有可能在后序assign中更新。
+				_assign_manager->SaveAssignVertex(v, partition);
 				break;
 			}
 		default:
