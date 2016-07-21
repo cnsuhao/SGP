@@ -770,19 +770,21 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 		Log::logln(TimeTicket::check());
 
 		adjust_partitions.clear();
-
-		_graph_sample.UpdateSampleGraph(_selected_edges, _substituted_edges);//- 注意：删除度为0的节点可能存在bug，见UpdateSampleGraph
-		Log::log("UpdateSampleGraph elapse : \t");
-		Log::logln(TimeTicket::check());
-
 		if(UpdateAndCheckRepartition(adjust_partitions))//更新划分中的节点，并检查是否需要重新划分
 		{
+			//- 注意：删除度为0的节点可能存在bug，见UpdateSampleGraph.该函数调用必须放在此处，因为节点删除后，对UpdateAndCheckRepartition中返回删除节点位置有bug
+			_graph_sample.UpdateSampleGraph(_selected_edges, _substituted_edges);
+			Log::log("UpdateSampleGraph elapse : \t");
+			Log::logln(TimeTicket::check());
 			//重新划分
 			RepartitionSampleGraph(adjust_partitions, partition_algorithm);
 		}
 		else
 		{
 			Log::log("No RepartitionSampleGraph : \t");
+			_graph_sample.UpdateSampleGraph(_selected_edges, _substituted_edges);
+			Log::log("UpdateSampleGraph elapse : \t");
+			Log::logln(TimeTicket::check());
 		}
 		Log::log("RepartitionSampleGraph elapse : \t");
 		Log::logln(TimeTicket::check());
@@ -972,7 +974,6 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 			doChangedVertex(e._u, new_vex, removed_vex, partitions_changed_vertex);
 			changed_vertex.push_back(e._v);
 			doChangedVertex(e._v, new_vex, removed_vex, partitions_changed_vertex);
-
 			iter_selected++;
 		}
 	}
@@ -998,21 +999,13 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 
 void SGPLoader::doChangedVertex(VERTEX v, vector<VERTEX>& new_vex, vector<VERTEX>& removed_vex, vector<int>& partitions_changed_vertex)
 {
-	//记录节点划分，主要用于被删除节点的划分。与changed_vertex一一对应
+	//记录节点划分，主要用于被删除节点的划分。与changed_vertex一一对应.如果是新增节点，其partition为-1，而删除节点不能为-1.
 	int partition = _partitions_in_memory.GetClusterLabelOfVex(v);
-	if(partition == -1)
-	{
-		Log::logln("SGLs : UpdateAndCheckRepartition : doChangedVertex 1: find the cluster of vex error. NOTE: the process will be continued. but you should check");
-	}
-	else
-	{
-		partitions_changed_vertex.push_back(partition);
-	}
 	//获得删除和添加节点集合
 	map<VERTEX, Vertex_Item>::iterator iter_item = _sample_vertex_items.find(v);
 	if(iter_item == _sample_vertex_items.end())
 	{
-		Log::logln("SGLs : UpdateAndCheckRepartition : doChangedVertex 2: find vex error. the vex should exist. NOTE: the process will be continued. but you should check");
+		Log::logln("SGLs : UpdateAndCheckRepartition : doChangedVertex 1: find vex error. the vex should exist. NOTE: the process will be continued. but you should check");
 	}
 	else
 	{
@@ -1023,10 +1016,16 @@ void SGPLoader::doChangedVertex(VERTEX v, vector<VERTEX>& new_vex, vector<VERTEX
 				new_vex.push_back(v);
 				//对新增加的sample节点，检查assign context中的相应vertex，是否存在，如果是则标记。
 				_assign_manager->LabelAssignVertexUnsample(v);
+				partitions_changed_vertex.push_back(partition);
 				break;
 			}
 		case 0://removed vex
 			{
+				if(partition == -1)
+				{
+					Log::logln("SGLs : UpdateAndCheckRepartition : doChangedVertex 2: find the partition of removed vex error. the partition should exist. NOTE: the process will be continued. but you should check");
+				}
+
 				removed_vex.push_back(v);
 				//对unsample节点，添加到assign context中并用unsample前的partition作为初始partition，其有可能在后序assign中更新。
 				for(vector<VERTEX>::iterator iter_remove = removed_vex.begin(); iter_remove != removed_vex.end(); iter_remove++)
