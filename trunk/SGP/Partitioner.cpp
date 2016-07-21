@@ -903,37 +903,6 @@ Cluster* Partitioner::MergeLeafofNode(int bt_node)
 	return merge_cluster;
 }
 
-//void Partitioner::UpdateAssignVertices(int partition)
-//{
-//	Cluster* cluster = _aPartition.at(partition);
-//	if(cluster == NULL)
-//	{
-//		Log::logln("Partitioner:UpdateAssignVertices:cluster is null");
-//		return;
-//	}
-//
-//	unordered_set<VERTEX>::iterator iter_assign_vex = cluster->_assign_vex.begin();
-//	while(iter_assign_vex != cluster->_assign_vex.end())
-//	{
-//		VERTEX u = *iter_assign_vex;
-//		int u_pos = _graph->GetVertexPos(u);
-//		if(u_pos == -1)
-//		{
-//			Log::logln("Partitioner:UpdateAssignVertices: the vex not found");
-//			return;
-//		}
-//
-//		ClusterNode node;
-//		node._pos = u_pos;
-//
-//		if(GetClusterNode(cluster, node) != -1)
-//		{
-//			cluster->_assign_vex.erase(iter_assign_vex);
-//		}
-//		iter_assign_vex++;
-//	}
-//}
-
 void Partitioner::RemoveClusterNode(vector<VERTEX>& vexs)
 {
 	for(vector<VERTEX>::iterator iter_v = vexs.begin(); iter_v!=vexs.end(); iter_v++)
@@ -995,4 +964,20 @@ void Partitioner::InsertNewVertexInCluster(Cluster* cluster, VERTEX& vex)
 	node._visited = 0;
 
 	AppendClusterNode(cluster, node);
+}
+
+int Partitioner::GetClusterNodeNumber()
+{
+	int total = 0;
+	Partition::const_iterator iter = _aPartition.begin();
+	while(iter!=_aPartition.end())
+	{
+		total += (*iter)->_cluster.size();
+		if((*iter)->_cluster.size() != (*iter)->_cluster_node_idx.size())
+		{
+			Log::logln("Partitioner:GetClusterNodeNumber: _cluster.size() != _cluster_node_idx.size()");
+		}
+		iter++;
+	}
+	return total;
 }

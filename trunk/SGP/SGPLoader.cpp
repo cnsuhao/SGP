@@ -756,7 +756,6 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 	//step 2
 	doGraphSamplePartition(partition_algorithm);
 
-
 	//step 4 to step 30 
 	vector<ReAdjustPartitionPair> adjust_partitions;
 	while(ReadNextEdgesCache_DBS())//已将所有读到的顶点添加到Vs中，如果采样选中，则curdegree大于零.注意：这里Vs是采样顶点的超集，即也包含了未采样顶点。
@@ -964,6 +963,7 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 		iter_substituted = _substituted_edges.find(*iter_selected);
 		if(iter_substituted!= _substituted_edges.end())
 		{
+			*iter_selected;
 			iter_selected = _selected_edges.erase(iter_selected);
 			_substituted_edges.erase(iter_substituted);
 		}
@@ -988,6 +988,7 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 
 		iter_substituted++;
 	}
+
 	//删除划分中的节点
 	_partitions_in_memory.RemoveClusterNode(removed_vex);
 	//将新节点添加到最小划分中，如果大小一样，随机
