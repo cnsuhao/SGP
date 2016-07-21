@@ -49,8 +49,8 @@ public:
 	int GetAssignVertexPartition(VERTEX& vex);
 	//save assigned vertex and its partition into info. if the vertex exists, override it.
 	void SaveAssignVertex(VERTEX& vex, int partition);
-	//Label the vertex as unsample. that is, partition is -1; if not found, return false;
-	bool LabelAssignVertexUnsample(VERTEX& vex);
+	//Label the vertex as sampled. that is, the assigned partition is -1; if not found, return false;
+	bool LabelAssignVertexSample(VERTEX& vex);
 	//get and set
 	map<VERTEX, int>* GetAssignVexInfo() {return &_assign_vex_info;};
 

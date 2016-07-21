@@ -215,7 +215,7 @@ void AssignContextManager::SaveAssignVertex(VERTEX& vex, int partition)
 	_assign_vex_info.insert(pair<VERTEX, int>(vex, partition));
 }
 
-bool AssignContextManager::LabelAssignVertexUnsample(VERTEX& vex)
+bool AssignContextManager::LabelAssignVertexSample(VERTEX& vex)
 {
 	map<VERTEX, int>::iterator iter = _assign_vex_info.find(vex);
 	if(iter != _assign_vex_info.end())
