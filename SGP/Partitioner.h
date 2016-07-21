@@ -154,4 +154,7 @@ public:
 	void RandomInsertNewVertices(vector<VERTEX>& vexs);
 	//insert a vertex into cluster. to be sure the vex exists in adj-table of sample graph
 	void InsertNewVertexInCluster(Cluster* cluster, VERTEX& vex);
+
+	//for debug
+	int GetClusterNodeNumber();
 };
