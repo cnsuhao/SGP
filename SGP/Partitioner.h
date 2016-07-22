@@ -133,7 +133,7 @@ public:
 	//adjust_partitions contains the partions to be adjust, i.e the gain is inversed, if null , no adjust.
 	//change_vexs contains the vertex whose edges is changed.partitions_change_vex is the partition of vex that begin with 0
 	//NOTE: the number of partition adjusted begin with the root of partitioning binary tree.
-	bool CheckIfAdjust(vector<VERTEX>& change_vexs, vector<int>& partitions_change_vex,vector<ReAdjustPartitionPair>& adjust_partitions);
+	bool CheckIfAdjust(map<VERTEX, int>& partitions_change_vex, vector<ReAdjustPartitionPair>& adjust_partitions);
 	//partition_u:the leaf set of the node containing u in BT at the level. begin with 0
 	//partition_not_u:the leaf set of the node's sibling. begin with 0
 	bool CheckClusterAdjust(VERTEX u, vector<int>& partition_u, vector<int>& partition_not_u);
@@ -150,8 +150,8 @@ public:
 	
 	//For current partitions, remove and insert vex. NOTE: for inserted vertices, the smaller size of partition will be preferred, otherwise, if all equal, random
 	//the following functions will be used on one sampling process finished, and affect the partitioned vertices, not assigned vertices
-	void RemoveClusterNode(vector<VERTEX>& vexs);
-	void RandomInsertNewVertices(vector<VERTEX>& vexs);
+	void RemoveClusterNode(hash_set<VERTEX>& vexs);
+	void RandomInsertNewVertices(hash_set<VERTEX>& vexs);
 	//insert a vertex into cluster. to be sure the vex exists in adj-table of sample graph
 	void InsertNewVertexInCluster(Cluster* cluster, VERTEX& vex);
 

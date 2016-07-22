@@ -683,7 +683,7 @@ void Partitioner::SetAssignVertexStat(int cluster_id)
 //	return -1;
 //}
 
-bool Partitioner::CheckIfAdjust(vector<VERTEX>& change_vexs, vector<int>& partitions_change_vex, vector<ReAdjustPartitionPair>& adjust_partitions)
+bool Partitioner::CheckIfAdjust(map<VERTEX, int>& partitions_change_vex, vector<ReAdjustPartitionPair>& adjust_partitions)
 {
 	typedef struct {
 		bool isRepartition;
@@ -701,22 +701,22 @@ bool Partitioner::CheckIfAdjust(vector<VERTEX>& change_vexs, vector<int>& partit
 	}
 
 
-	vector<VERTEX>::iterator iter = change_vexs.begin();
+	map<VERTEX, int>::iterator iter = partitions_change_vex.begin();
 	int  j=0;
-	while(iter!=change_vexs.end())
+	while(iter!=partitions_change_vex.end())
 	{
 		int level = 2;//from level 2 not root level (1)
 		int cluster_of_changed_vex=-1; //the vex'partition in the level, begin with 1
 		int cluster_sibling = -1;//the sibling of cluster_changed_vex, begin with 1
 		int leaf_of_vex = -1;//the cluster id of changed vex on the leafs, begin with 1
 
-		VERTEX u = *iter;
+		VERTEX u = iter->first;
 		vector<int> partition_u;//the leaf set of the node containing u in BT at the level
 		vector<int> partition_not_u; //the leaf set of the node's sibling
 
-		leaf_of_vex = partitions_change_vex[j];
+		leaf_of_vex = iter->second;
 		//leaf_of_vex = GetClusterLabelOfVex(u);//here, 0 begin on the level of leaf. 注意：如果被删除了？(solved)
-		leaf_of_vex += 1;// //begin with 1 //leaf_of_vex += _k; - ????
+		leaf_of_vex += 1;// //begin with 1 
 
 		//find a cluster to adjust from the top level, if yes, the following sub-nodes should not be
 		//considered.
@@ -724,7 +724,7 @@ bool Partitioner::CheckIfAdjust(vector<VERTEX>& change_vexs, vector<int>& partit
 		{
 			cluster_of_changed_vex = leaf_of_vex;
 			//find the cluster of vex in the level
-			for(int i = BT_height ; i>level; i++)
+			for(int i = BT_height ; i>level; i--)
 			{
 				cluster_of_changed_vex = floor(cluster_of_changed_vex/2.0f);
 			}
@@ -747,6 +747,8 @@ bool Partitioner::CheckIfAdjust(vector<VERTEX>& change_vexs, vector<int>& partit
 			start_leaf = cluster_sibling*size-_k; //begin with 0
 			for(int i = start_leaf; i<size; i++)
 				partition_not_u.push_back(i);
+
+			Log::logln("CheckClusterAdjust: ");
 
 			if(CheckClusterAdjust(u, partition_u, partition_not_u))
 			{
@@ -903,9 +905,9 @@ Cluster* Partitioner::MergeLeafofNode(int bt_node)
 	return merge_cluster;
 }
 
-void Partitioner::RemoveClusterNode(vector<VERTEX>& vexs)
+void Partitioner::RemoveClusterNode(hash_set<VERTEX>& vexs)
 {
-	for(vector<VERTEX>::iterator iter_v = vexs.begin(); iter_v!=vexs.end(); iter_v++)
+	for(hash_set<VERTEX>::iterator iter_v = vexs.begin(); iter_v!=vexs.end(); iter_v++)
 	{
 		VERTEX v = *iter_v;
 		int k = GetClusterLabelOfVex(v);
@@ -930,9 +932,9 @@ void Partitioner::RemoveClusterNode(vector<VERTEX>& vexs)
 	}
 }
 
-void Partitioner::RandomInsertNewVertices(vector<VERTEX>& vexs)
+void Partitioner::RandomInsertNewVertices(hash_set<VERTEX>& vexs)
 {
-	for(vector<VERTEX>::iterator iter_v = vexs.begin(); iter_v!=vexs.end(); iter_v++)
+	for(hash_set<VERTEX>::iterator iter_v = vexs.begin(); iter_v!=vexs.end(); iter_v++)
 	{
 		VERTEX vex = *iter_v;
 		int min = INT_MAX;
@@ -953,7 +955,7 @@ void Partitioner::RandomInsertNewVertices(vector<VERTEX>& vexs)
 
 void Partitioner::InsertNewVertexInCluster(Cluster* cluster, VERTEX& vex)
 {
-	int pos = _graph->GetVertexPos(vex); //TODO:检查一下是否修改sample graph邻接表，如真正删除顶点
+	int pos = _graph->GetVertexPos(vex); 
 	if( pos == -1)
 	{
 		Log::logln("Partitioner:InsertNewVertexInCluster: the pos of vex in the sample graph not found : NOTE: the process will not be terminated, you should check it");
