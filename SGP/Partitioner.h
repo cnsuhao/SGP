@@ -151,7 +151,8 @@ public:
 	//For current partitions, remove and insert vex. NOTE: for inserted vertices, the smaller size of partition will be preferred, otherwise, if all equal, random
 	//the following functions will be used on one sampling process finished, and affect the partitioned vertices, not assigned vertices
 	void RemoveClusterNode(hash_set<VERTEX>& vexs);
-	void RandomInsertNewVertices(hash_set<VERTEX>& vexs);
+	//partitions_changed_vertex contains all changed vertices including inserted vertex, the new partition should written
+	void RandomInsertNewVertices(hash_set<VERTEX>& vexs, map<VERTEX, int>& partitions_changed_vertex);
 	//insert a vertex into cluster. to be sure the vex exists in adj-table of sample graph
 	void InsertNewVertexInCluster(Cluster* cluster, VERTEX& vex);
 
