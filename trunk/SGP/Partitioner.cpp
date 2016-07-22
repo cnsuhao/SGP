@@ -715,8 +715,7 @@ bool Partitioner::CheckIfAdjust(map<VERTEX, int>& partitions_change_vex, vector<
 		vector<int> partition_not_u; //the leaf set of the node's sibling
 
 		leaf_of_vex = iter->second;
-		//leaf_of_vex = GetClusterLabelOfVex(u);//here, 0 begin on the level of leaf. 注意：如果被删除了？(solved)
-		leaf_of_vex += 1;// //begin with 1 
+		leaf_of_vex += _k;// //level coding and begin with 1 
 
 		//find a cluster to adjust from the top level, if yes, the following sub-nodes should not be
 		//considered.
@@ -742,6 +741,11 @@ bool Partitioner::CheckIfAdjust(map<VERTEX, int>& partitions_change_vex, vector<
 			int level_delta = BT_height - level;
 			int size = (int)pow(2.0f, level_delta);
 			int start_leaf = cluster_of_changed_vex*size-_k; //the leftest node (leaf) in the sub-tree, begin with 0
+			/*if(start_leaf < 0)
+			{
+				continue;
+			}*/
+
 			for(int i = start_leaf; i<size; i++)
 				partition_u.push_back(i);
 			start_leaf = cluster_sibling*size-_k; //begin with 0
