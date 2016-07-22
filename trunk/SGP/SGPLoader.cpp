@@ -999,7 +999,7 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 	//- 注意：删除度为0的节点可能存在bug，见UpdateSampleGraph.该函数调用必须放在此处，因为节点删除后，对UpdateAndCheckRepartition中返回删除节点位置有bug
 	_graph_sample.UpdateSampleGraph(_selected_edges, _substituted_edges);
 	//将新节点添加到最小划分中，如果大小一样，随机
-	_partitions_in_memory.RandomInsertNewVertices(new_vex);
+	_partitions_in_memory.RandomInsertNewVertices(new_vex, partitions_changed_vertex);
 	//将变化顶点对应划分传递过去，解决删除节点问题。
 	bool repartition = _partitions_in_memory.CheckIfAdjust(partitions_changed_vertex, adjust_partitions);//删除与添加的影响未考虑(通过partitions_changed_vertex解决)
 	//将所有此次采样点的newsample标志置为false

@@ -936,13 +936,14 @@ void Partitioner::RemoveClusterNode(hash_set<VERTEX>& vexs)
 	}
 }
 
-void Partitioner::RandomInsertNewVertices(hash_set<VERTEX>& vexs)
+void Partitioner::RandomInsertNewVertices(hash_set<VERTEX>& vexs, map<VERTEX, int>& partitions_changed_vertex)
 {
 	for(hash_set<VERTEX>::iterator iter_v = vexs.begin(); iter_v!=vexs.end(); iter_v++)
 	{
 		VERTEX vex = *iter_v;
 		int min = INT_MAX;
 		Cluster* min_size_cluster;
+		int cluster_id = -1; int i=0;
 		for(Partition::iterator iter_cluster = _aPartition.begin(); iter_cluster != _aPartition.end(); iter_cluster++)
 		{
 			Cluster* cluster = *iter_cluster;
@@ -950,7 +951,19 @@ void Partitioner::RandomInsertNewVertices(hash_set<VERTEX>& vexs)
 			{
 				min_size_cluster = cluster;
 				min = cluster->_cluster.size();
+				cluster_id = i;
 			}
+			i++;
+		}
+		//some new vertices' partition is -1, so...
+		map<VERTEX, int>::iterator iter_changed = partitions_changed_vertex.find(vex);
+		if(iter_changed == partitions_changed_vertex.end())
+		{
+			Log::logln("Partitioner:RandomInsertNewVertices: partitions_changed_vertex didn't contain the vex : NOTE: the process will not be terminated, you should check it");
+		}
+		else
+		{
+			iter_changed->second = cluster_id;
 		}
 
 		InsertNewVertexInCluster(min_size_cluster, vex);
