@@ -95,7 +95,9 @@ private:
 	//update storage node on parallel
 	bool UpdateStorageNode();
 	//the sub-routine for dealing the changed vertex after sampling once, called by UpdateAndCheckRepartition only
-	void doChangedVertex(VERTEX v, vector<VERTEX>& new_vex, vector<VERTEX>& removed_vex, vector<int>& partitions_changed_vertex);
+	void doChangedVertex(VERTEX v, hash_set<VERTEX>& new_vex, hash_set<VERTEX>& removed_vex, map<VERTEX, int>& partitions_changed_vertex);
+	//reset the new_sample flag as false
+	void ResetSampleFlag();
 	/***********************************************************************************************************************************/
 	
 	/***********************************************************************************************************************************/
