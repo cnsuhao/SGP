@@ -11,3 +11,18 @@
 6.检查MergeLeafofNode等划分编号正确性
 
 7. (OK)已将Cluster中_assign_vex删除，但对应引用未改，包括WriteAssignVerticesOfPartitions，UpdateAssignVertices
+
+8.
+Partitioner::doKL()中
+for(int i=0; i<_graph->GetVertexNumber(); i++)
+	{
+		ClusterNode node = {i, 0, 0};//pos, gain, visited《=============此处如果存在删除节点会有bug
+		AppendClusterNode(pCluster, node);
+	}
+	
+	9.
+	GetVertexNumber（）方法，如果存在删除节点会有bug
+	以修改：增加GetExistVertexNumber，但效率有所下降，因为遍历。
+	
+	10.
+	RandomInsertNewVertices后节点数不一致了《《《《《

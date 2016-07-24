@@ -749,35 +749,46 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 		Log::log("the graph is too small!\n");
 		return false;
 	}
+	Debug("ReadInitSamples_DBS");
+
 	if(!InitSamples_DBS())
 	{
 		Log::log("init samples error!!!\n");
 		return false;
 	}
+	Debug("InitSamples_DBS");
 
 	//step 2
 	doGraphSamplePartition(partition_algorithm);
+	Debug("doGraphSamplePartition");
 
 	//step 4 to step 30 
 	vector<ReAdjustPartitionPair> adjust_partitions;
 	while(ReadNextEdgesCache_DBS())//已将所有读到的顶点添加到Vs中，如果采样选中，则curdegree大于零.注意：这里Vs是采样顶点的超集，即也包含了未采样顶点。
 	{
+		Debug("ReadNextEdgesCache_DBS");
+
 		UpdateWeightofEdgesInEs();
 		Log::log("UpdateWeightofEdgesInEs elapse : \t");
 		Log::logln(TimeTicket::check());
+		Debug("UpdateWeightofEdgesInEs");
 
 		doStreamDBSSample();
 		Log::log("doStreamDBSSample elapse : \t");
 		Log::logln(TimeTicket::check());
+		Debug("doStreamDBSSample");
 
 		adjust_partitions.clear();
 		if(UpdateAndCheckRepartition(adjust_partitions))//更新划分中的节点，并检查是否需要重新划分
 		{
+			Debug("UpdateAndCheckRepartition");
 			//重新划分
 			RepartitionSampleGraph(adjust_partitions, partition_algorithm);
+			Debug("RepartitionSampleGraph");
 		}
 		else
 		{
+			Debug("UpdateAndCheckRepartition");
 			Log::log("No RepartitionSampleGraph : \t");
 		}
 		Log::log("RepartitionSampleGraph elapse : \t");
@@ -994,16 +1005,26 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 		iter_substituted++;
 	}
 
+	stringstream debug_str;
+	debug_str<<"removed_vex num: "<<removed_vex.size()
+		<<"\n new vex num: "<<new_vex.size()<<endl;
+	Log::logln(debug_str.str());
+
 	//删除划分中的节点
 	_partitions_in_memory.RemoveClusterNode(removed_vex);
+	Debug("RemoveClusterNode");
 	//- 注意：删除度为0的节点可能存在bug，见UpdateSampleGraph.该函数调用必须放在此处，因为节点删除后，对UpdateAndCheckRepartition中返回删除节点位置有bug
 	_graph_sample.UpdateSampleGraph(_selected_edges, _substituted_edges);
+	Debug("UpdateSampleGraph");
 	//将新节点添加到最小划分中，如果大小一样，随机
 	_partitions_in_memory.RandomInsertNewVertices(new_vex, partitions_changed_vertex);
+	Debug("RandomInsertNewVertices");
 	//将变化顶点对应划分传递过去，解决删除节点问题。
 	bool repartition = _partitions_in_memory.CheckIfAdjust(partitions_changed_vertex, adjust_partitions);//删除与添加的影响未考虑(通过partitions_changed_vertex解决)
+	Debug("CheckIfAdjust");
 	//将所有此次采样点的newsample标志置为false
 	ResetSampleFlag();
+	Debug("ResetSampleFlag");
 	return repartition;
 }
 
@@ -1280,4 +1301,26 @@ DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
 		}
 	}//end while
 	return 1;
+}
+
+void SGPLoader::Debug(string info)
+{
+	Log::logln("DEBUG=======================");
+	Log::logln(info);
+	int graph_vex_number = _graph_sample.GetExistVertexNumber();
+	int cluster_node_number = _partitions_in_memory.GetClusterNodeNumber();
+	int cahce_vex_total_number = _sample_vertex_items.size();
+	int sample_cahce_vex_number = 0;
+	for(map<VERTEX, Vertex_Item>::iterator iter =_sample_vertex_items.begin(); iter!=_sample_vertex_items.end(); iter++)
+	{
+		if(iter->second.cur_degree > 0)
+			sample_cahce_vex_number ++;
+	}
+
+	stringstream str;
+	str<<" graph_vex_number: "<< graph_vex_number <<"\n cluster_node_number: "<<cluster_node_number
+		<<"\n cahce_vex_total_number: "<<cahce_vex_total_number
+		<<"\n sample_cahce_vex_number:"<<sample_cahce_vex_number<<endl;
+	Log::logln(str.str());
+	Log::logln("DEBUG=======================");
 }

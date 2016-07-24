@@ -24,7 +24,7 @@ public:
 
 	int GetVertexNumber(){return _graph_data._vex_table.size();}
 	int GetEdgesNumber();
-	
+	int GetExistVertexNumber();//removed vertex is considered
 	AdjTable* GetAdjTableRef(){return &_graph_data;}
 	
 	EdgeInfoArray* GetAdjEdgeListofVertex(VERTEX& u);

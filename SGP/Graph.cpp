@@ -622,3 +622,14 @@ void Graph::DeleteEdgeAndRemoveVertex(EDGE& e)
 	if(v_pos!=-1 && GetVertexInfoofPos(v_pos)->_degree == 0)
 		DeleteVertex(e._v);
 }
+
+int Graph::GetExistVertexNumber()
+{
+	int n = 0;
+	for (VertexInfoArray::iterator iter = _graph_data._vex_table.begin(); iter!=_graph_data._vex_table.end(); iter++)
+	{
+		if(iter->_indicator == NORM)
+			n++;
+	}
+	return n;
+}
