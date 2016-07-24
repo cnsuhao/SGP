@@ -166,6 +166,6 @@ public:
 	void SetAssignWindowSize(int assign_win_size) {_assign_win_size = assign_win_size;};
 	/***********************************************************************************************************************************/
 
-
+	void Debug(string info);
 };
 

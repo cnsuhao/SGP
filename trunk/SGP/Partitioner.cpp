@@ -752,8 +752,6 @@ bool Partitioner::CheckIfAdjust(map<VERTEX, int>& partitions_change_vex, vector<
 			for(int i = start_leaf; i<size; i++)
 				partition_not_u.push_back(i);
 
-			Log::logln("CheckClusterAdjust: ");
-
 			if(CheckClusterAdjust(u, partition_u, partition_not_u))
 			{
 				cluster_info[cluster_of_changed_vex-1].isRepartition = true;
