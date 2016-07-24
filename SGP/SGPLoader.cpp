@@ -884,7 +884,7 @@ bool SGPLoader::doStreamDBSSample()
 				Log::log("DBS : doStreamDBSSample 5: error occur!!! ");
 				return false;
 			}
-			if(iter_add_v->second.cur_degree <= 0 )
+			if(iter_add_v->second.cur_degree < 0 )
 			{
 				iter_add_v->second.cur_degree = 1; //the vex is sampled first or removed after substituted
 				iter_add_v->second.new_sampled = true;
@@ -900,7 +900,7 @@ bool SGPLoader::doStreamDBSSample()
 				Log::log("DBS : doStreamDBSSample 6: error occur!!! ");
 				return false;
 			}
-			if(iter_add_v->second.cur_degree <= 0 )
+			if(iter_add_v->second.cur_degree < 0 )
 			{
 				iter_add_v->second.cur_degree = 1; //the vex is sampled first or removed after substituted
 				iter_add_v->second.new_sampled = true;
@@ -1005,11 +1005,20 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 		iter_substituted++;
 	}
 
+	////////////////////////////////////////////////////////////////////////////
 	stringstream debug_str;
 	debug_str<<"removed_vex num: "<<removed_vex.size()
 		<<"\n new vex num: "<<new_vex.size()<<endl;
 	Log::logln(debug_str.str());
-
+	debug_str.str("\n intersection :");
+	for(hash_set<VERTEX>::iterator iter_remove = removed_vex.begin(); iter_remove != removed_vex.end(); iter_remove++)
+	{
+		if (new_vex.find(*iter_remove) != new_vex.end())
+		{
+			debug_str<<*iter_remove;
+		}
+	}
+	///////////////////////////////////////////////////////////////////////////
 	//删除划分中的节点
 	_partitions_in_memory.RemoveClusterNode(removed_vex);
 	Debug("RemoveClusterNode");
