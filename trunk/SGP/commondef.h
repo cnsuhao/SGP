@@ -95,7 +95,11 @@ typedef struct _EDGE_ITEM {
 
 typedef struct _VERTEX_ITEM{
 	int degree;
-	int cur_degree;//for SGLd and SGLs. -1: new vex (add) and not sampled, 0: old vex and removed vex after substituted, >0: sampled vex 
+	//for SGLd and SGLs. 
+	//-1: new vex (add) and not sampled in the current sampling, or removed vex in the previous sampling  
+	//0: removed vex after substituted in the current sampling, this value indicates the set of cluster nodes removed
+	//>0: sampled vex , this value indicates the set of nodes in the sampling graph
+	int cur_degree;
 	bool new_sampled; //for SGLs, if true, it is selected in this sampling process
 } Vertex_Item, PVertex_Item;
 
