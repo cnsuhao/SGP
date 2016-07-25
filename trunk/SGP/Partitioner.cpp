@@ -746,10 +746,10 @@ bool Partitioner::CheckIfAdjust(map<VERTEX, int>& partitions_change_vex, vector<
 				continue;
 			}*/
 
-			for(int i = start_leaf; i<size; i++)
+			for(int i = start_leaf; i<start_leaf+size; i++)
 				partition_u.push_back(i);
 			start_leaf = cluster_sibling*size-_k; //begin with 0
-			for(int i = start_leaf; i<size; i++)
+			for(int i = start_leaf; i<start_leaf+size; i++)
 				partition_not_u.push_back(i);
 
 			if(CheckClusterAdjust(u, partition_u, partition_not_u))
@@ -895,7 +895,7 @@ Cluster* Partitioner::MergeLeafofNode(int bt_node)
 	int level_delta = BT_height - node_level;
 	int size = (int)pow(2.0f, level_delta);
 	int start_leaf = bt_node*size-_k; //the leftest node (leaf) in the sub-tree, begin with 0
-	for(int i = start_leaf; i<size; i++)
+	for(int i = start_leaf; i<start_leaf+size; i++)
 	{
 		for(int j=0; j<_aPartition[i]->_cluster.size(); j++)
 		{

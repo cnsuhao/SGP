@@ -766,6 +766,7 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 	vector<ReAdjustPartitionPair> adjust_partitions;
 	while(ReadNextEdgesCache_DBS())//已将所有读到的顶点添加到Vs中，如果采样选中，则curdegree大于零.注意：这里Vs是采样顶点的超集，即也包含了未采样顶点。
 	{
+		Log::logln("============================Sampling and Loading ============================");
 		Debug("ReadNextEdgesCache_DBS");
 
 		UpdateWeightofEdgesInEs();
@@ -1007,10 +1008,10 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 
 	////////////////////////////////////////////////////////////////////////////
 	stringstream debug_str;
-	debug_str<<"removed_vex num: "<<removed_vex.size()
-		<<"\n new vex num: "<<new_vex.size()<<endl;
+	debug_str<<" removed_vex num: "<<removed_vex.size()
+		<<"\n new vex num: "<<new_vex.size();
 	Log::logln(debug_str.str());
-	debug_str.str("\n intersection :");
+	debug_str.str("intersection :");
 	for(hash_set<VERTEX>::iterator iter_remove = removed_vex.begin(); iter_remove != removed_vex.end(); iter_remove++)
 	{
 		if (new_vex.find(*iter_remove) != new_vex.end())
@@ -1018,7 +1019,9 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 			debug_str<<*iter_remove;
 		}
 	}
+	Log::logln(debug_str.str());
 	///////////////////////////////////////////////////////////////////////////
+
 	//删除划分中的节点
 	_partitions_in_memory.RemoveClusterNode(removed_vex);
 	Debug("RemoveClusterNode");
@@ -1028,6 +1031,7 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 	//将新节点添加到最小划分中，如果大小一样，随机
 	_partitions_in_memory.RandomInsertNewVertices(new_vex, partitions_changed_vertex);
 	Debug("RandomInsertNewVertices");
+	Debug_2("check edge list");
 	//将变化顶点对应划分传递过去，解决删除节点问题。
 	bool repartition = _partitions_in_memory.CheckIfAdjust(partitions_changed_vertex, adjust_partitions);//删除与添加的影响未考虑(通过partitions_changed_vertex解决)
 	Debug("CheckIfAdjust");
@@ -1056,7 +1060,8 @@ void SGPLoader::doChangedVertex(VERTEX v, hash_set<VERTEX>& new_vex, hash_set<VE
 			if(!iter_item->second.new_sampled)//非此次采样的新节点
 			{
 				removed_vex.insert(v);
-				partitions_changed_vertex.insert(pair<VERTEX,int>(v,partition));
+				//对于删除节点，不用检查其gain的变化对其所在划分的影响，而其邻接点的划分是否重新划分，由邻接点处理。
+				//partitions_changed_vertex.insert(pair<VERTEX,int>(v,partition));
 				//对unsample节点，添加到assign context中并用unsample前的partition作为初始partition，其有可能在后序assign中更新。
 				_assign_manager->SaveAssignVertex(v, partition);
 			}
@@ -1314,7 +1319,7 @@ DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
 
 void SGPLoader::Debug(string info)
 {
-	Log::logln("DEBUG=======================");
+	Log::logln("DEBUG 1=======================");
 	Log::logln(info);
 	int graph_vex_number = _graph_sample.GetExistVertexNumber();
 	int cluster_node_number = _partitions_in_memory.GetClusterNodeNumber();
@@ -1331,5 +1336,28 @@ void SGPLoader::Debug(string info)
 		<<"\n cahce_vex_total_number: "<<cahce_vex_total_number
 		<<"\n sample_cahce_vex_number:"<<sample_cahce_vex_number<<endl;
 	Log::logln(str.str());
-	Log::logln("DEBUG=======================");
+	Log::logln("DEBUG 1=======================");
+}
+
+void SGPLoader::Debug_2(string info)
+{
+	Log::logln("DEBUG 2=======================");
+	stringstream str;
+	str<<"null edge list : vertex cur_degree\n ";
+	for(map<VERTEX, Vertex_Item>::iterator iter = _sample_vertex_items.begin(); iter != _sample_vertex_items.end(); iter++)
+	{
+		if(iter->second.cur_degree>0)
+		{
+			VERTEX v = iter->first;
+			EdgeInfoArray* edge_list =_graph_sample.GetAdjEdgeListofVertex(v);
+			if(edge_list == NULL)
+			{
+				str<<v<<" "<<iter->second.cur_degree<<endl;
+			}
+
+		}
+	}
+	Log::logln(str.str());
+	Log::logln("DEBUG 2=======================");
+
 }
