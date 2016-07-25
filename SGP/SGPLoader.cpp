@@ -1065,6 +1065,7 @@ void SGPLoader::doChangedVertex(VERTEX v, hash_set<VERTEX>& new_vex, hash_set<VE
 				//对unsample节点，添加到assign context中并用unsample前的partition作为初始partition，其有可能在后序assign中更新。
 				_assign_manager->SaveAssignVertex(v, partition);
 			}
+			iter_item->second.cur_degree = -1;//标记为-1
 		}
 		else if(iter_item->second.cur_degree > 0)
 		{
@@ -1322,6 +1323,7 @@ void SGPLoader::Debug(string info)
 	Log::logln("DEBUG 1=======================");
 	Log::logln(info);
 	int graph_vex_number = _graph_sample.GetExistVertexNumber();
+	int graph_all_vex_number = _graph_sample.GetVertexNumber();
 	int cluster_node_number = _partitions_in_memory.GetClusterNodeNumber();
 	int cahce_vex_total_number = _sample_vertex_items.size();
 	int sample_cahce_vex_number = 0;
@@ -1332,9 +1334,37 @@ void SGPLoader::Debug(string info)
 	}
 
 	stringstream str;
-	str<<" graph_vex_number: "<< graph_vex_number <<"\n cluster_node_number: "<<cluster_node_number
+	str<<" graph_vex_number: "<< graph_vex_number 
+		<<"\n cluster_node_number: "<<cluster_node_number
+		<<"\n sample_cahce_vex_number:"<<sample_cahce_vex_number
 		<<"\n cahce_vex_total_number: "<<cahce_vex_total_number
-		<<"\n sample_cahce_vex_number:"<<sample_cahce_vex_number<<endl;
+		<<"\n graph_all_vex_number: "<<graph_all_vex_number
+		<<endl;
+	if(graph_vex_number != sample_cahce_vex_number)
+	{
+		for(VertexInfoArray::iterator iter_graph = _graph_sample.GetAdjTableRef()->_vex_table.begin(); 
+			iter_graph != _graph_sample.GetAdjTableRef()->_vex_table.end(); 
+			iter_graph++)
+		{
+			if(iter_graph->_indicator == NORM)
+			{
+				VERTEX u = iter_graph->_u;
+				map<VERTEX, Vertex_Item>::iterator iter_sample_vex = _sample_vertex_items.find(u);
+				if(iter_sample_vex == _sample_vertex_items.end())
+				{
+					str<< "\n not found a vex of graph in the _sample_vertex_items :" << u;
+				}
+				else
+				{
+					if(iter_sample_vex->second.cur_degree<=0)
+					{
+						str<<"\n found a vex of graph with minus current degree :"<<u << "  "<<iter_sample_vex->second.cur_degree;
+					}
+				}
+			}
+		}
+	}
+
 	Log::logln(str.str());
 	Log::logln("DEBUG 1=======================");
 }

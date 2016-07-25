@@ -8,7 +8,7 @@
 
 5. （已解决，在删除前保存所有变化节点的划分）当划分中节点通过采样发生变化，检查是否重新划分中，删除节点如何获得划分。
 
-6.检查MergeLeafofNode等划分编号正确性
+6. （OK）检查MergeLeafofNode等划分编号正确性
 
 7. (OK)已将Cluster中_assign_vex删除，但对应引用未改，包括WriteAssignVerticesOfPartitions，UpdateAssignVertices
 
@@ -69,3 +69,66 @@ RandomInsertNewVertices
  sample_cahce_vex_number:204
  
  可能原因： removed 和new set 有问题？ 还是update graph有问题？ 前者可能更大？？？
+ 
+ 解决：doChangedVertex中对已删除节点标记为-1，防止将上一次删除的节点加入iter_item->second.cur_degree = -1;。
+ 
+ 14. 新问题，第四遍 13问题出现，但更麻烦
+ 
+ ============================Sampling and Loading ============================
+DEBUG 1=======================
+ReadNextEdgesCache_DBS
+ graph_vex_number: 207
+ cluster_node_number: 207
+ cahce_vex_total_number: 235
+ sample_cahce_vex_number:207
+
+DEBUG 1=======================
+UpdateWeightofEdgesInEs elapse : 	0
+DEBUG 1=======================
+UpdateWeightofEdgesInEs
+ graph_vex_number: 207
+ cluster_node_number: 207
+ cahce_vex_total_number: 235
+ sample_cahce_vex_number:207
+
+DEBUG 1=======================
+doStreamDBSSample elapse : 	0
+DEBUG 1=======================
+doStreamDBSSample
+ graph_vex_number: 207
+ cluster_node_number: 207
+ cahce_vex_total_number: 235
+ sample_cahce_vex_number:207
+
+DEBUG 1=======================
+ removed_vex num: 6
+ new vex num: 5
+intersection :
+DEBUG 1=======================
+RemoveClusterNode
+ graph_vex_number: 207
+ cluster_node_number: 201
+ cahce_vex_total_number: 235
+ sample_cahce_vex_number:207
+
+DEBUG 1=======================
+DEBUG 1=======================
+UpdateSampleGraph
+ graph_vex_number: 208
+ cluster_node_number: 201
+ cahce_vex_total_number: 235
+ sample_cahce_vex_number:207
+
+DEBUG 1=======================
+DEBUG 1=======================
+RandomInsertNewVertices
+ graph_vex_number: 208  《《《《《《《《《《《《
+ cluster_node_number: 206 《《《《《《《《《《《《《《
+ cahce_vex_total_number: 235
+ sample_cahce_vex_number:207 《《《《《《《《《《《《
+
+DEBUG 1=======================
+DEBUG 2=======================
+null edge list : vertex cur_degree
+ 
+DEBUG 2=======================
