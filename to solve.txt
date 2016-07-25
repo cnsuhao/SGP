@@ -20,9 +20,52 @@ for(int i=0; i<_graph->GetVertexNumber(); i++)
 		AppendClusterNode(pCluster, node);
 	}
 	
-	9.
+9.
 	GetVertexNumber（）方法，如果存在删除节点会有bug
 	以修改：增加GetExistVertexNumber，但效率有所下降，因为遍历。
 	
-	10.
-	RandomInsertNewVertices后节点数不一致了《《《《《
+10.
+	RandomInsertNewVertices后节点数不一致了《《《《《(已修改)
+	
+11.
+CheckIfAdjust中会出现NULL edgelist问题， 可能原因：partitions_changed_vertex有问题，把删除节点也添加在里了
+已解决：doChangedVertex中对于removed vex 不再添加在partitions_changed_vertex。对于删除节点，不用检查其gain的变化对其所在划分的影响，而其邻接点的划分是否重新划分，由邻接点处理。
+
+12. repartition会导致clusternode数目下降？？？？？（已解决：MergeLeafofNode中for(int i = start_leaf; i<start_leaf+size; i++)判断条件原为for(int i = start_leaf; i<size《《《《《《; i++)
+
+13. 第二遍时
+DEBUG 1=======================
+doStreamDBSSample
+ graph_vex_number: 207
+ cluster_node_number: 207
+ cahce_vex_total_number: 225
+ sample_cahce_vex_number:204
+
+DEBUG 1=======================
+removed_vex num: 7
+ new vex num: 2
+ intersection :
+DEBUG 1=======================
+RemoveClusterNode
+ graph_vex_number: 207
+ cluster_node_number: 200
+ cahce_vex_total_number: 225
+ sample_cahce_vex_number:204
+
+DEBUG 1=======================
+DEBUG 1=======================
+UpdateSampleGraph
+ graph_vex_number: 204
+ cluster_node_number: 200
+ cahce_vex_total_number: 225
+ sample_cahce_vex_number:204
+
+DEBUG 1=======================
+DEBUG 1=======================
+RandomInsertNewVertices
+ graph_vex_number: 204
+ cluster_node_number: 202 《《《《《《《《《《《《《《《《《《《《《《《《《《《《？？？？？
+ cahce_vex_total_number: 225
+ sample_cahce_vex_number:204
+ 
+ 可能原因： removed 和new set 有问题？ 还是update graph有问题？ 前者可能更大？？？
