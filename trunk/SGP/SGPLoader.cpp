@@ -978,37 +978,32 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 {
 	hash_set<VERTEX>  new_vex, removed_vex;
 	map<VERTEX, int> partitions_changed_vertex;
-	//if an edge is in and out, it will not change the partition
+	//if an edge is in and out, it will not change the partition - modify: 必须处理，否则如果新边然后删除，会出现 curdegree：0 newsample：false的情况
 	hash_set<EdgeID>::iterator iter_selected =  _selected_edges.begin();
 	hash_set<EdgeID>::iterator iter_substituted;
 	while(iter_selected != _selected_edges.end())
 	{
-		iter_substituted = _substituted_edges.find(*iter_selected);
-		if(iter_substituted!= _substituted_edges.end())
-		{
-			*iter_selected;
-			iter_selected = _selected_edges.erase(iter_selected);
-			_substituted_edges.erase(iter_substituted);
-		}
-		else
-		{
-			EDGE e = GetEdgeofID(*iter_selected);
-			//changed_vertex.push_back(e._u);
-			doChangedVertex(e._u, new_vex, removed_vex, partitions_changed_vertex);
-			//changed_vertex.push_back(e._v);
-			doChangedVertex(e._v, new_vex, removed_vex, partitions_changed_vertex);
-			iter_selected++;
-		}
+		//iter_substituted = _substituted_edges.find(*iter_selected);
+		//if(iter_substituted!= _substituted_edges.end())
+		//{
+		//	*iter_selected;
+		//	iter_selected = _selected_edges.erase(iter_selected);
+		//	_substituted_edges.erase(iter_substituted);
+		//}
+		//else
+		//{
+		EDGE e = GetEdgeofID(*iter_selected);
+		doChangedVertex(e._u, new_vex, removed_vex, partitions_changed_vertex);
+		doChangedVertex(e._v, new_vex, removed_vex, partitions_changed_vertex);
+		iter_selected++;
+		//}
 	}
 	iter_substituted = _substituted_edges.begin();
 	while(iter_substituted!=_substituted_edges.end())
 	{
 		EDGE e = GetEdgeofID(*iter_substituted);
-		//changed_vertex.push_back(e._u);
 		doChangedVertex(e._u, new_vex, removed_vex, partitions_changed_vertex);
-		//changed_vertex.push_back(e._v);
 		doChangedVertex(e._v, new_vex, removed_vex, partitions_changed_vertex);
-
 		iter_substituted++;
 	}
 
