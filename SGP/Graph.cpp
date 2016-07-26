@@ -213,7 +213,7 @@ void Graph::DeleteEdge(EDGE& e)
 
 	for(EdgeInfoArray::iterator iter=u_edges->begin(); iter!=u_edges->end(); iter++)
 	{
-		if(iter->_adj_vex_pos = v_pos)
+		if(iter->_adj_vex_pos == v_pos)
 		{
 			u_edges->erase(iter);
 			break;
@@ -221,7 +221,7 @@ void Graph::DeleteEdge(EDGE& e)
 	}
 	for(EdgeInfoArray::iterator iter=v_edges->begin(); iter!=v_edges->end(); iter++)
 	{
-		if(iter->_adj_vex_pos = u_pos)
+		if(iter->_adj_vex_pos == u_pos)
 		{
 			v_edges->erase(iter);
 			break;

@@ -132,3 +132,50 @@ DEBUG 2=======================
 null edge list : vertex cur_degree
  
 DEBUG 2=======================
+
+已解决：graph_vex_number与sample_cahce_vex_number不一致问题，Graph::DeleteEdge中if判断用了= 而不是==， ：（
+
+15. 
+DEBUG 1=======================
+doStreamDBSSample
+ graph_vex_number: 207
+ cluster_node_number: 207
+ sample_cahce_vex_number:207
+ cahce_vex_total_number: 241
+ graph_all_vex_number: 221
+
+DEBUG 1=======================
+ removed_vex num: 5
+ new vex num: 4
+intersection :
+DEBUG 1=======================
+RemoveClusterNode
+ graph_vex_number: 207
+ cluster_node_number: 202
+ sample_cahce_vex_number:207
+ cahce_vex_total_number: 241
+ graph_all_vex_number: 221
+
+DEBUG 1=======================
+DEBUG 1=======================
+UpdateSampleGraph
+ graph_vex_number: 207
+ cluster_node_number: 202
+ sample_cahce_vex_number:207
+ cahce_vex_total_number: 241
+ graph_all_vex_number: 221
+
+DEBUG 1=======================
+DEBUG 1=======================
+RandomInsertNewVertices
+ graph_vex_number: 207
+ cluster_node_number: 206   《《《《《《《《《《《《《《《《《《《《《
+ sample_cahce_vex_number:207
+ cahce_vex_total_number: 241
+ graph_all_vex_number: 221
+
+DEBUG 1=======================
+DEBUG 2=======================
+null edge list : vertex cur_degree
+ 
+DEBUG 2=======================
