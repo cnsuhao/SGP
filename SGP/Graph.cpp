@@ -91,6 +91,8 @@ int Graph::GetVertexPos(VERTEX& u)
 
 bool Graph::isConnectbyPos(int vex1_pos, int vex2_pos)
 {
+	if(vex1_pos == vex2_pos) return true;
+
 	if((GetVertexInfoofPos(vex1_pos)->_indicator == REMOVED) || (GetVertexInfoofPos(vex2_pos)->_indicator == REMOVED))
 		return false;
 
@@ -181,11 +183,11 @@ void Graph::DeleteVertex(VERTEX& u)
 void Graph::InsertEdge(EDGE e)
 {
 	int u_pos = -1, v_pos = -1;
-	u_pos = GetVertexPos(e._u);
-	v_pos = GetVertexPos(e._v);
+	u_pos = GetVertexPos(e._u);//fix£ºif u == v
 	if(u_pos<0){
 		u_pos = InsertVertex(e._u);
 	}
+	v_pos = GetVertexPos(e._v);
 	if(v_pos<0){
 		v_pos = InsertVertex(e._v);
 	}

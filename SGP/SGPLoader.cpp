@@ -773,12 +773,14 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 		Log::log("UpdateWeightofEdgesInEs elapse : \t");
 		Log::logln(TimeTicket::check());
 		Debug("UpdateWeightofEdgesInEs");
-
+		
+		Debug_4();
 		doStreamDBSSample();
 		Log::log("doStreamDBSSample elapse : \t");
 		Log::logln(TimeTicket::check());
 		Debug("doStreamDBSSample");
-
+		Debug_4();
+		
 		adjust_partitions.clear();
 		if(UpdateAndCheckRepartition(adjust_partitions))//更新划分中的节点，并检查是否需要重新划分
 		{
@@ -929,6 +931,10 @@ bool SGPLoader::doStreamDBSSample()
 
 bool SGPLoader::StreamAssignEdge(EDGE e)
 {
+	//stringstream debug_str;
+	//debug_str<<"StreamAssignEdge: "<< e._u << " : " <<e._v;
+	//Log::logln(debug_str.str());
+
 	bool all_vex_sampled = true;
 	int cluster_u, cluster_v;
 	cluster_u = _partitions_in_memory.GetClusterLabelOfVex(e._u);
@@ -1032,6 +1038,7 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 	_partitions_in_memory.RandomInsertNewVertices(new_vex, partitions_changed_vertex);
 	Debug("RandomInsertNewVertices");
 	Debug_2("check edge list");
+	Debug_3("check sample_cache and cluster node",removed_vex, new_vex);
 	//将变化顶点对应划分传递过去，解决删除节点问题。
 	bool repartition = _partitions_in_memory.CheckIfAdjust(partitions_changed_vertex, adjust_partitions);//删除与添加的影响未考虑(通过partitions_changed_vertex解决)
 	Debug("CheckIfAdjust");
@@ -1076,7 +1083,6 @@ void SGPLoader::doChangedVertex(VERTEX v, hash_set<VERTEX>& new_vex, hash_set<VE
 				_assign_manager->LabelAssignVertexSample(v);		
 			}
 			partitions_changed_vertex.insert(pair<VERTEX,int>(v,partition));
-
 		}
 		else //(iter_item->second.cur_degree < 0)
 		{
@@ -1390,4 +1396,64 @@ void SGPLoader::Debug_2(string info)
 	Log::logln(str.str());
 	Log::logln("DEBUG 2=======================");
 
+}
+
+void SGPLoader::Debug_3(string info, hash_set<VERTEX>& removed_set, hash_set<VERTEX>& new_set)
+{
+	Log::logln("DEBUG 3=======================");
+	stringstream str;
+	for(map<VERTEX, Vertex_Item>::iterator iter =_sample_vertex_items.begin(); iter!=_sample_vertex_items.end(); iter++)
+	{
+		if(iter->second.cur_degree > 0)
+		{
+			int cluster = _partitions_in_memory.GetClusterLabelOfVex(iter->first);
+			if(cluster == -1)
+			{
+				str<<"\n the vertex of _sample_vertex_items doesn't exist in  _partitions_in_memory :" << iter->first << " : " << iter->second.cur_degree << " : "<<iter->second.new_sampled;
+				hash_set<VERTEX>::iterator iter_remove = removed_set.find(iter->first);
+				if(iter_remove != removed_set.end())
+				{
+					str<<"\n the vertex is in the removed set";
+				}
+				hash_set<VERTEX>::iterator iter_new = new_set.find(iter->first);
+				if(iter_new != new_set.end())
+				{
+					str<<"\n the vertex is in the new set";
+				}
+
+				str<<"\n the edge of this vex in _selected_edges : ";
+				for(hash_set<EdgeID>::iterator iter_selected = _selected_edges.begin(); iter_selected != _selected_edges.end(); iter_selected++)
+				{
+					EDGE e = GetEdgeofID(*iter_selected);
+					if(e._u == iter->first || e._v == iter->first)
+					{
+						str<<"\n" << e._u << " : " <<e._v ;
+					}
+				}
+				str<<"\n the edge of this vex in _substituted_edges : ";
+				for(hash_set<EdgeID>::iterator iter_sub = _substituted_edges.begin(); iter_sub != _substituted_edges.end(); iter_sub++)
+				{
+					EDGE e = GetEdgeofID(*iter_sub);
+					if(e._u == iter->first || e._v == iter->first)
+					{
+						str<<"\n" << e._u << " : " <<e._v ;
+					}
+				}
+
+			}
+		}
+	}
+	Log::logln(str.str());
+	Log::logln("DEBUG 3=======================");
+}
+
+void SGPLoader::Debug_4()
+{
+	stringstream str;
+	str<<"vex \t cur_degree \t new_sample\n";
+	for(map<VERTEX, Vertex_Item>::iterator iter =_sample_vertex_items.begin(); iter!=_sample_vertex_items.end(); iter++)
+	{
+		str<<iter->first << " : " <<iter->second.cur_degree << " : "<<iter->second.new_sampled <<"\n";
+	}
+	Log::logln(str.str());
 }
