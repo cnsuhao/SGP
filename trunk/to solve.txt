@@ -179,3 +179,5 @@ DEBUG 2=======================
 null edge list : vertex cur_degree
  
 DEBUG 2=======================
+
+原因： doStreamDBSSample 中 对e_remove处理时，如果之前新添加一个节点，然后删除，则会出现 curdegree：0， newsample：0（false）的情况，会导致该节点不会选入newvex中。
