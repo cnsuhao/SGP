@@ -787,6 +787,7 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 			Debug("UpdateAndCheckRepartition");
 			//重新划分
 			RepartitionSampleGraph(adjust_partitions, partition_algorithm);
+			_assign_manager->UpdateAssignManager(_partitions_in_memory);
 			Debug("RepartitionSampleGraph");
 		}
 		else
@@ -1183,10 +1184,6 @@ bool SGPLoader::UpdateStorageNode()
 			ClearThreadParam(_k);
 			return false;
 		}
-		else
-		{
-			CloseHandle(hThreads[i]);//Closing a thread handle does not terminate the associated thread. Just reduce the reference count of thread
-		}
 	}
 	DWORD dwEvent;
 	dwEvent = WaitForMultipleObjects( 
@@ -1194,6 +1191,11 @@ bool SGPLoader::UpdateStorageNode()
 		hThreads,     // array of objects
 		TRUE,       // wait for all
 		INFINITE);   // indefinite wait
+
+	for(int i=0; i<_k; i++)
+	{
+		CloseHandle(hThreads[i]);
+	}
 
 	delete[] hThreads;
 	ClearThreadParam(_k);
@@ -1289,6 +1291,8 @@ DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
 				str.str("");
 				str<<"SGP: SteamLoader: UpdateStorageNode: Thread of Partition : "<<partition<< " Error!! : Cannot find the partition of Vex " <<u<<endl;
 				Log::logln(str.str());
+				
+				loader->Debug_5(u);
 			}
 		}
 		int v_partition = acm->GetAssignVertexPartition(v);
@@ -1300,6 +1304,8 @@ DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
 				str.str("");
 				str<<"SGP: SteamLoader: UpdateStorageNode: Thread of Partition : "<<partition<< " Error!! : Cannot find the partition of Vex " <<v<<endl;
 				Log::logln(str.str());
+				
+				loader->Debug_5(v);
 			}
 		}
 
@@ -1451,4 +1457,11 @@ void SGPLoader::Debug_4()
 		str<<iter->first << " : " <<iter->second.cur_degree << " : "<<iter->second.new_sampled <<"\n";
 	}
 	Log::logln(str.str());
+}
+
+void SGPLoader::Debug_5(VERTEX& u)
+{
+	Log::logln("DEBUG 5 ======================= \n please set breakpoint here to check");
+	_assign_manager->GetAssignVertexPartition(u);
+	Log::logln("DEBUG 5 =======================");
 }

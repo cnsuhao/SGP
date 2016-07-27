@@ -814,14 +814,14 @@ void Partitioner::RepartitionKL(vector<ReAdjustPartitionPair>& adjust_partitions
 {
 	int BT_nodes = 2*_k-1; //complete binary tree
 	int BT_height = int(log(float(_k))/log(2.0f))+1;
-
+	Log::log("Repartition ....... \n");
 	for(int i=0; i<adjust_partitions.size(); i++)
 	{
 		ReAdjustPartitionPair pair = adjust_partitions[i];
 
 		//从i开始调整，将调整结果更新到apartition。先将叶子中的顶点合并成两个分区，然后重新划分。
 		//如果知道哪些节点发生变化，则可优化（改动太大，暂时未处理）。
-		
+		Log::log("do partitioning...\n");
 		Cluster* cluster_left = MergeLeafofNode(pair._part1);
 		Cluster* cluster_right = MergeLeafofNode(pair._part2);
 		doKLPartition(cluster_left, cluster_right);
@@ -835,10 +835,9 @@ void Partitioner::RepartitionKL(vector<ReAdjustPartitionPair>& adjust_partitions
 		int subtree_height = BT_height - node_level+1;
 		int split_number = (int)pow(2.0f, subtree_height)-2;//2^(h-l+1)-2
 		
-		Log::log("Repartition : \n");
 		for(int k=1; k<=split_number; k++)
 		{
-			Log::log("spliting phase : ");
+			Log::log("spliting phase .... ");
 			Log::log(k);
 			Log::log("\n");
 

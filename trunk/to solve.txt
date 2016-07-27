@@ -185,3 +185,13 @@ DEBUG 2=======================
 
 16. 
 UpdateStorageThread中 ReWriteAssignEdgeToPartition 中loader->GetPartitioner().GetPartitionStatistic().at(u_partition)._internal_links++; u_partition为-1？？？
+
+已解决：主要是add（有标签） del（前标签） add（置为-1，此时重划分后并没有更新标签） del（-1出现）。增加了void UpdateAssignManager(Partitioner& partitions);用于每次重划分后的AC与cluster的一致性
+
+17.
+UpdateStorageThread中多线程会出现流处理错误。
+已解决：主要是创建后，Closehandle会关闭线程，导致WaitForMultipleObjects返回，并ClearThreadParam一直流关闭
+
+18.
+最终输出的定点数和边数不对，需要检查。统计问题，还是assign时的问题
+建议：编写一致性检查函数。
