@@ -170,5 +170,6 @@ public:
 	void Debug_2(string info);
 	void Debug_3(string info, hash_set<VERTEX>& removed_set, hash_set<VERTEX>& new_set);
 	void Debug_4();
+	void Debug_5(VERTEX& u);
 };
 

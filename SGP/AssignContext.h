@@ -53,6 +53,8 @@ public:
 	bool LabelAssignVertexSample(VERTEX& vex);
 	//get and set
 	map<VERTEX, int>* GetAssignVexInfo() {return &_assign_vex_info;};
+	//update the assigned vex info
+	void UpdateAssignManager(Partitioner& partitions);
 
 	static AssignContextManager* GetAssignManager();
 	

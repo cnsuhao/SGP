@@ -229,6 +229,23 @@ bool AssignContextManager::LabelAssignVertexSample(VERTEX& vex)
 	}
 }
 
+void  AssignContextManager::UpdateAssignManager(Partitioner& partitions)
+{
+	for (map<VERTEX, int>::iterator iter =  _assign_vex_info.begin(); iter!= _assign_vex_info.end(); iter++)
+	{
+		VERTEX u = iter->first;
+		int cluster = partitions.GetClusterLabelOfVex(u);
+		if(cluster == -1) 
+		{
+			continue;//该节点不在当前partitions中，该节点可能为assign或之前被删除的采样节点（此时，保留删除前的cluster label）
+		}
+		else
+		{
+			iter->second = cluster;
+		}
+	}
+}
+
 AssignContextManager* AssignContextManager::GetAssignManager()
 {
 	return &_assign_manager;
