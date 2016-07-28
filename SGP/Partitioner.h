@@ -156,6 +156,8 @@ public:
 	//insert a vertex into cluster. to be sure the vex exists in adj-table of sample graph
 	void InsertNewVertexInCluster(Cluster* cluster, VERTEX& vex);
 
+	//Init 
+	void InitPartitionerOutFile();
 	//for debug
 	int GetClusterNodeNumber();
 };
