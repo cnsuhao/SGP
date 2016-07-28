@@ -498,19 +498,24 @@ void Partitioner::WriteClusterEdgesOfPartitions()
 			{
 				VERTEX v = _graph->GetVertexInfoofPos(iter_edges->_adj_vex_pos)->_u;
 				int cluster_id_v = GetClusterLabelOfVex(v);
-				if(cluster_id_v == cluster_id)
-				{
-					if( v<u )//write the internal edge once
-					{
-						WriteClusterEdge(u, cluster_id, v, cluster_id_v);
-						edges_num++;
-					}
-				}
-				else
+				if(v<u)
 				{
 					WriteClusterEdge(u, cluster_id, v, cluster_id_v);
 					edges_num++;
 				}
+				//if(cluster_id_v == cluster_id)
+				//{
+				//	if( v<u )//write the internal edge once
+				//	{
+				//		WriteClusterEdge(u, cluster_id, v, cluster_id_v);
+				//		edges_num++;
+				//	}
+				//}
+				//else
+				//{
+				//	WriteClusterEdge(u, cluster_id, v, cluster_id_v);
+				//	edges_num++;
+				//}
 				iter_edges++;
 			}
 		}
@@ -606,6 +611,11 @@ void Partitioner::WriteAssignVerticesOfPartitions()
 
 		if(partition >= 0)
 		{
+			//AC中存在已被采样并划分的节点
+			int cluster = GetClusterLabelOfVex(v);
+			if(cluster!=-1)
+				continue;
+
 			stringstream log_str;
 			log_str<<" writing the assigned vertice "<< v << " into the partition " << partition <<"\n";
 			Log::log(log_str.str());
@@ -996,4 +1006,33 @@ int Partitioner::GetClusterNodeNumber()
 		iter++;
 	}
 	return total;
+}
+
+void Partitioner::InitPartitionerOutFile()
+{
+	stringstream str;
+	for(int i=0; i<_k; i++)
+	{
+		str.str("");
+		str<<_outfile<<"_cluster_edges."<<i;
+		ofstream ofs1(str.str(), ofstream::trunc);
+		ofs1.close();
+		str.str("");
+		str<<_outfile<<"_cluster_vertices."<<i;
+		ofstream ofs2(str.str(), ofstream::trunc);
+		ofs2.close();
+
+		str.str("");
+		str<<_outfile<<"_assign_edge."<<i;
+		ofstream ofs3(str.str(), ofstream::trunc);
+		ofs3.close();
+		str.str("");
+		str<<_outfile<<"_assign_edge_tmp."<<i;
+		ofstream ofs4(str.str(), ofstream::trunc);
+		ofs4.close();
+		str.str("");
+		str<<_outfile<<"_assign_vertices."<<i;
+		ofstream ofs5(str.str(), ofstream::trunc);
+		ofs5.close();
+	}
 }

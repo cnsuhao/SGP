@@ -576,6 +576,7 @@ void SGPLoader::doGraphSamplePartition(PartitionAlgorithm partition_algorithm)
 {
 	_partitions_in_memory.ClearPartition();
 	_partitions_in_memory.SetPartitionNumber(_k);
+	_partitions_in_memory.InitPartitionerOutFile();
 
 	BuildSampleGraph();
 	_partitions_in_memory.SetGraph(&_graph_sample);
@@ -804,19 +805,24 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 	UpdateStorageNode();
 	Log::log("UpdateStorageNode elapse : \t");
 	Log::logln(TimeTicket::check());
+	Debug("UpdateStorageNode");
 
 	GetPartitioner().WriteAssignVerticesOfPartitions();
 	Log::log("WriteAssignVerticesOfPartitions elapse : \t");
 	Log::logln(TimeTicket::check());
+	Debug("WriteAssignVerticesOfPartitions");
 
 	GetPartitioner().WriteVerticesOfPartitions();
 	Log::log("WriteVerticesOfPartitions elapse : \t");
 	Log::logln(TimeTicket::check());
+	Debug("WriteVerticesOfPartitions");
 
 	GetPartitioner().WriteClusterEdgesOfPartitions();
 	Log::log("WriteClusterEdgesOfPartitions elapse : \t");
 	Log::logln(TimeTicket::check());
+	Debug("WriteClusterEdgesOfPartitions");
 
+	Debug_6();
 
 	return true;
 }
@@ -916,6 +922,9 @@ bool SGPLoader::doStreamDBSSample()
 
 			_selected_edges.insert(e_id);
 			_substituted_edges.insert(_min_weight_edge_id);
+
+			//将置换出来的边保存，按照assign形式
+			StreamAssignEdge(e_remove);
 
 			//update key list
 			SearchMinimumKey();//it suffers from low efficiency. to improve it in the future by insert sorting with the index
@@ -1333,6 +1342,7 @@ void SGPLoader::Debug(string info)
 	int graph_all_vex_number = _graph_sample.GetVertexNumber();
 	int cluster_node_number = _partitions_in_memory.GetClusterNodeNumber();
 	int cahce_vex_total_number = _sample_vertex_items.size();
+	int graph_edges = _graph_sample.GetEdgesNumber();
 	int sample_cahce_vex_number = 0;
 	for(map<VERTEX, Vertex_Item>::iterator iter =_sample_vertex_items.begin(); iter!=_sample_vertex_items.end(); iter++)
 	{
@@ -1346,6 +1356,7 @@ void SGPLoader::Debug(string info)
 		<<"\n sample_cahce_vex_number:"<<sample_cahce_vex_number
 		<<"\n cahce_vex_total_number: "<<cahce_vex_total_number
 		<<"\n graph_all_vex_number: "<<graph_all_vex_number
+		<<"\n graph edges number: " << graph_edges
 		<<endl;
 	if(graph_vex_number != sample_cahce_vex_number)
 	{
@@ -1464,4 +1475,22 @@ void SGPLoader::Debug_5(VERTEX& u)
 	Log::logln("DEBUG 5 ======================= \n please set breakpoint here to check");
 	_assign_manager->GetAssignVertexPartition(u);
 	Log::logln("DEBUG 5 =======================");
+}
+
+void SGPLoader::Debug_6()
+{
+	Log::logln("DEBUG 6 =======================");
+	stringstream str;
+	str<<"ERR: the vex of AC also is in the Clusters!!! \n vex : cluster: partition in AC \n";
+	map<VERTEX, int>* ac_info = _assign_manager->GetAssignVexInfo();
+	for(map<VERTEX, int>::iterator iter = ac_info->begin();  iter!= ac_info->end(); iter++)
+	{
+		int cluster = _partitions_in_memory.GetClusterLabelOfVex(iter->first);
+		if(cluster!=-1)
+		{
+			str<<iter->first<<" : "<<cluster<<" : "<<iter->second<<"\n";
+		}
+	}
+	Log::logln(str.str());
+	Log::logln("DEBUG 6 =======================");
 }

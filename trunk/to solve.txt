@@ -195,3 +195,10 @@ UpdateStorageThread中多线程会出现流处理错误。
 18.
 最终输出的定点数和边数不对，需要检查。统计问题，还是assign时的问题
 建议：编写一致性检查函数。
+解决：
+（1）顶点数不一致：原因：AC中存在已被采样并划分的节点。解决：WriteAssignVerticesOfPartitions加了判断
+(2) 边数：尚未完全解决。
+部分解决：
+输出文件添加问题，增加初始化函数，将上一次结果情况。
+Partitioner::WriteClusterEdgesOfPartitions中修改cluster中边输出次数，原来方法cut边要输出两次。
+bool SGPLoader::doStreamDBSSample() 中 将置换出来的边保存，按照assign形式StreamAssignEdge(e_remove);
