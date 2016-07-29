@@ -197,11 +197,15 @@ UpdateStorageThread中多线程会出现流处理错误。
 建议：编写一致性检查函数。
 解决：
 （1）顶点数不一致：原因：AC中存在已被采样并划分的节点。解决：WriteAssignVerticesOfPartitions加了判断
-(2) 边数：尚未完全解决。
-部分解决：
+(2) 边数：解决。
 a）输出文件添加问题，增加初始化函数，将上一次结果情况。
 b）Partitioner::WriteClusterEdgesOfPartitions中修改cluster中边输出次数，原来方法cut边要输出两次。
 c）bool SGPLoader::doStreamDBSSample() 中 将置换出来的边保存，按照assign形式StreamAssignEdge(e_remove);
 d）经过检查，发现ReWriteAssignEdgeToPartition中if语句如果不加else的话，会导致部分assign边无法写入，会随机导致reassign边数少。添加else后，目前未发现此情况。坑爹的vs2010 ：（
+e）UpdateStorageThread中if(u_partition == partition &&  v_partition == partition)有bug，如果u_partition和v_partition相同但与partition不同，就会导致该边按照external写两遍 ：（
+已改为if(u_partition == v_partition)
+
+
 19.
 TODO：修改统计方法
+已改
