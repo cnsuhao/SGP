@@ -577,6 +577,7 @@ void SGPLoader::doGraphSamplePartition(PartitionAlgorithm partition_algorithm)
 	_partitions_in_memory.ClearPartition();
 	_partitions_in_memory.SetPartitionNumber(_k);
 	_partitions_in_memory.InitPartitionerOutFile();
+	_partitions_in_memory.InitStatistic();
 
 	BuildSampleGraph();
 	_partitions_in_memory.SetGraph(&_graph_sample);
@@ -671,38 +672,7 @@ bool SGPLoader::isSampled(EDGE& e)
 void SGPLoader::doSGPStatistic()
 {
 	Log::logln("====================Partition Statistic======================");
-
-	int cutvalue = 0;
-	stringstream str;
-	int total_internal_edges = 0, total_external_edges = 0, total_vex=0;
-	vector<PartitionStatisticInfo>& stats = GetPartitioner().GetPartitionStatistic();
-	for(int i=0; i<_k; i++)
-	{
-		str.str("");
-		str	<<"\n\n>>Partition "<<i<<" Statistic \n"
-			<<"Total Vertex number: \t"<<stats.at(i)._vex_number<<"\n"
-			<<"Assigned Vertex number: \t"<<stats.at(i)._assign_vex_number<<"\n"
-			<<"Internal Edges: \t"<<stats.at(i)._internal_links<<"\n"
-			<<"External Edges: \t"<<stats.at(i)._external_links<<"\n";
-		Log::log(str.str());
-		cutvalue += stats.at(i)._external_links;
-
-		total_internal_edges+=stats.at(i)._internal_links;
-		total_external_edges+=stats.at(i)._external_links;
-		total_vex += stats.at(i)._vex_number+stats.at(i)._assign_vex_number;
-	}
-
-	str.str("");
-	cutvalue = cutvalue/2;
-	str<<"\n\nPartition Cut Value : \t"<<cutvalue<<"\n" 
-		<<"Partition Cut Value in Mem : \t"<<GetPartitioner().ComputeCutValue()<<"\n\n"
-		<<"total number of vertex: \t"<<total_vex<<"\n"
-		<<"total number of Internal edges:\t"<<total_internal_edges<<"\n"
-		<<"total number of External edges:\t"<<total_external_edges<<"\n"
-		<<"total number of edges:\t"<<total_internal_edges+total_external_edges/2<<"\n\n"
-		<<"Assign Window Size : \t"<<_assign_win_size<<"\n"
-		<<"Sample Size Limition: \t"<<_edges_limition<<"\n";
-	Log::log(str.str());
+	GetPartitioner().GetStatistic()->printStatistic();
 	Log::logln("====================Partition Statistic======================");
 }
 
@@ -825,7 +795,7 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 
 	//Debug_6();
 
-	Debug_7();
+	//Debug_7();
 
 	return true;
 }
@@ -1151,13 +1121,7 @@ void ClearThreadParam(int k)
 
 bool SGPLoader::UpdateStorageNode()
 {
-	//clear the statistic of assign info that set by writeassignedge. the final statistic will be caculated on writing the vertices of clusters and assigned
-	vector<PartitionStatisticInfo>& stats = GetPartitioner().GetPartitionStatistic();
-	for(vector<PartitionStatisticInfo>::iterator iter = stats.begin(); iter!=stats.end(); iter++)
-	{
-		iter->_internal_links = 0;
-		iter->_external_links = 0;
-	}
+	_partitions_in_memory.GetStatistic()->ResetPartitionInfoofAssignLinks();
 
 	thread_param = new Update_Storage_Param[_k];
 
@@ -1215,36 +1179,15 @@ bool SGPLoader::UpdateStorageNode()
 	delete[] hThreads;
 	ClearThreadParam(_k);
 	return true;
-
-	//if(dwEvent == WAIT_OBJECT_0)//succeed
-	//{
-	//	delete[] hThreads;
-	//	ClearThreadParam(_k);
-	//	return true;
-
-	//}
-	//else
-	//{
-	//	delete[] hThreads;
-	//	ClearThreadParam(_k);
-	//	Log::logln("SGP: SteamLoader: UpdateStorageNode: Wait for Thread Termination Error!!");
-	//	return false;
-	//}
-
 }
 
 bool SGPLoader::UpdateStorageNode_Debug()
 {
-	//clear the statistic of assign info that set by writeassignedge. the final statistic will be caculated on writing the vertices of clusters and assigned
-	vector<PartitionStatisticInfo>& stats = GetPartitioner().GetPartitionStatistic();
-	for(vector<PartitionStatisticInfo>::iterator iter = stats.begin(); iter!=stats.end(); iter++)
-	{
-		iter->_internal_links = 0;
-		iter->_external_links = 0;
-	}
+	_partitions_in_memory.GetStatistic()->ResetPartitionInfoofAssignLinks();
 	stringstream str;
 	ifstream* ifs = new ifstream[_k];
 	ofstream* ofs = new ofstream[_k];
+	int interlinks = 0, exterlinks = 0;
 	for(int i=0; i<_k; i++)
 	{
 		str.str("");
@@ -1306,14 +1249,16 @@ bool SGPLoader::UpdateStorageNode_Debug()
 
 			if(partition<=u_assign_partition && partition<= v_assign_partition)//由划分小的来处理跨区边
 			{
-				if(u_partition == partition &&  v_partition == partition)
+				if(u_partition == v_partition)
 				{
-					ReWriteAssignEdgeToPartition_Debug(partition, u, u_partition, v, v_partition, this, ofs);
+					ReWriteAssignEdgeToPartition_Debug(u_partition, u, u_partition, v, v_partition, this, ofs);
+					interlinks++;
 				}
 				else
 				{
 					ReWriteAssignEdgeToPartition_Debug(u_partition, u, u_partition, v, v_partition, this, ofs);
 					ReWriteAssignEdgeToPartition_Debug(v_partition, u, u_partition, v, v_partition, this, ofs);
+					exterlinks+=2;
 				}
 			}
 		}//end while
@@ -1325,6 +1270,10 @@ bool SGPLoader::UpdateStorageNode_Debug()
 	}
 	delete[] ifs;
 	delete[] ofs;
+
+	str.str("");
+	str<<"internal assign edges : "<<interlinks<<" external assign edges: "<<exterlinks/2<<endl;
+	Log::logln(str.str());
 	return true;
 }
 
@@ -1335,11 +1284,11 @@ void ReWriteAssignEdgeToPartition_Debug(int to_partition, VERTEX u, int u_partit
 	// update statistic
 	if(u_partition == v_partition)
 	{
-		loader->GetPartitioner().GetPartitionStatistic().at(to_partition)._internal_links++;
+		loader->GetPartitioner().GetStatistic()->IncreaseAssignInternalLinks(to_partition);
 	}
 	else
 	{
-		loader->GetPartitioner().GetPartitionStatistic().at(to_partition)._external_links++;
+		loader->GetPartitioner().GetStatistic()->IncreaseAssignExternalLinks(to_partition);
 	}
 }
 
@@ -1347,38 +1296,49 @@ void ReWriteAssignEdgeToPartition(int to_partition, VERTEX u, int u_partition, V
 {
 	DWORD dwWaitResult; 
 	// Request ownership of mutex.
-	dwWaitResult = WaitForSingleObject(thread_param[to_partition].hMutex,INFINITE);
-	if(dwWaitResult == WAIT_OBJECT_0)
+	int retry = 0, max_retry = 3;
+	while(retry++<max_retry)
 	{
-		// The thread got mutex ownership, write the edge
-		thread_param[to_partition].ofs<<u<<" "<<u_partition<<" "<<v<<" "<<v_partition<<endl;
-
-		// update statistic
-		if(u_partition == v_partition)
+		dwWaitResult = WaitForSingleObject(thread_param[to_partition].hMutex,INFINITE);
+		if(dwWaitResult == WAIT_OBJECT_0)
 		{
-			loader->GetPartitioner().GetPartitionStatistic().at(to_partition)._internal_links++;
+			// The thread got mutex ownership, write the edge
+			thread_param[to_partition].ofs<<u<<" "<<u_partition<<" "<<v<<" "<<v_partition<<endl;
+
+			// update statistic
+			if(u_partition == v_partition)
+			{
+				loader->GetPartitioner().GetStatistic()->IncreaseAssignInternalLinks(to_partition);
+			}
+			else
+			{
+				loader->GetPartitioner().GetStatistic()->IncreaseAssignExternalLinks(to_partition);
+			}
+
+			//realse the mutex
+			if (0==ReleaseMutex(thread_param[to_partition].hMutex))
+			{
+				stringstream str;
+				str.str("");
+				str<<"SGP: SteamLoader: ReWriteAssignEdgeToPartition: "<<to_partition<< " Error in releasing Mutex, ERROR Code: "<<GetLastError()<<endl;
+				Log::logln(str.str());
+			}
+			return;
 		}
 		else
 		{
-			loader->GetPartitioner().GetPartitionStatistic().at(to_partition)._external_links++;
-		}
-
-		//realse the mutex
-		if (0==ReleaseMutex(thread_param[to_partition].hMutex))
-		{
 			stringstream str;
 			str.str("");
-			str<<"SGP: SteamLoader: ReWriteAssignEdgeToPartition: "<<to_partition<< " Error in releasing Mutex, ERROR Code: "<<GetLastError()<<endl;
+			str<<"SGP: SteamLoader: ReWriteAssignEdgeToPartition: "<<to_partition<< " Error in Waiting Mutex, ERROR Code: "<<GetLastError()
+				<<"\n"<<u<<" "<<u_partition<<" "<<v<<" "<<v_partition<<endl;
+			if(dwWaitResult == WAIT_ABANDONED)
+				str<<" WAIT_ABANDONED ";
+			if(dwWaitResult == WAIT_TIMEOUT)
+				str<<" WAIT_TIMEOUT ";
+			if(dwWaitResult == WAIT_FAILED)
+				str<<" WAIT_FAILED ";
 			Log::logln(str.str());
 		}
-	}
-	else
-	{
-		stringstream str;
-		str.str("");
-		str<<"SGP: SteamLoader: ReWriteAssignEdgeToPartition: "<<to_partition<< " Error in Waiting Mutex, ERROR Code: "<<GetLastError()
-			<<"\n"<<u<<" "<<u_partition<<" "<<v<<" "<<v_partition<<endl;
-		Log::logln(str.str());
 	}
 }
 
@@ -1444,9 +1404,9 @@ DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
 
 		if(partition<=u_assign_partition && partition<= v_assign_partition)//由划分小的来处理跨区边
 		{
-			if(u_partition == partition &&  v_partition == partition)
+			if(u_partition == v_partition)
 			{
-				ReWriteAssignEdgeToPartition(partition, u, u_partition, v, v_partition, loader);
+				ReWriteAssignEdgeToPartition(u_partition, u, u_partition, v, v_partition, loader);
 			}
 			else
 			{
@@ -1624,9 +1584,10 @@ void SGPLoader::Debug_7()
 {
 	hash_set<EdgeID> edges;
 	hash_set<EdgeID> edges_tmp;
+	map<EdgeID, int> edges_counts, edges_tmp_counts;
+	
 	ifstream ifs;
 	stringstream str;
-	
 	for(int i=0; i<_k; i++)
 	{
 		str.str("");
@@ -1655,7 +1616,19 @@ void SGPLoader::Debug_7()
 
 			temp = buf.substr(idx_next+1, buf.length()-idx_next-1);
 			int v_assign_partition = stoi(temp);
-			edges_tmp.insert(::MakeEdgeID(u,v));
+			EdgeID id = ::MakeEdgeID(u,v);
+			edges_tmp.insert(id);
+
+			map<EdgeID,int>::iterator iter_c = edges_tmp_counts.find(id);
+			if(iter_c == edges_tmp_counts.end())
+			{
+				edges_tmp_counts.insert(pair<EdgeID, int>(id, 1));
+			}
+			else
+			{
+				iter_c->second ++;
+			}
+
 		}
 		ifs.close();
 	}
@@ -1692,13 +1665,22 @@ void SGPLoader::Debug_7()
 
 			temp = buf.substr(idx_next+1, buf.length()-idx_next-1);
 			int v_assign_partition = stoi(temp);
+
 			EdgeID id = ::MakeEdgeID(u,v);
 			edges.insert(id);
-
 			hash_set<EdgeID>::iterator iter = edges_tmp.find(id);
 			if(iter == edges_tmp.end())
 			{
 				str<<u<<" : "<<u_assign_partition<<" : "<<v<<" : "<<v_assign_partition<<endl;
+			}
+			map<EdgeID,int>::iterator iter_c = edges_counts.find(id);
+			if(iter_c == edges_counts.end())
+			{
+				edges_counts.insert(pair<EdgeID, int>(id, 1));
+			}
+			else
+			{
+				iter_c->second ++;
 			}
 		}
 		ifs.close();
@@ -1708,4 +1690,57 @@ void SGPLoader::Debug_7()
 	str<<"the total edges assigned before updatestorage is : "<< edges.size();
 	Log::logln(str.str());
 
+	str.str("");
+	str<<"the edges in the assign file greater than 2 : u : v : count\n";
+	for(map<EdgeID,int>::iterator iter_c = edges_counts.begin(); iter_c!=edges_counts.end(); iter_c++)
+	{
+		if(iter_c->second > 2)
+		{
+			EDGE e = GetEdgeofID(iter_c->first);
+			str<<e._u<<" : "<<e._v<<" : "<<iter_c->second<<"\n";
+		}
+	}
+	Log::logln(str.str());
+
+	str.str("");
+	str<<"the edges count in the assign file : ";
+	int c_1 = 0, c_2 = 0;
+	for(map<EdgeID,int>::iterator iter_c = edges_counts.begin(); iter_c!=edges_counts.end(); iter_c++)
+	{
+		if(iter_c->second == 2)
+		{
+			c_2++;
+		}
+		else if(iter_c->second == 1)
+		{
+			c_1++;
+		}
+		else
+		{
+			Log::logln("error count for assign file !!!");
+		}
+	}
+	str<<"c_1: "<<c_1<<" c_2: "<<c_2<<endl;
+	Log::logln(str.str());
+	str.str("");
+
+	str<<"the edges count in the assign tmp file : ";
+	c_1 = 0, c_2 = 0;
+	for(map<EdgeID,int>::iterator iter_c = edges_tmp_counts.begin(); iter_c!=edges_tmp_counts.end(); iter_c++)
+	{
+		if(iter_c->second == 2)
+		{
+			c_2++;
+		}
+		else if(iter_c->second == 1)
+		{
+			c_1++;
+		}
+		else
+		{
+			Log::logln("error count for assign tmp file !!!");
+		}
+	}
+	str<<"c_1: "<<c_1<<" c_2: "<<c_2<<endl;
+	Log::logln(str.str());
 }

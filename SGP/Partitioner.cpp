@@ -8,6 +8,16 @@
 using namespace std;
 using namespace stdext;
 
+Partitioner::~Partitioner(void)
+{
+	delete _stat;
+}
+
+void Partitioner::InitStatistic()
+{
+	_stat=new Statistic(_k);
+}
+
 void Partitioner::ClearPartition()
 {
 	for(int i=0; i<_aPartition.size();i++)
@@ -15,16 +25,8 @@ void Partitioner::ClearPartition()
 		delete _aPartition.at(i);
 	}
 	_aPartition.clear();
-
-	ResetPartitionStatistic();
-}
-
-void Partitioner::ResetPartitionStatistic()
-{
-	_partitions_statistic.clear();
-	PartitionStatisticInfo info = {0,0,0,0};
-	for(int i=0; i<_k; i++)
-		_partitions_statistic.push_back(info);
+	if(_stat!=NULL)
+		_stat->ResetPartitionInfos();
 }
 
 void Partitioner::AppendClusterNode(Cluster* cluster, ClusterNode& node)
@@ -475,7 +477,7 @@ void Partitioner::WriteVerticesOfPartitions()
 		Log::log(log_str.str());
 
 		//statistic
-		_partitions_statistic.at(i)._vex_number = (*iter)->_cluster.size();
+		GetStatistic()->SetPartitionVexNumber(i, (*iter)->_cluster.size());
 	}
 }
 
@@ -536,7 +538,7 @@ void Partitioner::WriteAssignEdge(VERTEX u, int u_cluster, VERTEX v, int v_clust
 		ofs.close();
 
 		//statistic
-		_partitions_statistic.at(u_cluster)._internal_links ++;
+		GetStatistic()->IncreaseAssignInternalLinks(u_cluster);
 	}
 	else
 	{
@@ -553,9 +555,8 @@ void Partitioner::WriteAssignEdge(VERTEX u, int u_cluster, VERTEX v, int v_clust
 		ofs.close();
 
 		//statistic
-		_partitions_statistic.at(u_cluster)._external_links +=1;
-		_partitions_statistic.at(v_cluster)._external_links +=1;
-
+		GetStatistic()->IncreaseAssignExternalLinks(u_cluster);
+		GetStatistic()->IncreaseAssignExternalLinks(v_cluster);
 	}
 }
 
@@ -570,7 +571,7 @@ void Partitioner::WriteClusterEdge(VERTEX u, int u_cluster, VERTEX v, int v_clus
 		ofs.close();
 
 		//statistic
-		_partitions_statistic.at(u_cluster)._internal_links ++;
+		GetStatistic()->IncreasePartitionInternalLinks(u_cluster);
 	}
 	else
 	{
@@ -587,8 +588,8 @@ void Partitioner::WriteClusterEdge(VERTEX u, int u_cluster, VERTEX v, int v_clus
 		ofs.close();
 
 		//statistic
-		_partitions_statistic.at(u_cluster)._external_links ++;
-		_partitions_statistic.at(v_cluster)._external_links ++;
+		GetStatistic()->IncreasePartitionExternalLinks(u_cluster);
+		GetStatistic()->IncreasePartitionExternalLinks(v_cluster);
 	}
 }
 
@@ -622,7 +623,7 @@ void Partitioner::WriteAssignVerticesOfPartitions()
 
 			ofs_arry[partition]<<v<<endl;
 
-			_partitions_statistic.at(partition)._assign_vex_number++;//statistic
+			GetStatistic()->IncreaseAssignVexNumber(partition);
 		}
 	}
 
@@ -663,14 +664,13 @@ int Partitioner::ComputeLinkstoClusterFromVex(VERTEX vex, int cluster_pos)
 void Partitioner::SetPartitionNumber(int k) { 
 	
 	this->_k = k;
-	//statistic
-	ResetPartitionStatistic();
+	InitStatistic();
 }
 
-void Partitioner::SetAssignVertexStat(int cluster_id)
-{
-	_partitions_statistic.at(cluster_id)._assign_vex_number ++;
-}
+//void Partitioner::SetAssignVertexStat(int cluster_id)
+//{
+//	_partitions_statistic.at(cluster_id)._assign_vex_number ++;
+//}
 
 //void Partitioner::AppendAssignVertex(VERTEX vex, int partition_id)
 //{

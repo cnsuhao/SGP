@@ -11,6 +11,7 @@
 #include <set>
 #include <hash_set>
 #include "Graph.h"
+#include "Statistic.h"
 
 // a node in a cluster
 typedef struct _ClusterNode {
@@ -30,18 +31,6 @@ typedef struct _Cluster {
 // a set of cluster
 typedef vector<Cluster*> Partition;
 
-//statistic information of a partition
-typedef struct _PartitionStatisticInfo {
-	int	_vex_number; //total number of vertex of a partition
-	int _assign_vex_number;//the number of assigned vertex
-	int _external_links; //total external links
-	int _internal_links; //total internal links
-	int _partition_external_links; //
-	int _partition_internal_links;
-	int _assign_external_links;
-	int _assign_internal_links;
-} PartitionStatisticInfo;
-
 //partitioner
 class Partitioner {
 private:
@@ -53,25 +42,25 @@ private:
 	Graph* _graph;
 	//the stem of out file name
 	string _outfile;
+	//statistic
+	Statistic* _stat;
 	
-	//the statistic informations of partitions. these informations will be filled up at the step of writing
-	vector<PartitionStatisticInfo> _partitions_statistic;
-
 public:
-	Partitioner(){};
+	Partitioner(){_stat = NULL; _graph=NULL;};
+	~Partitioner(void);
 
 	void SetGraph(Graph* g){_graph = g;}
 	void SetPartitionNumber(int k);
 	int GetPartitionNumber(){return _k;};
 	void SetOutFile(string outfile){_outfile = outfile;};
 	string GetOutFile(){return _outfile;};
-	vector<PartitionStatisticInfo>& GetPartitionStatistic() {return _partitions_statistic;};
+	void InitStatistic();
+	
 	//increase the number of assigned vertex in the partition of cluster_id
-	void SetAssignVertexStat(int cluster_id);
+	//void SetAssignVertexStat(int cluster_id);
 	Partition& GetPartition(){return _aPartition;};
-
+	Statistic* GetStatistic(){return _stat;};
 	void ClearPartition();
-	void ResetPartitionStatistic();
 
 	//append a cluster node at the tail of a cluster
 	void AppendClusterNode(Cluster* cluster, ClusterNode& node);
