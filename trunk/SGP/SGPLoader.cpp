@@ -775,12 +775,12 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 		Log::logln(TimeTicket::check());
 		Debug("UpdateWeightofEdgesInEs");
 		
-		Debug_4();
+		//Debug_4();
 		doStreamDBSSample();
 		Log::log("doStreamDBSSample elapse : \t");
 		Log::logln(TimeTicket::check());
 		Debug("doStreamDBSSample");
-		Debug_4();
+		//Debug_4();
 		
 		adjust_partitions.clear();
 		if(UpdateAndCheckRepartition(adjust_partitions))//更新划分中的节点，并检查是否需要重新划分
@@ -803,6 +803,7 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 
 	//step 31 to step 51
 	UpdateStorageNode();
+	//UpdateStorageNode_Debug();
 	Log::log("UpdateStorageNode elapse : \t");
 	Log::logln(TimeTicket::check());
 	Debug("UpdateStorageNode");
@@ -822,7 +823,9 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 	Log::logln(TimeTicket::check());
 	Debug("WriteClusterEdgesOfPartitions");
 
-	Debug_6();
+	//Debug_6();
+
+	Debug_7();
 
 	return true;
 }
@@ -1017,21 +1020,21 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 		iter_substituted++;
 	}
 
-	////////////////////////////////////////////////////////////////////////////
-	stringstream debug_str;
-	debug_str<<" removed_vex num: "<<removed_vex.size()
-		<<"\n new vex num: "<<new_vex.size();
-	Log::logln(debug_str.str());
-	debug_str.str("intersection :");
-	for(hash_set<VERTEX>::iterator iter_remove = removed_vex.begin(); iter_remove != removed_vex.end(); iter_remove++)
-	{
-		if (new_vex.find(*iter_remove) != new_vex.end())
-		{
-			debug_str<<*iter_remove;
-		}
-	}
-	Log::logln(debug_str.str());
-	///////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////
+	//stringstream debug_str;
+	//debug_str<<" removed_vex num: "<<removed_vex.size()
+	//	<<"\n new vex num: "<<new_vex.size();
+	//Log::logln(debug_str.str());
+	//debug_str.str("intersection :");
+	//for(hash_set<VERTEX>::iterator iter_remove = removed_vex.begin(); iter_remove != removed_vex.end(); iter_remove++)
+	//{
+	//	if (new_vex.find(*iter_remove) != new_vex.end())
+	//	{
+	//		debug_str<<*iter_remove;
+	//	}
+	//}
+	//Log::logln(debug_str.str());
+	/////////////////////////////////////////////////////////////////////////////
 
 	//删除划分中的节点
 	_partitions_in_memory.RemoveClusterNode(removed_vex);
@@ -1042,8 +1045,8 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 	//将新节点添加到最小划分中，如果大小一样，随机
 	_partitions_in_memory.RandomInsertNewVertices(new_vex, partitions_changed_vertex);
 	Debug("RandomInsertNewVertices");
-	Debug_2("check edge list");
-	Debug_3("check sample_cache and cluster node",removed_vex, new_vex);
+	//Debug_2("check edge list");
+	//Debug_3("check sample_cache and cluster node",removed_vex, new_vex);
 	//将变化顶点对应划分传递过去，解决删除节点问题。
 	bool repartition = _partitions_in_memory.CheckIfAdjust(partitions_changed_vertex, adjust_partitions);//删除与添加的影响未考虑(通过partitions_changed_vertex解决)
 	Debug("CheckIfAdjust");
@@ -1120,6 +1123,9 @@ void SGPLoader::ResetSampleFlag()
 }
 
 DWORD WINAPI UpdateStorageThread( LPVOID lpParam );
+void ReWriteAssignEdgeToPartition(int to_partition, VERTEX u, int u_partition, VERTEX v, int v_partition, SGPLoader* loader);
+void ReWriteAssignEdgeToPartition_Debug(int to_partition, VERTEX u, int u_partition, VERTEX v, int v_partition, SGPLoader* loader, ofstream* ofs);
+
 //UpdateStorageThread param
 typedef struct _update_storage_param{
 	SGPLoader* _loader;
@@ -1227,6 +1233,116 @@ bool SGPLoader::UpdateStorageNode()
 
 }
 
+bool SGPLoader::UpdateStorageNode_Debug()
+{
+	//clear the statistic of assign info that set by writeassignedge. the final statistic will be caculated on writing the vertices of clusters and assigned
+	vector<PartitionStatisticInfo>& stats = GetPartitioner().GetPartitionStatistic();
+	for(vector<PartitionStatisticInfo>::iterator iter = stats.begin(); iter!=stats.end(); iter++)
+	{
+		iter->_internal_links = 0;
+		iter->_external_links = 0;
+	}
+	stringstream str;
+	ifstream* ifs = new ifstream[_k];
+	ofstream* ofs = new ofstream[_k];
+	for(int i=0; i<_k; i++)
+	{
+		str.str("");
+		str<<GetPartitioner().GetOutFile()<<"_assign_edge."<<i;
+		ifs[i].open(str.str());
+		str.str("");
+		str<<GetPartitioner().GetOutFile()<<"_assign_edge_tmp."<<i;
+		ofs[i].open(str.str());
+	}
+	for(int i=0; i<_k; i++)
+	{
+		int partition = i;
+		string buf;
+		while(getline(ifs[partition], buf))
+		{
+			if(buf.empty()) continue;
+
+			int idx =0;
+			int idx_next = buf.find_first_of(" ", idx);
+			string temp = buf.substr(idx, idx_next-idx);
+			VERTEX u = stoi(temp);
+
+			idx = ++idx_next;
+			idx_next = buf.find_first_of(" ", idx);
+			temp = buf.substr(idx, idx_next-idx);
+			int u_assign_partition = stoi(temp);
+
+			idx = ++idx_next;
+			idx_next = buf.find_first_of(" ", idx);
+			temp = buf.substr(idx, idx_next-idx);
+			VERTEX v= stoi(temp);
+
+			temp = buf.substr(idx_next+1, buf.length()-idx_next-1);
+			int v_assign_partition = stoi(temp);
+
+			AssignContextManager* acm = AssignContextManager::GetAssignManager();
+			int u_partition = acm->GetAssignVertexPartition(u);
+			if(u_partition == -1)//sampled already
+			{
+				u_partition = GetPartitioner().GetClusterLabelOfVex(u);
+				if(u_partition == -1)
+				{
+					str.str("");
+					str<<"SGP: SteamLoader: UpdateStorageNode: Thread of Partition : "<<partition<< " Error!! : Cannot find the partition of Vex " <<u<<endl;
+					Log::logln(str.str());
+				}
+			}
+			int v_partition = acm->GetAssignVertexPartition(v);
+			if(v_partition == -1)//sampled already
+			{
+				v_partition = GetPartitioner().GetClusterLabelOfVex(v);
+				if(v_partition == -1)
+				{
+					str.str("");
+					str<<"SGP: SteamLoader: UpdateStorageNode: Thread of Partition : "<<partition<< " Error!! : Cannot find the partition of Vex " <<v<<endl;
+					Log::logln(str.str());
+				}
+			}
+
+			if(partition<=u_assign_partition && partition<= v_assign_partition)//由划分小的来处理跨区边
+			{
+				if(u_partition == partition &&  v_partition == partition)
+				{
+					ReWriteAssignEdgeToPartition_Debug(partition, u, u_partition, v, v_partition, this, ofs);
+				}
+				else
+				{
+					ReWriteAssignEdgeToPartition_Debug(u_partition, u, u_partition, v, v_partition, this, ofs);
+					ReWriteAssignEdgeToPartition_Debug(v_partition, u, u_partition, v, v_partition, this, ofs);
+				}
+			}
+		}//end while
+	}
+	for(int i=0; i<_k; i++)
+	{
+		ifs[i].close();
+		ofs[i].close();
+	}
+	delete[] ifs;
+	delete[] ofs;
+	return true;
+}
+
+void ReWriteAssignEdgeToPartition_Debug(int to_partition, VERTEX u, int u_partition, VERTEX v, int v_partition, SGPLoader* loader, ofstream* ofs)
+{
+	ofs[to_partition]<<u<<" "<<u_partition<<" "<<v<<" "<<v_partition<<endl;
+
+	// update statistic
+	if(u_partition == v_partition)
+	{
+		loader->GetPartitioner().GetPartitionStatistic().at(to_partition)._internal_links++;
+	}
+	else
+	{
+		loader->GetPartitioner().GetPartitionStatistic().at(to_partition)._external_links++;
+	}
+}
+
 void ReWriteAssignEdgeToPartition(int to_partition, VERTEX u, int u_partition, VERTEX v, int v_partition, SGPLoader* loader)
 {
 	DWORD dwWaitResult; 
@@ -1235,16 +1351,16 @@ void ReWriteAssignEdgeToPartition(int to_partition, VERTEX u, int u_partition, V
 	if(dwWaitResult == WAIT_OBJECT_0)
 	{
 		// The thread got mutex ownership, write the edge
-		thread_param[to_partition].ofs<<u<<" "<<u_partition<<" "<<v<<" "<<v_partition;
+		thread_param[to_partition].ofs<<u<<" "<<u_partition<<" "<<v<<" "<<v_partition<<endl;
 
 		// update statistic
 		if(u_partition == v_partition)
 		{
-			loader->GetPartitioner().GetPartitionStatistic().at(u_partition)._internal_links++;
+			loader->GetPartitioner().GetPartitionStatistic().at(to_partition)._internal_links++;
 		}
 		else
 		{
-			loader->GetPartitioner().GetPartitionStatistic().at(u_partition)._external_links++;
+			loader->GetPartitioner().GetPartitionStatistic().at(to_partition)._external_links++;
 		}
 
 		//realse the mutex
@@ -1255,6 +1371,14 @@ void ReWriteAssignEdgeToPartition(int to_partition, VERTEX u, int u_partition, V
 			str<<"SGP: SteamLoader: ReWriteAssignEdgeToPartition: "<<to_partition<< " Error in releasing Mutex, ERROR Code: "<<GetLastError()<<endl;
 			Log::logln(str.str());
 		}
+	}
+	else
+	{
+		stringstream str;
+		str.str("");
+		str<<"SGP: SteamLoader: ReWriteAssignEdgeToPartition: "<<to_partition<< " Error in Waiting Mutex, ERROR Code: "<<GetLastError()
+			<<"\n"<<u<<" "<<u_partition<<" "<<v<<" "<<v_partition<<endl;
+		Log::logln(str.str());
 	}
 }
 
@@ -1301,7 +1425,7 @@ DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
 				str<<"SGP: SteamLoader: UpdateStorageNode: Thread of Partition : "<<partition<< " Error!! : Cannot find the partition of Vex " <<u<<endl;
 				Log::logln(str.str());
 				
-				loader->Debug_5(u);
+				//loader->Debug_5(u);
 			}
 		}
 		int v_partition = acm->GetAssignVertexPartition(v);
@@ -1314,7 +1438,7 @@ DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
 				str<<"SGP: SteamLoader: UpdateStorageNode: Thread of Partition : "<<partition<< " Error!! : Cannot find the partition of Vex " <<v<<endl;
 				Log::logln(str.str());
 				
-				loader->Debug_5(v);
+				//loader->Debug_5(v);
 			}
 		}
 
@@ -1358,30 +1482,31 @@ void SGPLoader::Debug(string info)
 		<<"\n graph_all_vex_number: "<<graph_all_vex_number
 		<<"\n graph edges number: " << graph_edges
 		<<endl;
-	if(graph_vex_number != sample_cahce_vex_number)
-	{
-		for(VertexInfoArray::iterator iter_graph = _graph_sample.GetAdjTableRef()->_vex_table.begin(); 
-			iter_graph != _graph_sample.GetAdjTableRef()->_vex_table.end(); 
-			iter_graph++)
-		{
-			if(iter_graph->_indicator == NORM)
-			{
-				VERTEX u = iter_graph->_u;
-				map<VERTEX, Vertex_Item>::iterator iter_sample_vex = _sample_vertex_items.find(u);
-				if(iter_sample_vex == _sample_vertex_items.end())
-				{
-					str<< "\n not found a vex of graph in the _sample_vertex_items :" << u;
-				}
-				else
-				{
-					if(iter_sample_vex->second.cur_degree<=0)
-					{
-						str<<"\n found a vex of graph with minus current degree :"<<u << "  "<<iter_sample_vex->second.cur_degree;
-					}
-				}
-			}
-		}
-	}
+
+	//if(graph_vex_number != sample_cahce_vex_number)
+	//{
+	//	for(VertexInfoArray::iterator iter_graph = _graph_sample.GetAdjTableRef()->_vex_table.begin(); 
+	//		iter_graph != _graph_sample.GetAdjTableRef()->_vex_table.end(); 
+	//		iter_graph++)
+	//	{
+	//		if(iter_graph->_indicator == NORM)
+	//		{
+	//			VERTEX u = iter_graph->_u;
+	//			map<VERTEX, Vertex_Item>::iterator iter_sample_vex = _sample_vertex_items.find(u);
+	//			if(iter_sample_vex == _sample_vertex_items.end())
+	//			{
+	//				str<< "\n not found a vex of graph in the _sample_vertex_items :" << u;
+	//			}
+	//			else
+	//			{
+	//				if(iter_sample_vex->second.cur_degree<=0)
+	//				{
+	//					str<<"\n found a vex of graph with minus current degree :"<<u << "  "<<iter_sample_vex->second.cur_degree;
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
 
 	Log::logln(str.str());
 	Log::logln("DEBUG 1=======================");
@@ -1493,4 +1618,94 @@ void SGPLoader::Debug_6()
 	}
 	Log::logln(str.str());
 	Log::logln("DEBUG 6 =======================");
+}
+
+void SGPLoader::Debug_7()
+{
+	hash_set<EdgeID> edges;
+	hash_set<EdgeID> edges_tmp;
+	ifstream ifs;
+	stringstream str;
+	
+	for(int i=0; i<_k; i++)
+	{
+		str.str("");
+		str<<GetPartitioner().GetOutFile()<<"_assign_edge_tmp."<<i;
+		ifs.open(str.str());
+
+		string buf;
+		while(getline(ifs, buf))
+		{
+			if(buf.empty()) continue;
+
+			int idx =0;
+			int idx_next = buf.find_first_of(" ", idx);
+			string temp = buf.substr(idx, idx_next-idx);
+			VERTEX u = stoi(temp);
+
+			idx = ++idx_next;
+			idx_next = buf.find_first_of(" ", idx);
+			temp = buf.substr(idx, idx_next-idx);
+			int u_assign_partition = stoi(temp);
+
+			idx = ++idx_next;
+			idx_next = buf.find_first_of(" ", idx);
+			temp = buf.substr(idx, idx_next-idx);
+			VERTEX v= stoi(temp);
+
+			temp = buf.substr(idx_next+1, buf.length()-idx_next-1);
+			int v_assign_partition = stoi(temp);
+			edges_tmp.insert(::MakeEdgeID(u,v));
+		}
+		ifs.close();
+	}
+	str.str("");
+	str<<"the total edges assigned after updatestorage is : "<< edges_tmp.size();
+	Log::logln(str.str());
+	
+	for(int i=0; i<_k; i++)
+	{
+		str.str("");
+		str<<GetPartitioner().GetOutFile()<<"_assign_edge."<<i;
+		ifs.open(str.str());
+
+		string buf;
+		str<<"\n the edge in assign is not found in the assign edge tmp. u : u_partition : v : v_partition \n";
+		while(getline(ifs, buf))
+		{
+			if(buf.empty()) continue;
+
+			int idx =0;
+			int idx_next = buf.find_first_of(" ", idx);
+			string temp = buf.substr(idx, idx_next-idx);
+			VERTEX u = stoi(temp);
+
+			idx = ++idx_next;
+			idx_next = buf.find_first_of(" ", idx);
+			temp = buf.substr(idx, idx_next-idx);
+			int u_assign_partition = stoi(temp);
+
+			idx = ++idx_next;
+			idx_next = buf.find_first_of(" ", idx);
+			temp = buf.substr(idx, idx_next-idx);
+			VERTEX v= stoi(temp);
+
+			temp = buf.substr(idx_next+1, buf.length()-idx_next-1);
+			int v_assign_partition = stoi(temp);
+			EdgeID id = ::MakeEdgeID(u,v);
+			edges.insert(id);
+
+			hash_set<EdgeID>::iterator iter = edges_tmp.find(id);
+			if(iter == edges_tmp.end())
+			{
+				str<<u<<" : "<<u_assign_partition<<" : "<<v<<" : "<<v_assign_partition<<endl;
+			}
+		}
+		ifs.close();
+		Log::logln(str.str());
+	}
+	str.str("");
+	str<<"the total edges assigned before updatestorage is : "<< edges.size();
+	Log::logln(str.str());
+
 }

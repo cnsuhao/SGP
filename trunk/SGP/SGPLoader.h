@@ -172,5 +172,7 @@ public:
 	void Debug_4();
 	void Debug_5(VERTEX& u);
 	void Debug_6();
+	void Debug_7();
+	bool UpdateStorageNode_Debug();
 };
 
