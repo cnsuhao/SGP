@@ -34,8 +34,12 @@ typedef vector<Cluster*> Partition;
 typedef struct _PartitionStatisticInfo {
 	int	_vex_number; //total number of vertex of a partition
 	int _assign_vex_number;//the number of assigned vertex
-	int _external_links;
-	int _internal_links;
+	int _external_links; //total external links
+	int _internal_links; //total internal links
+	int _partition_external_links; //
+	int _partition_internal_links;
+	int _assign_external_links;
+	int _assign_internal_links;
 } PartitionStatisticInfo;
 
 //partitioner

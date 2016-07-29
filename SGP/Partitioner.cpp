@@ -588,7 +588,7 @@ void Partitioner::WriteClusterEdge(VERTEX u, int u_cluster, VERTEX v, int v_clus
 
 		//statistic
 		_partitions_statistic.at(u_cluster)._external_links ++;
-		//_partitions_statistic.at(v_cluster)._external_links ++;
+		_partitions_statistic.at(v_cluster)._external_links ++;
 	}
 }
 
@@ -616,9 +616,9 @@ void Partitioner::WriteAssignVerticesOfPartitions()
 			if(cluster!=-1)
 				continue;
 
-			stringstream log_str;
-			log_str<<" writing the assigned vertice "<< v << " into the partition " << partition <<"\n";
-			Log::log(log_str.str());
+			//stringstream log_str;
+			//log_str<<" writing the assigned vertice "<< v << " into the partition " << partition <<"\n";
+			//Log::log(log_str.str());
 
 			ofs_arry[partition]<<v<<endl;
 
