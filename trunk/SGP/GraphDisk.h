@@ -15,7 +15,6 @@ typedef enum _gdVertexStatus {
 
 typedef struct _gdVertexInfo {
 	VERTEX				_u;
-	gdEdgeInfoList*		_edge_list;
 	gdVertexStatus		_status;
 	int					_degree;
 } gdVertexInfo;
@@ -36,8 +35,10 @@ typedef vector<gdVertexInfo> VertexInfoList;
 typedef struct _gdAdjTable {
 	VertexInfoList			_vertex_list;//all the vertices will be saved
 	map<VERTEX, int>		_vertex_to_pos_idx;//vex ->the pos in _vertex_list
+	
 	vector<gdEdgeInfoList>	_adj_matrix; //the adj matrix of the partial graph with the limition of mem size _max_rows*_max_d in the memory
 	map<VERTEX, gdVertexCacheInfo>	_cache_vex_list;//the vex list in the cache
+	
 	int _max_d;
 	int _max_rows;
 } AdjTable;
@@ -48,8 +49,26 @@ private:
 	AdjTable _graph_data;
 	string _tmp_file;
 	string _graph_file;
-	ofstream _ofs_tmp;
+	//adjtable temp file (binary): vertex|degree|adj_pos1....adj_pos_{max_d}
+	fstream _ofs_tmp;
 	ifstream _ifs_graph;
+	
+	//write the vex at the vex_pos in the adjtable, and its edgelist
+	//if edges is null, write a default value list of -1
+	void WriteEdgeList(int vex_pos, gdEdgeInfoList* edges);
+	void FillEdgeList(int vex_pos,gdEdgeInfoList* edges);
+
+	int GetAdjLineSize(){
+		return 
+		sizeof(VERTEX)					//vertex
+		+sizeof(int)					//degree
+		+_graph_data._max_d*sizeof(int);//adj_pos list
+	};
+
+	//read the edgelist at the pos in the temp file into the cache
+	//return the pos of the switchin edgelist in the cache after switching
+	int SwitchInEdgeList(int switchin_vex_pos);
+
 
 public:
 	GraphDisk(void);
@@ -63,6 +82,8 @@ public:
 
 	void SetTmpFile(string f) { _tmp_file = f;};
 	void SetGraphFile(string f) {_graph_file = f;};
+
+	int GetVertexNum() {return _graph_data._vertex_list.size();};
 
 	void InitAdjTable();
 
@@ -80,12 +101,12 @@ public:
 	//NOTE: the corresponding edgelist will be locked to avoid swithing out.
 	//the caller is reponsible for unlocking it by calling unlockvertex.
 	gdEdgeInfoList* GetAdjEdgeListofPos(int pos);
-
-	int SwitchInEdgeList(int pos);
 	void LockVertex(VERTEX& u);
 	void LockVertexofPos(int pos);
 	void UnLockVertex(VERTEX& u);
 	void UnLockVertexofPos(int pos);
+	bool isLockVertex(VERTEX u);
+	bool isLockVertexofPos(int pos);
 
 	bool ReadEdge(EDGE& e);
 };

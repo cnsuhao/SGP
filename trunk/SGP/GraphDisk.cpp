@@ -41,7 +41,7 @@ bool GraphDisk::ReadEdge(EDGE& e)
 void GraphDisk::InitAdjTable()
 {
 	_ifs_graph.open(_graph_file);
-	_ofs_tmp.open(_tmp_file);
+	_ofs_tmp.open(_tmp_file, ios::trunc|ios::binary);
 }
 
 int GraphDisk::BuildAdjTable()
@@ -70,6 +70,20 @@ int GraphDisk::InsertVertex(VERTEX u)
 	_graph_data._vertex_list.push_back(v_info);
 	int pos = _graph_data._vertex_list.size()-1;
 	_graph_data._vertex_to_pos_idx.insert(pair<VERTEX,int>(u, pos));
+
+	if(_graph_data._adj_matrix.size()<_graph_data._max_rows)//put the edgelist in the cache
+	{
+		gdEdgeInfoList edge_info_list;
+		_graph_data._adj_matrix.push_back(edge_info_list);
+
+		gdVertexCacheInfo info = {_graph_data._adj_matrix.size()-1, 1, UNLOCK};
+		_graph_data._cache_vex_list.insert(pair<VERTEX, gdVertexCacheInfo>(u, info));
+	}
+	else
+	{
+		WriteEdgeList(pos, NULL);//write into tmp file
+	}
+		
 	return pos;
 }
 
@@ -185,9 +199,47 @@ gdEdgeInfoList* GraphDisk::GetAdjEdgeListofPos(int pos)
 	}
 }
 
-int GraphDisk::SwitchInEdgeList(int pos)
+int GraphDisk::SwitchInEdgeList(int switchin_vex_pos)
 {
+	int switchout_idx_row_adj_matrix = -1, min_hit = INT_MAX, switchout_vex_pos=-1;
+	VERTEX switchout_vex = -1, switchin_vex = -1;
+	
+	//find the switchout
+	for (map<VERTEX, gdVertexCacheInfo>::iterator iter = _graph_data._cache_vex_list.begin();
+		iter!=_graph_data._cache_vex_list.end();
+		iter++)
+	{
+		if(iter->second._hit_count<min_hit && 
+			!isLockVertex(iter->first))
+		{
+			min_hit = iter->second._hit_count;
+			switchout_idx_row_adj_matrix = iter->second._idx_row_adj_matrix;
+			switchout_vex = iter->first;
+		}
+	}
+	//error check
+	if(switchout_idx_row_adj_matrix == -1)
+		return -1;
 
+	switchout_vex_pos = GetVertexPos(switchout_vex);
+	if(switchout_vex_pos == -1)
+		return -1;
+	
+	//read and write
+	gdEdgeInfoList* switchout_edgelist = &(_graph_data._adj_matrix.at(switchout_idx_row_adj_matrix));
+	WriteEdgeList(switchout_vex_pos, switchout_edgelist);
+	FillEdgeList(switchin_vex_pos, switchout_edgelist);
+
+	//update _cache_vex_list
+	//remove the switchout from the cache
+	map<VERTEX, gdVertexCacheInfo>::iterator iter = _graph_data._cache_vex_list.find(switchout_vex);
+	_graph_data._cache_vex_list.erase(iter);//don't check if exists
+	//insert the switchin
+	switchin_vex = GetVertexInfoofPos(switchin_vex_pos)->_u;
+	gdVertexCacheInfo switchin_info = {switchout_idx_row_adj_matrix, 1, UNLOCK};
+	_graph_data._cache_vex_list.insert(pair<VERTEX, gdVertexCacheInfo>(switchin_vex, switchin_info));
+
+	return switchout_idx_row_adj_matrix;
 }
 
 void GraphDisk::LockVertex(VERTEX& u)
@@ -238,5 +290,95 @@ void GraphDisk::UnLockVertexofPos(int pos)
 	}
 
 	UnLockVertex(v_info->_u);
+}
 
+bool GraphDisk::isLockVertex(VERTEX u)
+{
+	map<VERTEX, gdVertexCacheInfo>::iterator iter = _graph_data._cache_vex_list.find(u);
+	if(iter != _graph_data._cache_vex_list.end())
+	{
+		if(iter->second._status == LOCKED)
+			return true;
+		else
+			return false;
+	}
+	else
+	{
+		Log::logln("Error::GraphDisk::isLockVertex::the vertex in cache not found");
+		return false;
+	}
+}
+
+bool GraphDisk::isLockVertexofPos(int pos)
+{
+	gdVertexInfo* v_info = GetVertexInfoofPos(pos);
+	if(v_info == NULL)
+	{
+		Log::logln("Error::GraphDisk::isLockVertexofPos::the vertex info not found");
+		return false;
+	}
+	return isLockVertex(v_info->_u);
+}
+
+
+void GraphDisk::WriteEdgeList(int vex_pos, gdEdgeInfoList* edges)
+{
+	int max_pos = GetVertexNum();//maybe append at the end with the condition of max_pos == vex_pos
+	if(vex_pos > max_pos)
+	{
+		Log::logln("Error::GraphDisk::WriteEdgeList::Error Position");
+		return;
+	}
+	gdVertexInfo* v_info = GetVertexInfoofPos(vex_pos);
+	if(v_info == NULL)
+	{
+		Log::logln("Error::GraphDisk::WriteEdgeList::Not found the vertex");
+		return;
+	}
+
+	VERTEX u =v_info->_u;
+	int d = v_info->_degree;
+	int write_pos = vex_pos*GetAdjLineSize();
+	_ofs_tmp.seekp(write_pos, ios::beg);
+	
+	_ofs_tmp<<u<<d;
+	for(int i=0; i<GetMaxDegree(); i++)
+	{
+		int adj = -1;
+		if(edges == NULL || i>edges->size())
+		{
+			adj = -1;
+		}
+		else
+		{
+			adj = edges->at(i)._adj_vex_pos;
+		}
+		_ofs_tmp<<adj;
+	}
+}
+
+void GraphDisk::FillEdgeList(int vex_pos,gdEdgeInfoList* edges)
+{
+	int max_pos = GetVertexNum()-1;
+	if(vex_pos > max_pos)
+	{
+		Log::logln("Error::GraphDisk::WriteEdgeList::Error Position");
+		return;
+	}
+
+	edges->clear();
+	
+	VERTEX u = -1;
+	int d = -1;
+	gdEdgeInfo adj_info = {-1};
+	int read_pos = vex_pos*GetAdjLineSize();
+	_ofs_tmp.seekg(read_pos, ios::beg);
+
+	_ofs_tmp>>u;
+	_ofs_tmp>>d;
+	for(int i=0; i<GetMaxDegree(); i++)
+	{
+		_ofs_tmp>>adj_info._adj_vex_pos;
+		edges->push_back(adj_info);
+	}
 }
