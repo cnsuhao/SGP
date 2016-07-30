@@ -81,6 +81,7 @@
     <ClInclude Include="commondef.h" />
     <ClInclude Include="FENNEL.h" />
     <ClInclude Include="Graph.h" />
+    <ClInclude Include="GraphDisk.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="METIS.h" />
     <ClInclude Include="Partitioner.h" />
@@ -94,8 +95,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssignContext.cpp" />
+    <ClCompile Include="common.cpp" />
     <ClCompile Include="FENNEL.cpp" />
     <ClCompile Include="Graph.cpp" />
+    <ClCompile Include="GraphDisk.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="METIS.cpp" />
     <ClCompile Include="Partitioner.cpp" />

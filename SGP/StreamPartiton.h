@@ -1,4 +1,7 @@
 #pragma once
+#include "commondef.h"
+#include <fstream>
+
 /*
 This class implements the algorithm in the paper of " streaming graph partitioning for large distributed graphs ", including:
 1. hash partitoin: place a vertex to a cluster chosen uniformly at random
@@ -13,8 +16,28 @@ This class implements the algorithm in the paper of " streaming graph partitioni
 */
 class StreamPartiton
 {
+private:
+	string					_graph_file; //graph file input
+	string					_outfile;//output file;
+	ifstream				_ifs;
+	int						_k;
+	
+
 public:
 	StreamPartiton(void);
 	~StreamPartiton(void);
+
+	bool ReadEdge(EDGE& e);
+
+	void doHashStreamPartition();
+	void doBalanceStreamPartition();
+	void doDeterministicGreadyStreamPartition();
+	void doLinearWeightedDeterministicGreadyStreamPartition();
+	void doExponentialWeightedDeterministicGreadyStreamPartition();
+	void doTriangleStreamPartition();
+	void doLinearTriangleStreamPartition();
+	void doExponentDeterministicTriangleStreamPartition();
+	void doNonNeighborStreamPartition();
+
 };
 

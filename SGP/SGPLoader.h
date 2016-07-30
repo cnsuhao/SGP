@@ -6,9 +6,6 @@
 #include "commondef.h"
 #include <hash_set>
 
-int rand(int range_min, int range_max);
-float randf(float range_min, float range_max);
-
 
 class SGPLoader
 {

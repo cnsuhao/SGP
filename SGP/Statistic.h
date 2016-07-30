@@ -24,6 +24,7 @@ private:
 	vector<int> _partition_exchange_count_array;
 	int _k;
 	int _sample_hit;//采样置换次数
+	double _total_elapse;
 
 public:
 	void IncreasePartitionInternalLinks(int partition);
@@ -37,6 +38,9 @@ public:
 
 	void IncreaseSampleHit() {_sample_hit++;};
 	int GetSampleHit(){return _sample_hit;};
+
+	void SetTotalElapse(double elapse){_total_elapse = elapse;};
+	double GetTotalElapse(){return _total_elapse;};
 
 	void IncreaseRepartitionCount();
 	int GetRepartitionCount();

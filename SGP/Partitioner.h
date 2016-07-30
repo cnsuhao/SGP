@@ -56,8 +56,6 @@ public:
 	string GetOutFile(){return _outfile;};
 	void InitStatistic();
 	
-	//increase the number of assigned vertex in the partition of cluster_id
-	//void SetAssignVertexStat(int cluster_id);
 	Partition& GetPartition(){return _aPartition;};
 	Statistic* GetStatistic(){return _stat;};
 	void ClearPartition();
@@ -75,7 +73,8 @@ public:
 	int GetClusterLabelOfVex(VERTEX u);
 	//KL partitioning algorithm
 	void doKL();
-	void doKLPartition(Cluster* aCluster, Cluster* bCluster);
+	//return the exchange count
+	int doKLPartition(Cluster* aCluster, Cluster* bCluster);
 	//Max-Min partitioning algorithm
 	void doMaxMin();
 
@@ -118,9 +117,6 @@ public:
 	int ComputeLinkstoClusterFromVex(VERTEX vex, int cluster_pos);
 
 
-	/*void AppendAssignVertex(VERTEX vex, int partition_id);*/
-	/*int GetAssignedLabelOfVex(VERTEX vex);*/
-
 	/*********************************************************************************/
 	//SGLs:将整个划分过程看做二叉树（完全），但最终只保存了叶子节点，更新实际上在叶子上开始处理的
 	//adjust_partitions contains the partions to be adjust, i.e the gain is inversed, if null , no adjust.
@@ -152,5 +148,5 @@ public:
 	//Init 
 	void InitPartitionerOutFile();
 	//for debug
-	int GetClusterNodeNumber();
+	int GetClusterNodeNumber_Debug();
 };

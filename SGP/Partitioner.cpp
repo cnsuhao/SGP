@@ -51,6 +51,7 @@ void Partitioner::doKL()
 	cluster_to_split.push(pCluster);
 
 	int split_number =_k-1;//2^n-1
+	int exchange_count = 0;
 	for(int k=1; k<=split_number; k++)
 	{
 		Log::log("spliting phase : ");
@@ -78,33 +79,37 @@ void Partitioner::doKL()
 		
 		Log::log("do partitioning...\n");
 		//partitioning the splitted cluster
-		doKLPartition(pNewClusterA, pNewClusterB);
+		int c = doKLPartition(pNewClusterA, pNewClusterB);
+		exchange_count += c;
 
 		//push the clusters
 		cluster_to_split.push(pNewClusterA);
 		cluster_to_split.push(pNewClusterB);
 	}
+	GetStatistic()->AppendPartitionExchangeCount(exchange_count);
 
 	while(!cluster_to_split.empty())
 	{
 		_aPartition.push_back(cluster_to_split.front());
 		cluster_to_split.pop();
 	}
+
 }
 
-void Partitioner::doKLPartition(Cluster* aCluster, Cluster* bCluster)
+int Partitioner::doKLPartition(Cluster* aCluster, Cluster* bCluster)
 {
+	Log::log("\t doKLPartition...\n");
 	bool exchanged = false;
+	int total_exchanged_count = 0;
 	do {
 
 		exchanged = false;
-		Log::log("\t compute gain and sort...\n");
+		
 		//init the cluster - compute a vertex gain and insert sorting
 		ComputeGainAndSort(aCluster, bCluster);
 		int min_cluster_size = aCluster->_cluster.size() > bCluster->_cluster.size() 
 			? bCluster->_cluster.size():aCluster->_cluster.size();
 		
-		Log::log("\t exchanging...\n");
 		int exchange_count = 0;
 		for(int i=0; i<min_cluster_size; i++)
 		{
@@ -136,11 +141,10 @@ void Partitioner::doKLPartition(Cluster* aCluster, Cluster* bCluster)
 			exchanged = true;
 			exchange_count++;
 		}
-
-		Log::log("exchange count: ");
-		Log::logln(exchange_count);
-
+		total_exchanged_count += exchange_count;
 	}while(exchanged);
+
+	return total_exchanged_count;
 }
 
 bool Partitioner::FindExchangeClusterNode(Cluster* aCluster,int find_begin_a,int& exchanged_a,
@@ -667,32 +671,6 @@ void Partitioner::SetPartitionNumber(int k) {
 	InitStatistic();
 }
 
-//void Partitioner::SetAssignVertexStat(int cluster_id)
-//{
-//	_partitions_statistic.at(cluster_id)._assign_vex_number ++;
-//}
-
-//void Partitioner::AppendAssignVertex(VERTEX vex, int partition_id)
-//{
-//	Cluster* cluster = _aPartition.at(partition_id);
-//	cluster->_assign_vex.insert(vex);
-//}
-
-
-//int Partitioner::GetAssignedLabelOfVex(VERTEX vex)
-//{
-//	for(int i=0; i<_aPartition.size(); i++)
-//	{
-//		Cluster* cluster = _aPartition.at(i);
-//		unordered_set<VERTEX>& assign_vex = cluster->_assign_vex;
-//		unordered_set<VERTEX>::const_iterator iter = assign_vex.find(vex);
-//		if(iter != assign_vex.end())
-//			return i;
-//	} 
-//
-//	return -1;
-//}
-
 bool Partitioner::CheckIfAdjust(map<VERTEX, int>& partitions_change_vex, vector<ReAdjustPartitionPair>& adjust_partitions)
 {
 	typedef struct {
@@ -824,6 +802,7 @@ void Partitioner::RepartitionKL(vector<ReAdjustPartitionPair>& adjust_partitions
 {
 	int BT_nodes = 2*_k-1; //complete binary tree
 	int BT_height = int(log(float(_k))/log(2.0f))+1;
+	int exchange_count = 0;
 	Log::log("Repartition ....... \n");
 	for(int i=0; i<adjust_partitions.size(); i++)
 	{
@@ -834,7 +813,8 @@ void Partitioner::RepartitionKL(vector<ReAdjustPartitionPair>& adjust_partitions
 		Log::log("do partitioning...\n");
 		Cluster* cluster_left = MergeLeafofNode(pair._part1);
 		Cluster* cluster_right = MergeLeafofNode(pair._part2);
-		doKLPartition(cluster_left, cluster_right);
+		int c = doKLPartition(cluster_left, cluster_right);
+		exchange_count += c;
 
 		queue<Cluster*> cluster_to_split;
 		cluster_to_split.push(cluster_left);
@@ -872,8 +852,8 @@ void Partitioner::RepartitionKL(vector<ReAdjustPartitionPair>& adjust_partitions
 
 			Log::log("do partitioning...\n");
 			//partitioning the splitted cluster
-			doKLPartition(pNewClusterA, pNewClusterB);
-
+			int c = doKLPartition(pNewClusterA, pNewClusterB);
+			exchange_count += c;
 			//push the clusters
 			cluster_to_split.push(pNewClusterA);
 			cluster_to_split.push(pNewClusterB);
@@ -889,6 +869,7 @@ void Partitioner::RepartitionKL(vector<ReAdjustPartitionPair>& adjust_partitions
 			cluster_to_split.pop();
 		}
 	}
+	GetStatistic()->AppendPartitionExchangeCount(exchange_count);
 }
 
 void Partitioner::RepartitionMaxMin(vector<ReAdjustPartitionPair>& adjust_partitions)
@@ -992,7 +973,7 @@ void Partitioner::InsertNewVertexInCluster(Cluster* cluster, VERTEX& vex)
 	AppendClusterNode(cluster, node);
 }
 
-int Partitioner::GetClusterNodeNumber()
+int Partitioner::GetClusterNodeNumber_Debug()
 {
 	int total = 0;
 	Partition::const_iterator iter = _aPartition.begin();
