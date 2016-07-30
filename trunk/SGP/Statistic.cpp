@@ -154,6 +154,7 @@ void Statistic::printStatistic()
 	{
 		str<<*iter<<"\t";
 	}
+	str<<"\nTotal Elapse : \t"<<GetTotalElapse()<<"\n";
 	Log::logln(str.str());
 }
 

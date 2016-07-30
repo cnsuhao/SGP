@@ -38,7 +38,7 @@ public:
 	bool isConnectbyPos(int vex1_pos, int vex2_pos);
 	//check if vex1 is connected by vex2
 	bool isConnect(VERTEX v1, VERTEX v2);
-	//NOTE: to ensure the u does't exist by calling getvertexpos.
+	//NOTE: to ensure the u does't exist by calling getvertexpos. return the pos after inserted
 	int InsertVertex(VERTEX u);
 	//the vertex u will set as REMOVED。位置索引中的项删除，相关邻接点修改。出于效率考虑，最好对度为0的进行删除。
 	void DeleteVertex(VERTEX& u);

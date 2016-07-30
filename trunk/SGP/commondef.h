@@ -113,3 +113,6 @@ typedef struct _ReAdjustPartitionPair {
 	//vector<VERTEX> _part1_changed_vex;
 	//vector<VERTEX> _part2_changed_vex;
 } ReAdjustPartitionPair;
+
+int rand(int range_min, int range_max);
+float randf(float range_min, float range_max);

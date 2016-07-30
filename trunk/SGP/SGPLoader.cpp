@@ -9,16 +9,6 @@
 using namespace std;
 using namespace stdext; //for hash set
 
-int rand(int range_min, int range_max)
-{
-	return (double)rand() / (RAND_MAX + 1) * (range_max - range_min) + range_min;
-}
-
-float randf(float range_min, float range_max)
-{
-	return (float)rand() / (RAND_MAX + 1) * (range_max - range_min) + range_min;
-}
-
 SGPLoader::SGPLoader(void)
 {
 	_assign_manager = AssignContextManager::GetAssignManager();
@@ -74,6 +64,7 @@ bool SGPLoader::doGraphSamplingByFixMemEq()
 		{
 			int replace = rand(1, _edges_limition);
 			_sample_reserior.at(replace) = MakeEdgeID(e._u, e._v);
+			GetPartitioner().GetStatistic()->IncreaseSampleHit();
 		}
 	}
 
@@ -119,8 +110,9 @@ bool SGPLoader::doGraphSamplingByFixMemUneq()
 
 		int i = rand(1, iread);
 		if(i>_edges_limition) continue;
-
-		SelectNewEdge_Uneq(e);
+		
+		if(SelectNewEdge_Uneq(e))
+			GetPartitioner().GetStatistic()->IncreaseSampleHit();
 	}
 	return true;
 }
@@ -504,6 +496,8 @@ bool SGPLoader::SamplingEdgeCache()
 
 			//update key list
 			SearchMinimumKey();//it suffers from low efficiency. to improve it in the future by insert sorting with the index
+
+			GetPartitioner().GetStatistic()->IncreaseSampleHit();
 		}
 		iter++;
 	}
@@ -720,54 +714,61 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 		Log::log("the graph is too small!\n");
 		return false;
 	}
-	Debug("ReadInitSamples_DBS");
+	//Debug("ReadInitSamples_DBS");
 
 	if(!InitSamples_DBS())
 	{
 		Log::log("init samples error!!!\n");
 		return false;
 	}
-	Debug("InitSamples_DBS");
+	//Debug("InitSamples_DBS");
 
 	//step 2
 	doGraphSamplePartition(partition_algorithm);
-	Debug("doGraphSamplePartition");
+	//Debug("doGraphSamplePartition");
 
 	//step 4 to step 30 
 	vector<ReAdjustPartitionPair> adjust_partitions;
 	while(ReadNextEdgesCache_DBS())//已将所有读到的顶点添加到Vs中，如果采样选中，则curdegree大于零.注意：这里Vs是采样顶点的超集，即也包含了未采样顶点。
 	{
-		Log::logln("============================Sampling and Loading ============================");
-		Debug("ReadNextEdgesCache_DBS");
+		//Log::logln("============================Sampling and Loading ============================");
+		//Debug("ReadNextEdgesCache_DBS");
 
 		UpdateWeightofEdgesInEs();
 		Log::log("UpdateWeightofEdgesInEs elapse : \t");
 		Log::logln(TimeTicket::check());
-		Debug("UpdateWeightofEdgesInEs");
 		
+		//Debug("UpdateWeightofEdgesInEs");	
 		//Debug_4();
+		
 		doStreamDBSSample();
 		Log::log("doStreamDBSSample elapse : \t");
 		Log::logln(TimeTicket::check());
-		Debug("doStreamDBSSample");
+		
+		//Debug("doStreamDBSSample");
 		//Debug_4();
+
 		
 		adjust_partitions.clear();
-		if(UpdateAndCheckRepartition(adjust_partitions))//更新划分中的节点，并检查是否需要重新划分
+		bool isRepartition = UpdateAndCheckRepartition(adjust_partitions);
+		Log::log("UpdateAndCheckRepartition elapse : \t");
+		Log::logln(TimeTicket::check());
+		if(isRepartition)//更新划分中的节点，并检查是否需要重新划分
 		{
-			Debug("UpdateAndCheckRepartition");
+			//Debug("UpdateAndCheckRepartition");
 			//重新划分
 			RepartitionSampleGraph(adjust_partitions, partition_algorithm);
 			_assign_manager->UpdateAssignManager(_partitions_in_memory);
-			Debug("RepartitionSampleGraph");
+			GetPartitioner().GetStatistic()->IncreaseRepartitionCount();
+			Log::log("RepartitionSampleGraph elapse : \t");
+			Log::logln(TimeTicket::check());
+			//Debug("RepartitionSampleGraph");
 		}
 		else
 		{
-			Debug("UpdateAndCheckRepartition");
-			Log::log("No RepartitionSampleGraph : \t");
+			//Debug("UpdateAndCheckRepartition");
+			//Log::log("No RepartitionSampleGraph : \t");
 		}
-		Log::log("RepartitionSampleGraph elapse : \t");
-		Log::logln(TimeTicket::check());
 	}
 	_assign_manager->Flush();
 
@@ -776,22 +777,24 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 	//UpdateStorageNode_Debug();
 	Log::log("UpdateStorageNode elapse : \t");
 	Log::logln(TimeTicket::check());
-	Debug("UpdateStorageNode");
+	//Debug("UpdateStorageNode");
 
 	GetPartitioner().WriteAssignVerticesOfPartitions();
 	Log::log("WriteAssignVerticesOfPartitions elapse : \t");
 	Log::logln(TimeTicket::check());
-	Debug("WriteAssignVerticesOfPartitions");
+	//Debug("WriteAssignVerticesOfPartitions");
 
 	GetPartitioner().WriteVerticesOfPartitions();
 	Log::log("WriteVerticesOfPartitions elapse : \t");
 	Log::logln(TimeTicket::check());
-	Debug("WriteVerticesOfPartitions");
+	//Debug("WriteVerticesOfPartitions");
 
 	GetPartitioner().WriteClusterEdgesOfPartitions();
 	Log::log("WriteClusterEdgesOfPartitions elapse : \t");
 	Log::logln(TimeTicket::check());
-	Debug("WriteClusterEdgesOfPartitions");
+
+	GetPartitioner().GetStatistic()->SetTotalElapse(TimeTicket::total_elapse());
+	//Debug("WriteClusterEdgesOfPartitions");
 
 	//Debug_6();
 
@@ -949,9 +952,9 @@ bool SGPLoader::StreamAssignEdge(EDGE e)
 			e, 
 			&_partitions_in_memory, 
 			&_graph_sample, 
-			_assign_win_size);//!!!check, the partition and graph sample varied.
+			_assign_win_size);
 
-		_assign_manager->AppendEdge(e);//NOTE: modify the partition!!!! TODO
+		_assign_manager->AppendEdge(e);
 		_assign_manager->doManager();
 	}
 	return true;
@@ -966,20 +969,10 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 	hash_set<EdgeID>::iterator iter_substituted;
 	while(iter_selected != _selected_edges.end())
 	{
-		//iter_substituted = _substituted_edges.find(*iter_selected);
-		//if(iter_substituted!= _substituted_edges.end())
-		//{
-		//	*iter_selected;
-		//	iter_selected = _selected_edges.erase(iter_selected);
-		//	_substituted_edges.erase(iter_substituted);
-		//}
-		//else
-		//{
 		EDGE e = GetEdgeofID(*iter_selected);
 		doChangedVertex(e._u, new_vex, removed_vex, partitions_changed_vertex);
 		doChangedVertex(e._v, new_vex, removed_vex, partitions_changed_vertex);
 		iter_selected++;
-		//}
 	}
 	iter_substituted = _substituted_edges.begin();
 	while(iter_substituted!=_substituted_edges.end())
@@ -1008,21 +1001,21 @@ bool SGPLoader::UpdateAndCheckRepartition(vector<ReAdjustPartitionPair>& adjust_
 
 	//删除划分中的节点
 	_partitions_in_memory.RemoveClusterNode(removed_vex);
-	Debug("RemoveClusterNode");
+	//Debug("RemoveClusterNode");
 	//- 注意：删除度为0的节点可能存在bug，见UpdateSampleGraph.该函数调用必须放在此处，因为节点删除后，对UpdateAndCheckRepartition中返回删除节点位置有bug
 	_graph_sample.UpdateSampleGraph(_selected_edges, _substituted_edges);
-	Debug("UpdateSampleGraph");
+	//Debug("UpdateSampleGraph");
 	//将新节点添加到最小划分中，如果大小一样，随机
 	_partitions_in_memory.RandomInsertNewVertices(new_vex, partitions_changed_vertex);
-	Debug("RandomInsertNewVertices");
+	//Debug("RandomInsertNewVertices");
 	//Debug_2("check edge list");
 	//Debug_3("check sample_cache and cluster node",removed_vex, new_vex);
 	//将变化顶点对应划分传递过去，解决删除节点问题。
 	bool repartition = _partitions_in_memory.CheckIfAdjust(partitions_changed_vertex, adjust_partitions);//删除与添加的影响未考虑(通过partitions_changed_vertex解决)
-	Debug("CheckIfAdjust");
+	//Debug("CheckIfAdjust");
 	//将所有此次采样点的newsample标志置为false
 	ResetSampleFlag();
-	Debug("ResetSampleFlag");
+	//Debug("ResetSampleFlag");
 	return repartition;
 }
 
@@ -1424,7 +1417,7 @@ void SGPLoader::Debug(string info)
 	Log::logln(info);
 	int graph_vex_number = _graph_sample.GetExistVertexNumber();
 	int graph_all_vex_number = _graph_sample.GetVertexNumber();
-	int cluster_node_number = _partitions_in_memory.GetClusterNodeNumber();
+	int cluster_node_number = _partitions_in_memory.GetClusterNodeNumber_Debug();
 	int cahce_vex_total_number = _sample_vertex_items.size();
 	int graph_edges = _graph_sample.GetEdgesNumber();
 	int sample_cahce_vex_number = 0;

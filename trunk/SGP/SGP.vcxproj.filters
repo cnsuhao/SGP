@@ -60,6 +60,9 @@
     <ClInclude Include="Statistic.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="GraphDisk.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -96,6 +99,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Statistic.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="common.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphDisk.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

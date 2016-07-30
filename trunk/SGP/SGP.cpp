@@ -234,7 +234,7 @@ void doSGPKLPartitioning(string inputfile, string outputfile, int k, string logf
 	Log::log(" partitioning the graph finished! elapse time: ");
 	Log::log(TimeTicket::total_elapse());
 	Log::log(" sec\n");
-
+	loader.GetPartitioner().GetStatistic()->SetTotalElapse(TimeTicket::total_elapse());
 	loader.doSGPStatistic();
 
 }
