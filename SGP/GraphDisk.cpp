@@ -41,7 +41,7 @@ bool GraphDisk::ReadEdge(EDGE& e)
 void GraphDisk::InitAdjTable()
 {
 	_ifs_graph.open(_graph_file);
-	_ofs_tmp.open(_tmp_file, ios::trunc|ios::binary);
+	_ofs_tmp.open(_tmp_file, ios::trunc|ios::in|ios::out|ios::binary);
 }
 
 int GraphDisk::BuildAdjTable()
