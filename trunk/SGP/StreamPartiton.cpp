@@ -364,7 +364,7 @@ void StreamPartiton::doDeterministicGreadyStreamPartition()
 	GraphDisk graph;
 	graph.SetGraphFile(_graph_file);
 	str.str("");
-	str<<_graph_file<<"_tmp";
+	str<<_outfile<<"_cachetmp.bin";
 	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
 	graph.SetMaxRows(_max_rows);
@@ -444,7 +444,7 @@ void StreamPartiton::doLinearWeightedDeterministicGreadyStreamPartition()
 	GraphDisk graph;
 	graph.SetGraphFile(_graph_file);
 	str.str("");
-	str<<_graph_file<<"_tmp";
+	str<<_outfile<<"_cachetmp.bin";
 	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
 	graph.SetMaxRows(_max_rows);
@@ -524,7 +524,7 @@ void StreamPartiton::doExponentialWeightedDeterministicGreadyStreamPartition()
 	GraphDisk graph;
 	graph.SetGraphFile(_graph_file);
 	str.str("");
-	str<<_graph_file<<"_tmp";
+	str<<_outfile<<"_cachetmp.bin";
 	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
 	graph.SetMaxRows(_max_rows);
@@ -630,7 +630,7 @@ void StreamPartiton::doTriangleStreamPartition()
 	GraphDisk graph;
 	graph.SetGraphFile(_graph_file);
 	str.str("");
-	str<<_graph_file<<"_tmp";
+	str<<_outfile<<"_cachetmp.bin";
 	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
 	graph.SetMaxRows(_max_rows);
@@ -736,7 +736,7 @@ void StreamPartiton::doLinearTriangleStreamPartition()
 	GraphDisk graph;
 	graph.SetGraphFile(_graph_file);
 	str.str("");
-	str<<_graph_file<<"_tmp";
+	str<<_outfile<<"_cachetmp.bin";
 	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
 	graph.SetMaxRows(_max_rows);
@@ -842,7 +842,7 @@ void StreamPartiton::doExponentDeterministicTriangleStreamPartition()
 	GraphDisk graph;
 	graph.SetGraphFile(_graph_file);
 	str.str("");
-	str<<_graph_file<<"_tmp";
+	str<<_outfile<<"_cachetmp.bin";
 	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
 	graph.SetMaxRows(_max_rows);
@@ -921,7 +921,7 @@ void StreamPartiton::doNonNeighborStreamPartition()
 	GraphDisk graph;
 	graph.SetGraphFile(_graph_file);
 	str.str("");
-	str<<_graph_file<<"_tmp";
+	str<<_outfile<<"_cachetmp.bin";
 	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
 	graph.SetMaxRows(_max_rows);
