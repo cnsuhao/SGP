@@ -17,17 +17,21 @@ This class implements the algorithm in the paper of " streaming graph partitioni
 class StreamPartiton
 {
 private:
-	string					_graph_file; //graph file input
-	string					_outfile;//output file;
-	ifstream				_ifs;
-	int						_k;
-	
+	string		_graph_file; //graph file input
+	string		_outfile;//output file;
+	ifstream	_ifs;
+	int			_k;
+	//graph disk parameter
+	int			_max_d;
+	int			_max_rows;
 
 public:
 	StreamPartiton(void);
 	~StreamPartiton(void);
 
 	bool ReadEdge(EDGE& e);
+	void SetMaxDegree(int d) {_max_d = d;};
+	void SetMaxRows(int r) {_max_rows = r;};
 
 	void doHashStreamPartition();
 	void doBalanceStreamPartition();
