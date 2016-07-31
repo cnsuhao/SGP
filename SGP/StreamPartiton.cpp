@@ -14,9 +14,42 @@ StreamPartiton::StreamPartiton(void)
 {
 }
 
-
 StreamPartiton::~StreamPartiton(void)
 {
+}
+
+void StreamPartiton::doStreamPartition(StreamPartitionMeasure measure)
+{
+	switch(measure)
+	{
+	case HASH:
+		doHashStreamPartition();
+		break;
+	case BALANCE:
+		doBalanceStreamPartition();
+		break;
+	case DG:
+		doDeterministicGreadyStreamPartition();
+		break;
+	case LDG:
+		doLinearWeightedDeterministicGreadyStreamPartition();
+		break;
+	case EDG:
+		doExponentialWeightedDeterministicGreadyStreamPartition();
+		break;
+	case Tri:
+		doTriangleStreamPartition();
+		break;
+	case LTri:
+		doLinearTriangleStreamPartition();
+		break;
+	case EDTri:
+		doExponentDeterministicTriangleStreamPartition();
+		break;
+	case NN:
+		doNonNeighborStreamPartition();
+		break;
+	}
 }
 
 bool StreamPartiton::ReadEdge(EDGE& e)
@@ -51,6 +84,7 @@ int hash_stream_partition_find_partition(hash_set<VERTEX>* partitions, int k, VE
 	int c = rand(0, k-1);
 	return c;
 }
+
 void StreamPartiton::doHashStreamPartition()
 {
 	Log::logln("doHashStreamPartition.........");
@@ -398,6 +432,7 @@ int LinearWeightedDeterministicGready_stream_partition_find_partition(hash_set<V
 		}
 	}
 	graph->UnLockVertex(u);
+	delete[] links;
 	return max_c;
 }
 
@@ -469,7 +504,7 @@ int ExponentialWeightedDeterministicGready_stream_partition_find_partition(hash_
 	int n = graph->GetVertexNum();
 	for(int i=0; i<k; i++)
 	{
-		float w = links[i]*(1-exp(partitions[i].size()-n*1.0/k));
+		float w = links[i]*(1-exp(partitions[i].size()-n*1.0f/k));
 		if(w > max_w)
 		{
 			max_w = w;
@@ -477,6 +512,7 @@ int ExponentialWeightedDeterministicGready_stream_partition_find_partition(hash_
 		}
 	}
 	graph->UnLockVertex(u);
+	delete[] links;
 	return max_c;
 }
 
@@ -526,16 +562,322 @@ void StreamPartiton::doExponentialWeightedDeterministicGreadyStreamPartition()
 	Log::logln(str.str());
 }
 
+int Triangle_stream_partition_find_partition(hash_set<VERTEX>* partitions, int k, VERTEX u, GraphDisk* graph)
+{
+	int* links = new int[k];
+	hash_set<VERTEX>* intersect_vex = new hash_set<VERTEX>[k];
+
+	gdEdgeInfoList* adj_edges = graph->GetAdjEdgeListofVex(u);
+	for(int i=0; i<k; i++)
+	{
+		links[i] = 0;
+		for(gdEdgeInfoList::iterator iter = adj_edges->begin(); iter!= adj_edges->end(); iter++)
+		{
+			int adj_pos = iter->_adj_vex_pos;
+			VERTEX adj_u = graph->GetVertexAtPos(adj_pos);
+			if(partitions[i].find(adj_u)!=partitions[i].end())
+			{
+				links[i]++;
+				intersect_vex[i].insert(adj_u);
+			}
+		}
+	}
+	
+	float max_w = 0; 
+	int max_c = -1;
+	int n = graph->GetVertexNum();
+
+	for(int i=0; i<k; i++)
+	{
+		//compute weight
+		float w;
+		int triangle = 0;
+		for(hash_set<VERTEX>::iterator iter_u = intersect_vex[i].begin(); iter_u!=intersect_vex[i].end(); iter_u++)
+		{
+			VERTEX u = *iter_u;
+			for(hash_set<VERTEX>::iterator iter_v = intersect_vex[i].begin(); iter_v!=intersect_vex[i].end(); iter_v++)
+			{
+				VERTEX v = *iter_v;
+				if(u<v)
+				{
+					if(graph->isConnectbyVex(u, v))
+					{
+						triangle++;
+					}
+
+				}
+			}
+		}
+		w = 1.0f*triangle/(n*(n-1));
+		//find max weight
+		if(w > max_w)
+		{
+			max_w = w;
+			max_c = i;
+		}
+	}
+	graph->UnLockVertex(u);
+	delete[] links;
+	delete[] intersect_vex;
+	return max_c;
+}
+
 void StreamPartiton::doTriangleStreamPartition()
 {
+	Log::logln("doTriangleStreamPartition.........");
+	stringstream str;
+
+	GraphDisk graph;
+	graph.SetGraphFile(_graph_file);
+	str.str("");
+	str<<_graph_file<<"_tmp";
+	graph.SetTmpFile(str.str());
+	graph.SetMaxDegree(_max_d);
+	graph.SetMaxRows(_max_rows);
+	graph.InitAdjTable();
+	graph.BuildAdjTable();
+
+	VertexInfoList* vex_list = graph.GetVertexList();
+	//init partitions
+	hash_set<VERTEX>* partitions = new hash_set<VERTEX>[_k];
+	int i=0;
+	for(i=0; i<_k; i++)
+	{
+		VERTEX u = vex_list->at(i)._u;
+		partitions[i].insert(u);
+	}
+	//do parititioning
+	for(;i<graph.GetVertexNum();i++)
+	{
+		VERTEX u = vex_list->at(i)._u;
+		int c = Triangle_stream_partition_find_partition(partitions, _k, u, &graph);
+		partitions[c].insert(u);
+	}
+	//compute cut
+	int interlinks =0, exterlinks=0;
+	write_partitions(partitions, _k, &graph, _outfile, interlinks, exterlinks);
+
+	delete[] partitions;
+
+	str.str("");
+	str<<"k : \t"<<_k<<"\n"
+		<<"Total Cut Value: \t"<<exterlinks<<"\n"
+		<<"Total Edges: \t"<<exterlinks+interlinks<<"\n"
+		<<"Total Vex: \t"<<graph.GetVertexNum()<<"\n"
+		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n";
+	Log::logln(str.str());
+}
+
+int LinearTriangle_stream_partition_find_partition(hash_set<VERTEX>* partitions, int k, VERTEX u, GraphDisk* graph)
+{
+	int* links = new int[k];
+	hash_set<VERTEX>* intersect_vex = new hash_set<VERTEX>[k];
+
+	gdEdgeInfoList* adj_edges = graph->GetAdjEdgeListofVex(u);
+	for(int i=0; i<k; i++)
+	{
+		links[i] = 0;
+		for(gdEdgeInfoList::iterator iter = adj_edges->begin(); iter!= adj_edges->end(); iter++)
+		{
+			int adj_pos = iter->_adj_vex_pos;
+			VERTEX adj_u = graph->GetVertexAtPos(adj_pos);
+			if(partitions[i].find(adj_u)!=partitions[i].end())
+			{
+				links[i]++;
+				intersect_vex[i].insert(adj_u);
+			}
+		}
+	}
+	
+	float max_w = 0; 
+	int max_c = -1;
+	int n = graph->GetVertexNum();
+
+	for(int i=0; i<k; i++)
+	{
+		//compute weight
+		float w;
+		int triangle = 0;
+		for(hash_set<VERTEX>::iterator iter_u = intersect_vex[i].begin(); iter_u!=intersect_vex[i].end(); iter_u++)
+		{
+			VERTEX u = *iter_u;
+			for(hash_set<VERTEX>::iterator iter_v = intersect_vex[i].begin(); iter_v!=intersect_vex[i].end(); iter_v++)
+			{
+				VERTEX v = *iter_v;
+				if(u<v)
+				{
+					if(graph->isConnectbyVex(u, v))
+					{
+						triangle++;
+					}
+
+				}
+			}
+		}
+		w = (1-partitions[i].size()*k*1.0f/n)*triangle/(n*(n-1));
+		//find max weight
+		if(w > max_w)
+		{
+			max_w = w;
+			max_c = i;
+		}
+	}
+	graph->UnLockVertex(u);
+	delete[] links;
+	delete[] intersect_vex;
+	return max_c;
 }
 
 void StreamPartiton::doLinearTriangleStreamPartition()
 {
+	Log::logln("doTriangleStreamPartition.........");
+	stringstream str;
+
+	GraphDisk graph;
+	graph.SetGraphFile(_graph_file);
+	str.str("");
+	str<<_graph_file<<"_tmp";
+	graph.SetTmpFile(str.str());
+	graph.SetMaxDegree(_max_d);
+	graph.SetMaxRows(_max_rows);
+	graph.InitAdjTable();
+	graph.BuildAdjTable();
+
+	VertexInfoList* vex_list = graph.GetVertexList();
+	//init partitions
+	hash_set<VERTEX>* partitions = new hash_set<VERTEX>[_k];
+	int i=0;
+	for(i=0; i<_k; i++)
+	{
+		VERTEX u = vex_list->at(i)._u;
+		partitions[i].insert(u);
+	}
+	//do parititioning
+	for(;i<graph.GetVertexNum();i++)
+	{
+		VERTEX u = vex_list->at(i)._u;
+		int c = LinearTriangle_stream_partition_find_partition(partitions, _k, u, &graph);
+		partitions[c].insert(u);
+	}
+	//compute cut
+	int interlinks =0, exterlinks=0;
+	write_partitions(partitions, _k, &graph, _outfile, interlinks, exterlinks);
+
+	delete[] partitions;
+
+	str.str("");
+	str<<"k : \t"<<_k<<"\n"
+		<<"Total Cut Value: \t"<<exterlinks<<"\n"
+		<<"Total Edges: \t"<<exterlinks+interlinks<<"\n"
+		<<"Total Vex: \t"<<graph.GetVertexNum()<<"\n"
+		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n";
+	Log::logln(str.str());
+}
+
+int ExponentDeterministic_stream_partition_find_partition(hash_set<VERTEX>* partitions, int k, VERTEX u, GraphDisk* graph)
+{
+	int* links = new int[k];
+	hash_set<VERTEX>* intersect_vex = new hash_set<VERTEX>[k];
+
+	gdEdgeInfoList* adj_edges = graph->GetAdjEdgeListofVex(u);
+	for(int i=0; i<k; i++)
+	{
+		links[i] = 0;
+		for(gdEdgeInfoList::iterator iter = adj_edges->begin(); iter!= adj_edges->end(); iter++)
+		{
+			int adj_pos = iter->_adj_vex_pos;
+			VERTEX adj_u = graph->GetVertexAtPos(adj_pos);
+			if(partitions[i].find(adj_u)!=partitions[i].end())
+			{
+				links[i]++;
+				intersect_vex[i].insert(adj_u);
+			}
+		}
+	}
+	
+	float max_w = 0; 
+	int max_c = -1;
+	int n = graph->GetVertexNum();
+
+	for(int i=0; i<k; i++)
+	{
+		//compute weight
+		float w;
+		int triangle = 0;
+		for(hash_set<VERTEX>::iterator iter_u = intersect_vex[i].begin(); iter_u!=intersect_vex[i].end(); iter_u++)
+		{
+			VERTEX u = *iter_u;
+			for(hash_set<VERTEX>::iterator iter_v = intersect_vex[i].begin(); iter_v!=intersect_vex[i].end(); iter_v++)
+			{
+				VERTEX v = *iter_v;
+				if(u<v)
+				{
+					if(graph->isConnectbyVex(u, v))
+					{
+						triangle++;
+					}
+
+				}
+			}
+		}
+		w = (1-exp(partitions[i].size()-n*1.0f/k))*triangle/(n*(n-1));
+		//find max weight
+		if(w > max_w)
+		{
+			max_w = w;
+			max_c = i;
+		}
+	}
+	graph->UnLockVertex(u);
+	delete[] links;
+	delete[] intersect_vex;
+	return max_c;
 }
 
 void StreamPartiton::doExponentDeterministicTriangleStreamPartition()
 {
+	Log::logln("doExponentDeterministicTriangleStreamPartition.........");
+	stringstream str;
+
+	GraphDisk graph;
+	graph.SetGraphFile(_graph_file);
+	str.str("");
+	str<<_graph_file<<"_tmp";
+	graph.SetTmpFile(str.str());
+	graph.SetMaxDegree(_max_d);
+	graph.SetMaxRows(_max_rows);
+	graph.InitAdjTable();
+	graph.BuildAdjTable();
+
+	VertexInfoList* vex_list = graph.GetVertexList();
+	//init partitions
+	hash_set<VERTEX>* partitions = new hash_set<VERTEX>[_k];
+	int i=0;
+	for(i=0; i<_k; i++)
+	{
+		VERTEX u = vex_list->at(i)._u;
+		partitions[i].insert(u);
+	}
+	//do parititioning
+	for(;i<graph.GetVertexNum();i++)
+	{
+		VERTEX u = vex_list->at(i)._u;
+		int c = ExponentDeterministic_stream_partition_find_partition(partitions, _k, u, &graph);
+		partitions[c].insert(u);
+	}
+	//compute cut
+	int interlinks =0, exterlinks=0;
+	write_partitions(partitions, _k, &graph, _outfile, interlinks, exterlinks);
+
+	delete[] partitions;
+
+	str.str("");
+	str<<"k : \t"<<_k<<"\n"
+		<<"Total Cut Value: \t"<<exterlinks<<"\n"
+		<<"Total Edges: \t"<<exterlinks+interlinks<<"\n"
+		<<"Total Vex: \t"<<graph.GetVertexNum()<<"\n"
+		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n";
+	Log::logln(str.str());
 }
 
 int NonNeighbor_stream_partition_find_partition(hash_set<VERTEX>* partitions, int k, VERTEX u, GraphDisk* graph)
@@ -567,6 +909,7 @@ int NonNeighbor_stream_partition_find_partition(hash_set<VERTEX>* partitions, in
 		}
 	}
 	graph->UnLockVertex(u);
+	delete[] links;
 	return min_c;
 }
 

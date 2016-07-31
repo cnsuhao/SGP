@@ -25,23 +25,37 @@ private:
 	int			_max_d;
 	int			_max_rows;
 
+	bool ReadEdge(EDGE& e);
+	//hash
+	void doHashStreamPartition();
+	//balance
+	void doBalanceStreamPartition();
+	//DG
+	void doDeterministicGreadyStreamPartition();
+	//LDG
+	void doLinearWeightedDeterministicGreadyStreamPartition();
+	//EDG
+	void doExponentialWeightedDeterministicGreadyStreamPartition();
+	//Tri
+	void doTriangleStreamPartition();
+	//LTri
+	void doLinearTriangleStreamPartition();
+	//EDTri
+	void doExponentDeterministicTriangleStreamPartition();
+	//NN
+	void doNonNeighborStreamPartition();
+
 public:
 	StreamPartiton(void);
 	~StreamPartiton(void);
 
-	bool ReadEdge(EDGE& e);
 	void SetMaxDegree(int d) {_max_d = d;};
 	void SetMaxRows(int r) {_max_rows = r;};
+	void SetGraphFile(string f) {_graph_file = f;};
+	void SetOutFile(string f) {_outfile = f;};
+	void SetK(int k) {_k = k;};
 
-	void doHashStreamPartition();
-	void doBalanceStreamPartition();
-	void doDeterministicGreadyStreamPartition();
-	void doLinearWeightedDeterministicGreadyStreamPartition();
-	void doExponentialWeightedDeterministicGreadyStreamPartition();
-	void doTriangleStreamPartition();
-	void doLinearTriangleStreamPartition();
-	void doExponentDeterministicTriangleStreamPartition();
-	void doNonNeighborStreamPartition();
-
+	void doStreamPartition(StreamPartitionMeasure measure);
+	
 };
 

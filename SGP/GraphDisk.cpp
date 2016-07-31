@@ -63,7 +63,7 @@ int GraphDisk::BuildAdjTable()
 int GraphDisk::InsertVertex(VERTEX u)
 {
 	map<VERTEX, int>::iterator iter = _graph_data._vertex_to_pos_idx.find(u);
-	if(iter == _graph_data._vertex_to_pos_idx.end())
+	if(iter != _graph_data._vertex_to_pos_idx.end())
 		return -1;
 
 	gdVertexInfo v_info;
@@ -138,7 +138,15 @@ bool GraphDisk::isConnectbyPos(int vex1_pos, int vex2_pos)
 	{
 		if(iter->_adj_vex_pos == vex2_pos) return true;
 	}
+	UnLockVertexofPos(vex1_pos);
 	return false;
+}
+
+bool GraphDisk::isConnectbyVex(VERTEX u, VERTEX v)
+{
+	int u_pos = GetVertexPos(u);
+	int v_pos = GetVertexPos(v);
+	return isConnectbyPos(u_pos, v_pos);
 }
 
 gdVertexInfo* GraphDisk::GetVertexInfoofPos(VERTEX& u)
@@ -364,7 +372,7 @@ void GraphDisk::WriteEdgeList(int vex_pos, gdEdgeInfoList* edges)
 	for(int i=0; i<GetMaxDegree(); i++)
 	{
 		int adj = -1;
-		if(edges == NULL || i>edges->size())
+		if(edges == NULL || i>edges->size()||edges->size() == 0)
 		{
 			adj = -1;
 		}
