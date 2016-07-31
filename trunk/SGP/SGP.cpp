@@ -9,11 +9,12 @@
 #include "Log.h"
 #include <sstream>
 #include "TimeTicket.h"
+#include "StreamPartiton.h"
 
 using namespace std;
 
 string usage = 
-	"sgp -CMD [DFS|BFS|RAND|KL|MaxMin|SGPKL|SGPMaxMin|SGPStreamKL|SGPStreamMaxMin|Test] ...\n"
+	"sgp -CMD [DFS|BFS|RAND|KL|MaxMin|SGPKL|SGPMaxMin|SGPStreamKL|SGPStreamMaxMin|StreamPartition|Test] ...\n"
 	"DFS:\n"
 	"convert edges order by dfs.\n"
 	"params: -i <inputfile> -o <outputfile> -log <log file>\n"
@@ -41,6 +42,9 @@ string usage =
 	"SGPStreamMaxMin:\n"
 	"partitioning a graph by stream sgp  of max-min algorithm.\n"
 	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs> -maxd <max degree if sample mode is uneq>\n"
+	"StreamPartition:\n"
+	"streamly partitioning a graph by a series of vertex assigning measure.\n"
+	"params: -i <inputfile> -o <outputdir> -k <clusters num> -log <log file> -asm <assign measure: hash, balance, DG, LDG, EDG, Tri, LTri, EDTri, NN> -maxd <max degree> -maxrows <max rows of adj-matrix in the memory>\n"
 	"Test:\n"
 	"do a test!!!!"
 	"params: -i <input file> -log <log file>";
@@ -270,6 +274,21 @@ void doSGPStreamKLPartitioning(string inputfile, string outputfile, int k, strin
 
 void doSGPStreamMaxMinPartitioning(string inputfile, string outputfile, int k, string logfile,EdgeOrderMode ordermode, int assign_win_size, int edges_limits, SampleMode sample_mode, int max_d)
 {
+}
+
+void doStreamPartitioning(string inputfile, string outputfile, int k, string logfile, StreamPartitionMeasure measure, int max_d, int max_rows)
+{
+	TimeTicket::reset();
+	Log::CreateLog(logfile);
+	Log::logln("Streamingly loading the graph"+inputfile+" by StreamPartitioning");
+	StreamPartiton loader;
+	loader.SetMaxDegree(max_d);
+	loader.SetMaxRows(max_rows);
+	loader.SetGraphFile(inputfile);
+	loader.SetOutFile(outputfile);
+	loader.SetK(k);
+	Log::logln("do graph loading...");
+	loader.doStreamPartition(measure);
 }
 
 void doTest(string inputfile, string logfile)
@@ -581,6 +600,43 @@ bool ParseCommand(map<string, string> &command_params)
 			}
 
 			doSGPStreamMaxMinPartitioning(inputfile, outputfile, k, logfile, ordermode, aw_size, ew_size, mode, max_d);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	if(cmd == "streampartition")
+	{
+		//inputfile, outputfile
+		string inputfile, outputfile, logfile, k_str, assign_measure, max_d_str, max_rows_str;
+		if(GetParam(command_params, string("-i"), inputfile) && 
+			GetParam(command_params, string("-o"), outputfile) &&
+			GetParam(command_params, string("-log"), logfile)&&
+			GetParam(command_params, string("-k"), k_str)&&
+			GetParam(command_params, string("-asm"), assign_measure)&&
+			GetParam(command_params, string("-maxd"), max_d_str)&&
+			GetParam(command_params, string("-maxrows"), max_rows_str))
+		{
+			int k = stoi(k_str); 
+			int max_d = stoi(max_d_str);
+			int max_rows = stoi(max_rows_str);
+
+			StreamPartitionMeasure measure;
+			if(assign_measure.compare("hash")==0) measure = HASH;
+			if(assign_measure.compare("balance")==0) measure = BALANCE;
+			if(assign_measure.compare("dg")==0) measure = DG;
+			if(assign_measure.compare("ldg")==0) measure = LDG;
+			if(assign_measure.compare("edg")==0) measure = EDG;
+			if(assign_measure.compare("tri")==0) measure = Tri;
+			if(assign_measure.compare("ltri")==0) measure = LTri;
+			if(assign_measure.compare("edtri")==0) measure = EDTri;
+			if(assign_measure.compare("nn")==0) measure = NN;
+
+		
+			doStreamPartitioning(inputfile, outputfile, k, logfile, measure, max_d, max_rows);
 			return true;
 		}
 		else

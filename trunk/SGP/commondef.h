@@ -114,5 +114,9 @@ typedef struct _ReAdjustPartitionPair {
 	//vector<VERTEX> _part2_changed_vex;
 } ReAdjustPartitionPair;
 
+typedef enum _StreamPartitionMeasure {
+	HASH, BALANCE, DG, LDG, EDG, Tri, LTri, EDTri, NN
+} StreamPartitionMeasure;
+
 int rand(int range_min, int range_max);
 float randf(float range_min, float range_max);

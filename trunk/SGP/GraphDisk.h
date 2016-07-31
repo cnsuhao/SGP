@@ -102,6 +102,7 @@ public:
 	gdVertexInfo* GetVertexInfoofPos(VERTEX& u);
 	gdVertexInfo* GetVertexInfoofPos(int pos);
 	bool isConnectbyPos(int vex1_pos, int vex2_pos);
+	bool isConnectbyVex(VERTEX u, VERTEX v);
 	//NOTE: the corresponding edgelist will be locked to avoid swithing out.
 	//the caller is reponsible for unlocking it by calling unlockvertex.
 	gdEdgeInfoList* GetAdjEdgeListofPos(int pos);
