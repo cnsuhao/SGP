@@ -41,12 +41,14 @@ typedef struct _gdAdjTable {
 	
 	int _max_d;
 	int _max_rows;
-} AdjTable;
+
+	int _edge_count;
+} gdAdjTable;
 
 class GraphDisk
 {
 private:
-	AdjTable _graph_data;
+	gdAdjTable _graph_data;
 	string _tmp_file;
 	string _graph_file;
 	//adjtable temp file (binary): vertex|degree|adj_pos1....adj_pos_{max_d}
@@ -57,6 +59,7 @@ private:
 	//if edges is null, write a default value list of -1
 	void WriteEdgeList(int vex_pos, gdEdgeInfoList* edges);
 	void FillEdgeList(int vex_pos,gdEdgeInfoList* edges);
+	void Flush();
 
 	int GetAdjLineSize(){
 		return 
@@ -68,7 +71,6 @@ private:
 	//read the edgelist at the pos in the temp file into the cache
 	//return the pos of the switchin edgelist in the cache after switching
 	int SwitchInEdgeList(int switchin_vex_pos);
-
 
 public:
 	GraphDisk(void);
@@ -84,6 +86,7 @@ public:
 	void SetGraphFile(string f) {_graph_file = f;};
 
 	int GetVertexNum() {return _graph_data._vertex_list.size();};
+	int GetEdgeNum() {return _graph_data._edge_count;};
 
 	void InitAdjTable();
 
@@ -95,12 +98,16 @@ public:
 	//if the e exists or self-edge, do nothing
 	bool InsertEdge(EDGE e);
 	int GetVertexPos(VERTEX& u);
+	VERTEX GetVertexAtPos(int pos);
 	gdVertexInfo* GetVertexInfoofPos(VERTEX& u);
 	gdVertexInfo* GetVertexInfoofPos(int pos);
 	bool isConnectbyPos(int vex1_pos, int vex2_pos);
 	//NOTE: the corresponding edgelist will be locked to avoid swithing out.
 	//the caller is reponsible for unlocking it by calling unlockvertex.
 	gdEdgeInfoList* GetAdjEdgeListofPos(int pos);
+	gdEdgeInfoList* GetAdjEdgeListofVex(VERTEX& u);
+
+	VertexInfoList* GetVertexList() {return &(_graph_data._vertex_list);};
 	void LockVertex(VERTEX& u);
 	void LockVertexofPos(int pos);
 	void UnLockVertex(VERTEX& u);

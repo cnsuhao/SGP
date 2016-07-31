@@ -50,10 +50,14 @@ int GraphDisk::BuildAdjTable()
 	EDGE e;
 	while(ReadEdge(e))
 	{
-
+		if(InsertEdge(e))
+		{
+			_graph_data._edge_count++;
+		}
 		iread++;
 	}
-
+	Flush();
+	return iread;
 }
 
 int GraphDisk::InsertVertex(VERTEX u)
@@ -100,7 +104,7 @@ bool GraphDisk::InsertEdge(EDGE e)
 	}
 
 	if(isConnectbyPos(u_pos, v_pos))//the edge exists
-		return;
+		return false;
 
 	gdEdgeInfo u_adj, v_adj;
 	u_adj._adj_vex_pos = v_pos;
@@ -112,6 +116,7 @@ bool GraphDisk::InsertEdge(EDGE e)
 	GetVertexInfoofPos(v_pos)->_degree++;
 	UnLockVertexofPos(u_pos);
 	UnLockVertexofPos(v_pos);
+	return true;
 
 }
 
@@ -148,6 +153,20 @@ gdVertexInfo* GraphDisk::GetVertexInfoofPos(int pos)
 		return NULL;
 	
 	return &(_graph_data._vertex_list.at(pos));
+}
+
+VERTEX GraphDisk::GetVertexAtPos(int pos)
+{
+	if(pos<0 || pos>_graph_data._vertex_list.size()-1)
+		return -1;
+
+	return _graph_data._vertex_list.at(pos)._u;
+}
+
+gdEdgeInfoList* GraphDisk::GetAdjEdgeListofVex(VERTEX& u)
+{
+	int pos = GetVertexPos(u);
+	return GetAdjEdgeListofPos(pos);
 }
 
 gdEdgeInfoList* GraphDisk::GetAdjEdgeListofPos(int pos)
@@ -257,14 +276,14 @@ void GraphDisk::LockVertex(VERTEX& u)
 }
 void GraphDisk::LockVertexofPos(int pos)
 {
-	gdVertexInfo* v_info = GetVertexInfoofPos(pos);
-	if(v_info == NULL)
+	VERTEX u = GetVertexAtPos(pos);
+	if(u == -1)
 	{
 		Log::logln("Error::GraphDisk::LockVertexofPos::the vertex info not found");
 		return;
 	}
 
-	LockVertex(v_info->_u);
+	LockVertex(u);
 
 }
 void GraphDisk::UnLockVertex(VERTEX& u)
@@ -282,14 +301,14 @@ void GraphDisk::UnLockVertex(VERTEX& u)
 }
 void GraphDisk::UnLockVertexofPos(int pos)
 {
-	gdVertexInfo* v_info = GetVertexInfoofPos(pos);
-	if(v_info == NULL)
+	VERTEX u = GetVertexAtPos(pos);
+	if(u == -1)
 	{
 		Log::logln("Error::GraphDisk::UnLockVertexofPos::the vertex info not found");
 		return;
 	}
 
-	UnLockVertex(v_info->_u);
+	UnLockVertex(u);
 }
 
 bool GraphDisk::isLockVertex(VERTEX u)
@@ -311,13 +330,13 @@ bool GraphDisk::isLockVertex(VERTEX u)
 
 bool GraphDisk::isLockVertexofPos(int pos)
 {
-	gdVertexInfo* v_info = GetVertexInfoofPos(pos);
-	if(v_info == NULL)
+	VERTEX u = GetVertexAtPos(pos);
+	if(u == -1)
 	{
 		Log::logln("Error::GraphDisk::isLockVertexofPos::the vertex info not found");
 		return false;
 	}
-	return isLockVertex(v_info->_u);
+	return isLockVertex(u);
 }
 
 
@@ -380,5 +399,26 @@ void GraphDisk::FillEdgeList(int vex_pos,gdEdgeInfoList* edges)
 	{
 		_ofs_tmp>>adj_info._adj_vex_pos;
 		edges->push_back(adj_info);
+	}
+}
+
+void GraphDisk::Flush()
+{
+	for (map<VERTEX, gdVertexCacheInfo>::iterator iter = _graph_data._cache_vex_list.begin();
+		iter!=_graph_data._cache_vex_list.end();
+		iter++)
+	{
+		VERTEX u = iter->first;
+		int u_pos = GetVertexPos(u);
+		if(u_pos == -1)
+		{
+			Log::logln("Error::GraphDisk::Flush::the pos of the vex in the cache not found");
+		}
+		else
+		{
+			int idx_row_adj_matrix = iter->second._idx_row_adj_matrix;
+			gdEdgeInfoList* edge_info_list = &(_graph_data._adj_matrix.at(idx_row_adj_matrix));
+			WriteEdgeList(u_pos, edge_info_list);
+		}
 	}
 }
