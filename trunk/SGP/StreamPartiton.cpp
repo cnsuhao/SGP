@@ -555,11 +555,11 @@ int NonNeighbor_stream_partition_find_partition(hash_set<VERTEX>* partitions, in
 			}
 		}
 	}
-	float min_w = FLOAT_MAX; 
+	float min_w = INT_MAX; 
 	int min_c = -1;
 	for(int i=0; i<k; i++)
 	{
-		float w = absf(partitions[i].size()-links[i])
+		float w = partitions[i].size()-links[i];
 		if(w < min_w)
 		{
 			min_w = w;
