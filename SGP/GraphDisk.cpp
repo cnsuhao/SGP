@@ -77,16 +77,14 @@ int GraphDisk::InsertVertex(VERTEX u)
 
 	if(_graph_data._adj_matrix.size()<_graph_data._max_rows)//put the edgelist in the cache
 	{
+		_graph_data._vertex_list.at(pos)._status = INMEM;
 		gdEdgeInfoList edge_info_list;
 		_graph_data._adj_matrix.push_back(edge_info_list);
 
 		gdVertexCacheInfo info = {_graph_data._adj_matrix.size()-1, 1, UNLOCK};
 		_graph_data._cache_vex_list.insert(pair<VERTEX, gdVertexCacheInfo>(u, info));
 	}
-	else
-	{
-		WriteEdgeList(pos, NULL);//write into tmp file
-	}
+	WriteEdgeList(pos, NULL);//write into tmp file
 		
 	return pos;
 }
@@ -112,9 +110,10 @@ bool GraphDisk::InsertEdge(EDGE e)
 
 	GetAdjEdgeListofPos(u_pos)->push_back(u_adj);
 	GetVertexInfoofPos(u_pos)->_degree++;
+	UnLockVertexofPos(u_pos);
+
 	GetAdjEdgeListofPos(v_pos)->push_back(v_adj);
 	GetVertexInfoofPos(v_pos)->_degree++;
-	UnLockVertexofPos(u_pos);
 	UnLockVertexofPos(v_pos);
 	return true;
 
@@ -136,7 +135,11 @@ bool GraphDisk::isConnectbyPos(int vex1_pos, int vex2_pos)
 	gdEdgeInfoList* vex1_edges = GetAdjEdgeListofPos(vex1_pos);
 	for(gdEdgeInfoList::iterator iter = vex1_edges->begin(); iter!=vex1_edges->end(); iter++)
 	{
-		if(iter->_adj_vex_pos == vex2_pos) return true;
+		if(iter->_adj_vex_pos == vex2_pos) 
+		{
+			UnLockVertexofPos(vex1_pos);	
+			return true;
+		}
 	}
 	UnLockVertexofPos(vex1_pos);
 	return false;
@@ -261,10 +264,13 @@ int GraphDisk::SwitchInEdgeList(int switchin_vex_pos)
 	//remove the switchout from the cache
 	map<VERTEX, gdVertexCacheInfo>::iterator iter = _graph_data._cache_vex_list.find(switchout_vex);
 	_graph_data._cache_vex_list.erase(iter);//don't check if exists
+	GetVertexInfoofPos(switchout_vex)->_status = INDISK;
+
 	//insert the switchin
 	switchin_vex = GetVertexInfoofPos(switchin_vex_pos)->_u;
 	gdVertexCacheInfo switchin_info = {switchout_idx_row_adj_matrix, 1, UNLOCK};
 	_graph_data._cache_vex_list.insert(pair<VERTEX, gdVertexCacheInfo>(switchin_vex, switchin_info));
+	GetVertexInfoofPos(switchin_vex_pos)->_status = INMEM;
 
 	return switchout_idx_row_adj_matrix;
 }
@@ -368,11 +374,13 @@ void GraphDisk::WriteEdgeList(int vex_pos, gdEdgeInfoList* edges)
 	int write_pos = vex_pos*GetAdjLineSize();
 	_ofs_tmp.seekp(write_pos, ios::beg);
 	
-	_ofs_tmp<<u<<d;
+	_ofs_tmp.write((char*)(&u), sizeof(VERTEX));
+	_ofs_tmp.write((char*)(&d), sizeof(int));
+	//_ofs_tmp<<u<<d;
 	for(int i=0; i<GetMaxDegree(); i++)
 	{
 		int adj = -1;
-		if(edges == NULL || i>edges->size()||edges->size() == 0)
+		if(edges == NULL || i>=edges->size()||edges->size() == 0)
 		{
 			adj = -1;
 		}
@@ -380,7 +388,8 @@ void GraphDisk::WriteEdgeList(int vex_pos, gdEdgeInfoList* edges)
 		{
 			adj = edges->at(i)._adj_vex_pos;
 		}
-		_ofs_tmp<<adj;
+		_ofs_tmp.write((char*)(&adj), sizeof(int));
+		//_ofs_tmp<<adj;
 	}
 }
 
@@ -401,11 +410,14 @@ void GraphDisk::FillEdgeList(int vex_pos,gdEdgeInfoList* edges)
 	int read_pos = vex_pos*GetAdjLineSize();
 	_ofs_tmp.seekg(read_pos, ios::beg);
 
-	_ofs_tmp>>u;
-	_ofs_tmp>>d;
-	for(int i=0; i<GetMaxDegree(); i++)
+	_ofs_tmp.read((char*)(&u), sizeof(VERTEX));
+	_ofs_tmp.read((char*)(&d), sizeof(int));
+	//_ofs_tmp>>u;
+	//_ofs_tmp>>d;
+	for(int i=0; i<d; i++)
 	{
-		_ofs_tmp>>adj_info._adj_vex_pos;
+		_ofs_tmp.read((char*)(&(adj_info._adj_vex_pos)), sizeof(int));
+		//_ofs_tmp>>adj_info._adj_vex_pos;
 		edges->push_back(adj_info);
 	}
 }
