@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>-cmd streampartition -i D:\workspace\data\20119746_dfs.graph  -o D:\workspace\out\20119746_dfs_sp -log D:\workspace\out\log_20119746_dfs_sp.txt -k 4 -maxd 200 -maxrows 300 -asm LDG</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-cmd streampartition -i D:\workspace\data\20119746_dfs.graph  -o D:\workspace\out\20119746_dfs_sp -log D:\workspace\out\log_20119746_dfs_sp.txt -k 4 -maxd 200 -maxrows 10 -asm nn</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

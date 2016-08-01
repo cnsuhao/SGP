@@ -24,6 +24,12 @@ bool SGPLoader::doGraphSampling()
 	_sample_vertex_items.clear();
 	_sample_edge_items.clear();
 
+	_partitions_in_memory.ClearPartition();
+	_partitions_in_memory.SetPartitionNumber(_k);
+	_partitions_in_memory.InitPartitionerOutFile();
+	_partitions_in_memory.InitStatistic();
+
+
 	switch(_sample_mode)
 	{
 	case FIX_RATIO:

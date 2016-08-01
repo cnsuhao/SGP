@@ -81,7 +81,8 @@ int hash_stream_partition_find_partition(hash_set<VERTEX>* partitions, int k, VE
 			return i;
 		}
 	}
-	int c = rand(0, k-1);
+	int c = rand(0, k);
+	if(c>=k) c=k-1;
 	return c;
 }
 
@@ -98,7 +99,7 @@ void StreamPartiton::doHashStreamPartition()
 		str<<_outfile<<"_edge."<<i;
 		ofs[i].open(str.str(), ios_base::trunc);
 	}
-	_ifs.open(_outfile);
+	_ifs.open(_graph_file);
 
 	int iread = 0, interlinks =0, exterlinks=0, vex_num=0;
 	EDGE e;
@@ -108,7 +109,7 @@ void StreamPartiton::doHashStreamPartition()
 		u_partition = hash_stream_partition_find_partition(partitions, _k, e._u);
 		partitions[u_partition].insert(e._u);
 		v_partition = hash_stream_partition_find_partition(partitions, _k, e._v);
-		partitions[u_partition].insert(e._v);
+		partitions[v_partition].insert(e._v);
 
 		if(u_partition == v_partition)
 		{
@@ -143,18 +144,23 @@ void StreamPartiton::doHashStreamPartition()
 		ofs[i].close();
 	}
 
-	delete[] ofs;
-	delete ofs_v;
-	delete[] partitions;
-	_ifs.close();
-
 	str.str("");
 	str<<"k : \t"<<_k<<"\n"
 		<<"Total Cut Value: \t"<<exterlinks<<"\n"
 		<<"Total Edges: \t"<<exterlinks+interlinks<<"\n"
 		<<"Total Vex: \t"<<vex_num<<"\n"
-		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n";
+		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
+		<<"Partition size: \t";
+	for(int i=0; i<_k; i++)
+	{
+		str<<partitions[i].size()<<"\t";
+	}
 	Log::logln(str.str());
+
+	delete[] ofs;
+	delete ofs_v;
+	_ifs.close();
+	delete[] partitions;
 
 }
 
@@ -193,7 +199,7 @@ void StreamPartiton::doBalanceStreamPartition()
 		str<<_outfile<<"_edge."<<i;
 		ofs[i].open(str.str(), ios_base::trunc);
 	}
-	_ifs.open(_outfile);
+	_ifs.open(_graph_file);
 
 	int iread = 0, interlinks =0, exterlinks=0, vex_num=0;
 	EDGE e;
@@ -202,8 +208,8 @@ void StreamPartiton::doBalanceStreamPartition()
 		int u_partition, v_partition;
 		u_partition = balance_stream_partition_find_partition(partitions, _k, e._u);
 		partitions[u_partition].insert(e._u);
-		v_partition = hash_stream_partition_find_partition(partitions, _k, e._v);
-		partitions[u_partition].insert(e._v);
+		v_partition = balance_stream_partition_find_partition(partitions, _k, e._v);
+		partitions[v_partition].insert(e._v);
 
 		if(u_partition == v_partition)
 		{
@@ -238,18 +244,24 @@ void StreamPartiton::doBalanceStreamPartition()
 		ofs[i].close();
 	}
 
-	delete[] ofs;
-	delete ofs_v;
-	delete[] partitions;
-	_ifs.close();
-
 	str.str("");
 	str<<"k : \t"<<_k<<"\n"
 		<<"Total Cut Value: \t"<<exterlinks<<"\n"
 		<<"Total Edges: \t"<<exterlinks+interlinks<<"\n"
 		<<"Total Vex: \t"<<vex_num<<"\n"
-		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n";
+		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
+		<<"Partition size: \t";
+	for(int i=0; i<_k; i++)
+	{
+		str<<partitions[i].size()<<"\t";
+	}
 	Log::logln(str.str());
+
+	delete[] ofs;
+	delete ofs_v;
+	delete[] partitions;
+	_ifs.close();
+
 }
 
 int DeterministicGready_stream_partition_find_partition(hash_set<VERTEX>* partitions, int k, VERTEX u, GraphDisk* graph)
@@ -275,6 +287,11 @@ int DeterministicGready_stream_partition_find_partition(hash_set<VERTEX>* partit
 			max_c = i;
 		}
 	}
+	if(max_c == -1)
+	{
+		max_c = rand(0, k-1);
+	}
+
 	graph->UnLockVertex(u);
 	return max_c;
 }
@@ -334,6 +351,7 @@ void write_partitions(hash_set<VERTEX>* partitions, int k, GraphDisk* graph, str
 				}
 			}
 		}
+		graph->UnLockVertex(u);
 	}
 	for(int i=0; i<k; i++)
 	{
@@ -391,15 +409,19 @@ void StreamPartiton::doDeterministicGreadyStreamPartition()
 	int interlinks =0, exterlinks=0;
 	write_partitions(partitions, _k, &graph, _outfile, interlinks, exterlinks);
 	
-	delete[] partitions;
-
 	str.str("");
 	str<<"k : \t"<<_k<<"\n"
 		<<"Total Cut Value: \t"<<exterlinks<<"\n"
 		<<"Total Edges: \t"<<exterlinks+interlinks<<"\n"
 		<<"Total Vex: \t"<<graph.GetVertexNum()<<"\n"
-		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n";
+		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
+		<<"Partition size: \t";
+	for(int i=0; i<_k; i++)
+	{
+		str<<partitions[i].size()<<"\t";
+	}
 	Log::logln(str.str());
+	delete[] partitions;
 }
 
 int LinearWeightedDeterministicGready_stream_partition_find_partition(hash_set<VERTEX>* partitions, int k, VERTEX u, GraphDisk* graph)
@@ -424,13 +446,21 @@ int LinearWeightedDeterministicGready_stream_partition_find_partition(hash_set<V
 	int n = graph->GetVertexNum();
 	for(int i=0; i<k; i++)
 	{
-		float w = links[i]*(1-partitions[i].size()*k*1.0/n);
+		float link = links[i];
+		float size = partitions[i].size();
+		float mid = 1-size*k/n;
+		float w = link*mid;
 		if(w > max_w)
 		{
 			max_w = w;
 			max_c = i;
 		}
 	}
+	if(max_c == -1)
+	{
+		max_c = rand(0, k-1);
+	}
+
 	graph->UnLockVertex(u);
 	delete[] links;
 	return max_c;
@@ -453,7 +483,7 @@ void StreamPartiton::doLinearWeightedDeterministicGreadyStreamPartition()
 
 	VertexInfoList* vex_list = graph.GetVertexList();
 	//init partitions
-	hash_set<VERTEX>* partitions = new hash_set<VERTEX>[_k];
+	hash_set<VERTEX>* partitions = new hash_set<VERTEX> [_k];
 	int i=0;
 	for(i=0; i<_k; i++)
 	{
@@ -471,15 +501,19 @@ void StreamPartiton::doLinearWeightedDeterministicGreadyStreamPartition()
 	int interlinks =0, exterlinks=0;
 	write_partitions(partitions, _k, &graph, _outfile, interlinks, exterlinks);
 
-	delete[] partitions;
-
 	str.str("");
 	str<<"k : \t"<<_k<<"\n"
 		<<"Total Cut Value: \t"<<exterlinks<<"\n"
 		<<"Total Edges: \t"<<exterlinks+interlinks<<"\n"
 		<<"Total Vex: \t"<<graph.GetVertexNum()<<"\n"
-		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n";
+		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
+		<<"Partition size: \t";
+	for(int i=0; i<_k; i++)
+	{
+		str<<partitions[i].size()<<"\t";
+	}
 	Log::logln(str.str());
+	delete[] partitions;
 }
 
 int ExponentialWeightedDeterministicGready_stream_partition_find_partition(hash_set<VERTEX>* partitions, int k, VERTEX u, GraphDisk* graph)
@@ -511,6 +545,11 @@ int ExponentialWeightedDeterministicGready_stream_partition_find_partition(hash_
 			max_c = i;
 		}
 	}
+	if(max_c == -1)
+	{
+		max_c = rand(0, k-1);
+	}
+
 	graph->UnLockVertex(u);
 	delete[] links;
 	return max_c;
@@ -551,15 +590,19 @@ void StreamPartiton::doExponentialWeightedDeterministicGreadyStreamPartition()
 	int interlinks =0, exterlinks=0;
 	write_partitions(partitions, _k, &graph, _outfile, interlinks, exterlinks);
 
-	delete[] partitions;
-
 	str.str("");
 	str<<"k : \t"<<_k<<"\n"
 		<<"Total Cut Value: \t"<<exterlinks<<"\n"
 		<<"Total Edges: \t"<<exterlinks+interlinks<<"\n"
 		<<"Total Vex: \t"<<graph.GetVertexNum()<<"\n"
-		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n";
+		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
+		<<"Partition size: \t";
+	for(int i=0; i<_k; i++)
+	{
+		str<<partitions[i].size()<<"\t";
+	}
 	Log::logln(str.str());
+	delete[] partitions;
 }
 
 int Triangle_stream_partition_find_partition(hash_set<VERTEX>* partitions, int k, VERTEX u, GraphDisk* graph)
@@ -582,7 +625,8 @@ int Triangle_stream_partition_find_partition(hash_set<VERTEX>* partitions, int k
 			}
 		}
 	}
-	
+	graph->UnLockVertex(u);
+
 	float max_w = 0; 
 	int max_c = -1;
 	int n = graph->GetVertexNum();
@@ -616,7 +660,11 @@ int Triangle_stream_partition_find_partition(hash_set<VERTEX>* partitions, int k
 			max_c = i;
 		}
 	}
-	graph->UnLockVertex(u);
+	if(max_c == -1)
+	{
+		max_c = rand(0, k-1);
+	}
+
 	delete[] links;
 	delete[] intersect_vex;
 	return max_c;
@@ -657,15 +705,22 @@ void StreamPartiton::doTriangleStreamPartition()
 	int interlinks =0, exterlinks=0;
 	write_partitions(partitions, _k, &graph, _outfile, interlinks, exterlinks);
 
-	delete[] partitions;
+	
 
 	str.str("");
 	str<<"k : \t"<<_k<<"\n"
 		<<"Total Cut Value: \t"<<exterlinks<<"\n"
 		<<"Total Edges: \t"<<exterlinks+interlinks<<"\n"
 		<<"Total Vex: \t"<<graph.GetVertexNum()<<"\n"
-		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n";
+		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
+		<<"Partition size: \t";
+	for(int i=0; i<_k; i++)
+	{
+		str<<partitions[i].size()<<"\t";
+	}
+
 	Log::logln(str.str());
+	delete[] partitions;
 }
 
 int LinearTriangle_stream_partition_find_partition(hash_set<VERTEX>* partitions, int k, VERTEX u, GraphDisk* graph)
@@ -722,6 +777,11 @@ int LinearTriangle_stream_partition_find_partition(hash_set<VERTEX>* partitions,
 			max_c = i;
 		}
 	}
+	if(max_c == -1)
+	{
+		max_c = rand(0, k-1);
+	}
+
 	graph->UnLockVertex(u);
 	delete[] links;
 	delete[] intersect_vex;
@@ -763,15 +823,19 @@ void StreamPartiton::doLinearTriangleStreamPartition()
 	int interlinks =0, exterlinks=0;
 	write_partitions(partitions, _k, &graph, _outfile, interlinks, exterlinks);
 
-	delete[] partitions;
-
 	str.str("");
 	str<<"k : \t"<<_k<<"\n"
 		<<"Total Cut Value: \t"<<exterlinks<<"\n"
 		<<"Total Edges: \t"<<exterlinks+interlinks<<"\n"
 		<<"Total Vex: \t"<<graph.GetVertexNum()<<"\n"
-		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n";
+		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
+		<<"Partition size: \t";
+	for(int i=0; i<_k; i++)
+	{
+		str<<partitions[i].size()<<"\t";
+	}
 	Log::logln(str.str());
+	delete[] partitions;
 }
 
 int ExponentDeterministic_stream_partition_find_partition(hash_set<VERTEX>* partitions, int k, VERTEX u, GraphDisk* graph)
@@ -828,6 +892,11 @@ int ExponentDeterministic_stream_partition_find_partition(hash_set<VERTEX>* part
 			max_c = i;
 		}
 	}
+	if(max_c == -1)
+	{
+		max_c = rand(0, k-1);
+	}
+
 	graph->UnLockVertex(u);
 	delete[] links;
 	delete[] intersect_vex;
@@ -869,15 +938,19 @@ void StreamPartiton::doExponentDeterministicTriangleStreamPartition()
 	int interlinks =0, exterlinks=0;
 	write_partitions(partitions, _k, &graph, _outfile, interlinks, exterlinks);
 
-	delete[] partitions;
-
 	str.str("");
 	str<<"k : \t"<<_k<<"\n"
 		<<"Total Cut Value: \t"<<exterlinks<<"\n"
 		<<"Total Edges: \t"<<exterlinks+interlinks<<"\n"
 		<<"Total Vex: \t"<<graph.GetVertexNum()<<"\n"
-		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n";
+		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
+		<<"Partition size: \t";
+	for(int i=0; i<_k; i++)
+	{
+		str<<partitions[i].size()<<"\t";
+	}
 	Log::logln(str.str());
+	delete[] partitions;
 }
 
 int NonNeighbor_stream_partition_find_partition(hash_set<VERTEX>* partitions, int k, VERTEX u, GraphDisk* graph)
@@ -908,6 +981,11 @@ int NonNeighbor_stream_partition_find_partition(hash_set<VERTEX>* partitions, in
 			min_c = i;
 		}
 	}
+	if(min_c == -1)
+	{
+		min_c = rand(0, k-1);
+	}
+
 	graph->UnLockVertex(u);
 	delete[] links;
 	return min_c;
@@ -948,13 +1026,17 @@ void StreamPartiton::doNonNeighborStreamPartition()
 	int interlinks =0, exterlinks=0;
 	write_partitions(partitions, _k, &graph, _outfile, interlinks, exterlinks);
 
-	delete[] partitions;
-
 	str.str("");
 	str<<"k : \t"<<_k<<"\n"
 		<<"Total Cut Value: \t"<<exterlinks<<"\n"
 		<<"Total Edges: \t"<<exterlinks+interlinks<<"\n"
 		<<"Total Vex: \t"<<graph.GetVertexNum()<<"\n"
-		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n";
+		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
+		<<"Partition size: \t";
+	for(int i=0; i<_k; i++)
+	{
+		str<<partitions[i].size()<<"\t";
+	}
 	Log::logln(str.str());
+	delete[] partitions;
 }
