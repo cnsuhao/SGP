@@ -14,6 +14,6 @@
 -cmd kl -i D:\workspace\data\*.*  -o D:\workspace\out\20119746_dfs -log D:\workspace\out\log_20119746_dfs_kl.txt -k 4 
 -cmd sgpkl -i D:\workspace\data\20119746_dfs.graph  -o D:\workspace\out\20119746_dfs -log D:\workspace\out\log_20119746_dfs_sgpkl_uneq.txt -k 4 -m dfs -aw 20 -ew 1000 -sm uneq -maxd 200 -ec 500
 -cmd SGPStreamKL -i D:\workspace\data\20119746_dfs.graph  -o D:\workspace\out\20119746_dfs -log D:\workspace\out\log_20119746_dfs_sgpstreamkl_dbs.txt -k 4 -m dfs -aw 20 -ew 2000 -sm dbs -maxd 200 -ec 1000
--cmd streampartition -i D:\workspace\data\20119746_dfs.graph  -o D:\workspace\out\20119746_dfs_sp -log D:\workspace\out\log_20119746_dfs_sp.txt -k 4 -maxd 200 -maxrows 10 -asm tri
+-cmd streampartition -i D:\workspace\data\20119746_dfs.graph  -o D:\workspace\out\20119746_dfs_sp -log D:\workspace\out\log_20119746_dfs_sp.txt -k 4 -maxd 200 -ew 10 -asm tri
 
-hash, balance, DG, LDG, EDG, Tri, LTri, EDTri, NN
+hash, balance, DG, LDG, EDG, Tri, LTri, EDTri, NN, Fennel
