@@ -44,7 +44,7 @@ string usage =
 	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs> -maxd <max degree if sample mode is uneq>\n"
 	"StreamPartition:\n"
 	"streamly partitioning a graph by a series of vertex assigning measure.\n"
-	"params: -i <inputfile> -o <outputdir> -k <clusters num> -log <log file> -asm <assign measure: hash, balance, DG, LDG, EDG, Tri, LTri, EDTri, NN> -maxd <max degree> -maxrows <max rows of adj-matrix in the memory>\n"
+	"params: -i <inputfile> -o <outputdir> -k <clusters num> -log <log file> -asm <assign measure: hash, balance, DG, LDG, EDG, Tri, LTri, EDTri, NN, Fennel> -maxd <max degree> -ew <edges limits>\n"
 	"Test:\n"
 	"do a test!!!!"
 	"params: -i <input file> -log <log file>";
@@ -276,14 +276,14 @@ void doSGPStreamMaxMinPartitioning(string inputfile, string outputfile, int k, s
 {
 }
 
-void doStreamPartitioning(string inputfile, string outputfile, int k, string logfile, StreamPartitionMeasure measure, int max_d, int max_rows)
+void doStreamPartitioning(string inputfile, string outputfile, int k, string logfile, StreamPartitionMeasure measure, int max_d, int max_edges)
 {
 	TimeTicket::reset();
 	Log::CreateLog(logfile);
 	Log::logln("Streamingly loading the graph"+inputfile+" by StreamPartitioning");
 	StreamPartiton loader;
 	loader.SetMaxDegree(max_d);
-	loader.SetMaxRows(max_rows);
+	loader.SetMaxEdges(max_edges);
 	loader.SetGraphFile(inputfile);
 	loader.SetOutFile(outputfile);
 	loader.SetK(k);
@@ -611,18 +611,18 @@ bool ParseCommand(map<string, string> &command_params)
 	if(cmd == "streampartition")
 	{
 		//inputfile, outputfile
-		string inputfile, outputfile, logfile, k_str, assign_measure, max_d_str, max_rows_str;
+		string inputfile, outputfile, logfile, k_str, assign_measure, max_d_str, max_edges_str;
 		if(GetParam(command_params, string("-i"), inputfile) && 
 			GetParam(command_params, string("-o"), outputfile) &&
 			GetParam(command_params, string("-log"), logfile)&&
 			GetParam(command_params, string("-k"), k_str)&&
 			GetParam(command_params, string("-asm"), assign_measure)&&
 			GetParam(command_params, string("-maxd"), max_d_str)&&
-			GetParam(command_params, string("-maxrows"), max_rows_str))
+			GetParam(command_params, string("-ew"), max_edges_str))
 		{
 			int k = stoi(k_str); 
 			int max_d = stoi(max_d_str);
-			int max_rows = stoi(max_rows_str);
+			int max_edges = stoi(max_edges_str);
 
 			StreamPartitionMeasure measure;
 			if(assign_measure.compare("hash")==0) measure = HASH;
@@ -634,9 +634,9 @@ bool ParseCommand(map<string, string> &command_params)
 			if(assign_measure.compare("ltri")==0) measure = LTri;
 			if(assign_measure.compare("edtri")==0) measure = EDTri;
 			if(assign_measure.compare("nn")==0) measure = NN;
-
+			if(assign_measure.compare("fennel")==0) measure = FENNEL;
 		
-			doStreamPartitioning(inputfile, outputfile, k, logfile, measure, max_d, max_rows);
+			doStreamPartitioning(inputfile, outputfile, k, logfile, measure, max_d, max_edges);
 			return true;
 		}
 		else

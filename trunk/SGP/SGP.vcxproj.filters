@@ -42,12 +42,6 @@
     <ClInclude Include="AssignContext.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="METIS.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="FENNEL.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -87,12 +81,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="AssignContext.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="METIS.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="FENNEL.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="StreamPartiton.cpp">
