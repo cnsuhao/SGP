@@ -119,8 +119,13 @@ void Statistic::printStatistic()
 {
 	int cutvalue = 0;
 	stringstream str;
+	int max_size = 0;
 	for(int i=0; i<_k; i++)
 	{
+		int size = GetPartitionVexNumber(i)+GetAssignVexNumber(i);
+		if(size > max_size)
+			max_size = size;
+
 		str.str("");
 		str	<<"\n\n>>Partition "<<i<<" Statistic \n"
 			<<"Partition Vertex number: \t"<<GetPartitionVexNumber(i)<<"\n"
@@ -154,6 +159,8 @@ void Statistic::printStatistic()
 	{
 		str<<*iter<<"\t";
 	}
+	str<<"\nCut/Edges: \t"<<GetTotalCutValue()*1.0f/(GetTotalInternalLinks()+GetTotalExternalLinks())<<"\n"
+	<<"MaxParitionSize/AvgSize: \t"<<max_size*_k*1.0f/GetTotalVexNumber()<<"\n";
 	str<<"\nTotal Elapse : \t"<<GetTotalElapse()<<"\n";
 	Log::logln(str.str());
 }

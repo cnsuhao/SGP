@@ -154,10 +154,16 @@ void StreamPartiton::doHashStreamPartition()
 		<<"Total Vex: \t"<<vex_num<<"\n"
 		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
 		<<"Partition size: \t";
+	int max_size = 0;
 	for(int i=0; i<_k; i++)
 	{
+		if(partitions[i].size()>max_size) 
+			max_size = partitions[i].size();
+
 		str<<partitions[i].size()<<"\t";
 	}
+	str<<"\nCut/Edges: \t"<<exterlinks*1.0f/(exterlinks+interlinks)<<"\n"
+		<<"MaxParitionSize/AvgSize: \t"<<max_size*_k*1.0f/vex_num<<"\n";
 	Log::logln(str.str());
 
 	delete[] ofs;
@@ -254,10 +260,16 @@ void StreamPartiton::doBalanceStreamPartition()
 		<<"Total Vex: \t"<<vex_num<<"\n"
 		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
 		<<"Partition size: \t";
+	int max_size = 0;
 	for(int i=0; i<_k; i++)
 	{
+		if(partitions[i].size()>max_size) 
+			max_size = partitions[i].size();
+
 		str<<partitions[i].size()<<"\t";
 	}
+	str<<"\nCut/Edges: \t"<<exterlinks*1.0f/(exterlinks+interlinks)<<"\n"
+		<<"MaxParitionSize/AvgSize: \t"<<max_size*_k*1.0f/vex_num<<"\n";
 	Log::logln(str.str());
 
 	delete[] ofs;
@@ -419,10 +431,16 @@ void StreamPartiton::doDeterministicGreadyStreamPartition()
 		<<"Total Vex: \t"<<graph.GetVertexNum()<<"\n"
 		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
 		<<"Partition size: \t";
+	int max_size = 0;
 	for(int i=0; i<_k; i++)
 	{
+		if(partitions[i].size()>max_size) 
+			max_size = partitions[i].size();
+
 		str<<partitions[i].size()<<"\t";
 	}
+	str<<"\nCut/Edges: \t"<<exterlinks*1.0f/graph.GetEdgeNum()<<"\n"
+		<<"MaxParitionSize/AvgSize: \t"<<max_size*_k*1.0f/graph.GetVertexNum()<<"\n";
 	Log::logln(str.str());
 	delete[] partitions;
 }
@@ -511,10 +529,16 @@ void StreamPartiton::doLinearWeightedDeterministicGreadyStreamPartition()
 		<<"Total Vex: \t"<<graph.GetVertexNum()<<"\n"
 		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
 		<<"Partition size: \t";
+	int max_size = 0;
 	for(int i=0; i<_k; i++)
 	{
+		if(partitions[i].size()>max_size) 
+			max_size = partitions[i].size();
+
 		str<<partitions[i].size()<<"\t";
 	}
+	str<<"\nCut/Edges: \t"<<exterlinks*1.0f/graph.GetEdgeNum()<<"\n"
+		<<"MaxParitionSize/AvgSize: \t"<<max_size*_k*1.0f/graph.GetVertexNum()<<"\n";
 	Log::logln(str.str());
 	delete[] partitions;
 }
@@ -600,10 +624,16 @@ void StreamPartiton::doExponentialWeightedDeterministicGreadyStreamPartition()
 		<<"Total Vex: \t"<<graph.GetVertexNum()<<"\n"
 		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
 		<<"Partition size: \t";
+	int max_size = 0;
 	for(int i=0; i<_k; i++)
 	{
+		if(partitions[i].size()>max_size) 
+			max_size = partitions[i].size();
+
 		str<<partitions[i].size()<<"\t";
 	}
+	str<<"\nCut/Edges: \t"<<exterlinks*1.0f/graph.GetEdgeNum()<<"\n"
+		<<"MaxParitionSize/AvgSize: \t"<<max_size*_k*1.0f/graph.GetVertexNum()<<"\n";
 	Log::logln(str.str());
 	delete[] partitions;
 }
@@ -717,11 +747,16 @@ void StreamPartiton::doTriangleStreamPartition()
 		<<"Total Vex: \t"<<graph.GetVertexNum()<<"\n"
 		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
 		<<"Partition size: \t";
+	int max_size = 0;
 	for(int i=0; i<_k; i++)
 	{
+		if(partitions[i].size()>max_size) 
+			max_size = partitions[i].size();
+
 		str<<partitions[i].size()<<"\t";
 	}
-
+	str<<"\nCut/Edges: \t"<<exterlinks*1.0f/graph.GetEdgeNum()<<"\n"
+		<<"MaxParitionSize/AvgSize: \t"<<max_size*_k*1.0f/graph.GetVertexNum()<<"\n";
 	Log::logln(str.str());
 	delete[] partitions;
 }
@@ -793,7 +828,7 @@ int LinearTriangle_stream_partition_find_partition(hash_set<VERTEX>* partitions,
 
 void StreamPartiton::doLinearTriangleStreamPartition()
 {
-	Log::logln("doTriangleStreamPartition.........");
+	Log::logln("doLinearTriangleStreamPartition.........");
 	stringstream str;
 
 	GraphDisk graph;
@@ -833,10 +868,16 @@ void StreamPartiton::doLinearTriangleStreamPartition()
 		<<"Total Vex: \t"<<graph.GetVertexNum()<<"\n"
 		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
 		<<"Partition size: \t";
+	int max_size = 0;
 	for(int i=0; i<_k; i++)
 	{
+		if(partitions[i].size()>max_size) 
+			max_size = partitions[i].size();
+
 		str<<partitions[i].size()<<"\t";
 	}
+	str<<"\nCut/Edges: \t"<<exterlinks*1.0f/graph.GetEdgeNum()<<"\n"
+		<<"MaxParitionSize/AvgSize: \t"<<max_size*_k*1.0f/graph.GetVertexNum()<<"\n";
 	Log::logln(str.str());
 	delete[] partitions;
 }
@@ -948,10 +989,16 @@ void StreamPartiton::doExponentDeterministicTriangleStreamPartition()
 		<<"Total Vex: \t"<<graph.GetVertexNum()<<"\n"
 		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
 		<<"Partition size: \t";
+	int max_size = 0;
 	for(int i=0; i<_k; i++)
 	{
+		if(partitions[i].size()>max_size) 
+			max_size = partitions[i].size();
+
 		str<<partitions[i].size()<<"\t";
 	}
+	str<<"\nCut/Edges: \t"<<exterlinks*1.0f/graph.GetEdgeNum()<<"\n"
+		<<"MaxParitionSize/AvgSize: \t"<<max_size*_k*1.0f/graph.GetVertexNum()<<"\n";
 	Log::logln(str.str());
 	delete[] partitions;
 }
@@ -1044,7 +1091,107 @@ void StreamPartiton::doNonNeighborStreamPartition()
 	delete[] partitions;
 }
 
+int Fennel_stream_partition_find_partition(hash_set<VERTEX>* partitions, int k, VERTEX u, GraphDisk* graph)
+{
+	int* links = new int[k];
+	gdEdgeInfoList* adj_edges = graph->GetAdjEdgeListofVex(u);
+	for(int i=0; i<k; i++)
+	{
+		links[i] = 0;
+		for(gdEdgeInfoList::iterator iter = adj_edges->begin(); iter!= adj_edges->end(); iter++)
+		{
+			int adj_pos = iter->_adj_vex_pos;
+			VERTEX adj_u = graph->GetVertexAtPos(adj_pos);
+			if(partitions[i].find(adj_u)!=partitions[i].end())
+			{
+				links[i]++;
+			}
+		}
+	}
+	
+	float max_w = INT_MIN; 
+	int max_c = -1;
+	int n = graph->GetVertexNum();
+	int m = graph->GetEdgeNum();
+	//the follwing parameters are referred to the paper
+	float alpha = sqrt((float)k)*m/pow(n,1.5);
+	float gamma = 1.5f;
+	float nu = 1.1f;
+
+	for(int i=0; i<k; i++)
+	{
+		//compute weight
+		float w =links[i]-alpha*gamma*pow(partitions[i].size(),gamma-1);
+		if(w>max_w && partitions[i].size()<nu*n/k)
+		{
+			max_w = w;
+			max_c = i;
+		}
+	}
+	//if(max_c == -1)
+	//{
+	//	max_c = rand(0, k-1);
+	//}
+
+	graph->UnLockVertex(u);
+	delete[] links;
+	return max_c;
+}
+
 void StreamPartiton::doFennelStreamPartition()
 {
+	Log::logln("doFennelStreamPartition.........");
+	stringstream str;
+
+	GraphDisk graph;
+	graph.SetGraphFile(_graph_file);
+	str.str("");
+	str<<_outfile<<"_cachetmp.bin";
+	graph.SetTmpFile(str.str());
+	graph.SetMaxDegree(_max_d);
+	graph.SetMaxEdges(_max_edges);
+	graph.InitAdjTable();
+	graph.BuildAdjTable();
+
+	VertexInfoList* vex_list = graph.GetVertexList();
+	//init partitions
+	hash_set<VERTEX>* partitions = new hash_set<VERTEX>[_k];
+	int i=0;
+	for(i=0; i<_k; i++)
+	{
+		VERTEX u = vex_list->at(i)._u;
+		partitions[i].insert(u);
+	}
+	//do parititioning
+	for(;i<graph.GetVertexNum();i++)
+	{
+		VERTEX u = vex_list->at(i)._u;
+		int c = Fennel_stream_partition_find_partition(partitions, _k, u, &graph);
+		partitions[c].insert(u);
+	}
+	//compute cut
+	int interlinks =0, exterlinks=0;
+	write_partitions(partitions, _k, &graph, _outfile, interlinks, exterlinks);
+
+	str.str("");
+	str<<"k : \t"<<_k<<"\n"
+		<<"Total Cut Value: \t"<<exterlinks<<"\n"
+		<<"Total Edges: \t"<<exterlinks+interlinks<<"\n"
+		<<"Total Vex: \t"<<graph.GetVertexNum()<<"\n"
+		<<"Total Elapse : \t"<<TimeTicket::total_elapse()<<"\n"
+		<<"Partition size: \t";
+	int max_size = 0;
+	for(int i=0; i<_k; i++)
+	{
+		if(partitions[i].size()>max_size) 
+			max_size = partitions[i].size();
+
+		str<<partitions[i].size()<<"\t";
+	}
+	str<<"\nCut/Edges: \t"<<exterlinks*1.0f/graph.GetEdgeNum()<<"\n"
+		<<"MaxParitionSize/AvgSize: \t"<<max_size*_k*1.0f/graph.GetVertexNum()<<"\n";
+
+	Log::logln(str.str());
+	delete[] partitions;
 
 }
