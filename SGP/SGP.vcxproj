@@ -79,11 +79,9 @@
   <ItemGroup>
     <ClInclude Include="AssignContext.h" />
     <ClInclude Include="commondef.h" />
-    <ClInclude Include="FENNEL.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="GraphDisk.h" />
     <ClInclude Include="Log.h" />
-    <ClInclude Include="METIS.h" />
     <ClInclude Include="Partitioner.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SGPLoader.h" />
@@ -96,11 +94,9 @@
   <ItemGroup>
     <ClCompile Include="AssignContext.cpp" />
     <ClCompile Include="common.cpp" />
-    <ClCompile Include="FENNEL.cpp" />
     <ClCompile Include="Graph.cpp" />
     <ClCompile Include="GraphDisk.cpp" />
     <ClCompile Include="Log.cpp" />
-    <ClCompile Include="METIS.cpp" />
     <ClCompile Include="Partitioner.cpp" />
     <ClCompile Include="SGP.cpp" />
     <ClCompile Include="SGPLoader.cpp" />

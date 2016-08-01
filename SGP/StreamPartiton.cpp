@@ -49,6 +49,9 @@ void StreamPartiton::doStreamPartition(StreamPartitionMeasure measure)
 	case NN:
 		doNonNeighborStreamPartition();
 		break;
+	case FENNEL:
+		doFennelStreamPartition();
+		break;
 	}
 }
 
@@ -385,7 +388,7 @@ void StreamPartiton::doDeterministicGreadyStreamPartition()
 	str<<_outfile<<"_cachetmp.bin";
 	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
-	graph.SetMaxRows(_max_rows);
+	graph.SetMaxEdges(_max_edges);
 	graph.InitAdjTable();
 	graph.BuildAdjTable();
 
@@ -477,7 +480,7 @@ void StreamPartiton::doLinearWeightedDeterministicGreadyStreamPartition()
 	str<<_outfile<<"_cachetmp.bin";
 	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
-	graph.SetMaxRows(_max_rows);
+	graph.SetMaxEdges(_max_edges);
 	graph.InitAdjTable();
 	graph.BuildAdjTable();
 
@@ -566,7 +569,7 @@ void StreamPartiton::doExponentialWeightedDeterministicGreadyStreamPartition()
 	str<<_outfile<<"_cachetmp.bin";
 	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
-	graph.SetMaxRows(_max_rows);
+	graph.SetMaxEdges(_max_edges);
 	graph.InitAdjTable();
 	graph.BuildAdjTable();
 
@@ -681,7 +684,7 @@ void StreamPartiton::doTriangleStreamPartition()
 	str<<_outfile<<"_cachetmp.bin";
 	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
-	graph.SetMaxRows(_max_rows);
+	graph.SetMaxEdges(_max_edges);
 	graph.InitAdjTable();
 	graph.BuildAdjTable();
 
@@ -799,7 +802,7 @@ void StreamPartiton::doLinearTriangleStreamPartition()
 	str<<_outfile<<"_cachetmp.bin";
 	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
-	graph.SetMaxRows(_max_rows);
+	graph.SetMaxEdges(_max_edges);
 	graph.InitAdjTable();
 	graph.BuildAdjTable();
 
@@ -914,7 +917,7 @@ void StreamPartiton::doExponentDeterministicTriangleStreamPartition()
 	str<<_outfile<<"_cachetmp.bin";
 	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
-	graph.SetMaxRows(_max_rows);
+	graph.SetMaxEdges(_max_edges);
 	graph.InitAdjTable();
 	graph.BuildAdjTable();
 
@@ -1002,7 +1005,7 @@ void StreamPartiton::doNonNeighborStreamPartition()
 	str<<_outfile<<"_cachetmp.bin";
 	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
-	graph.SetMaxRows(_max_rows);
+	graph.SetMaxEdges(_max_edges);
 	graph.InitAdjTable();
 	graph.BuildAdjTable();
 
@@ -1039,4 +1042,9 @@ void StreamPartiton::doNonNeighborStreamPartition()
 	}
 	Log::logln(str.str());
 	delete[] partitions;
+}
+
+void StreamPartiton::doFennelStreamPartition()
+{
+
 }

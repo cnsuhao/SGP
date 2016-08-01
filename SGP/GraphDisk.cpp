@@ -42,6 +42,8 @@ void GraphDisk::InitAdjTable()
 {
 	_ifs_graph.open(_graph_file);
 	_ofs_tmp.open(_tmp_file, ios::trunc|ios::in|ios::out|ios::binary);
+	_graph_data._edges_count_in_mem = 0;
+	_graph_data._total_edge_count = 0;
 }
 
 int GraphDisk::BuildAdjTable()
@@ -52,7 +54,7 @@ int GraphDisk::BuildAdjTable()
 	{
 		if(InsertEdge(e))
 		{
-			_graph_data._edge_count++;
+			_graph_data._total_edge_count++;
 		}
 		iread++;
 	}
@@ -75,7 +77,7 @@ int GraphDisk::InsertVertex(VERTEX u)
 	int pos = _graph_data._vertex_list.size()-1;
 	_graph_data._vertex_to_pos_idx.insert(pair<VERTEX,int>(u, pos));
 
-	if(_graph_data._adj_matrix.size()<_graph_data._max_rows)//put the edgelist in the cache
+	if(_graph_data._edges_count_in_mem<=_graph_data._max_edges)//put the edgelist in the cache
 	{
 		_graph_data._vertex_list.at(pos)._status = INMEM;
 		gdEdgeInfoList edge_info_list;
@@ -115,6 +117,8 @@ bool GraphDisk::InsertEdge(EDGE e)
 	GetAdjEdgeListofPos(v_pos)->push_back(v_adj);
 	GetVertexInfoofPos(v_pos)->_degree++;
 	UnLockVertexofPos(v_pos);
+
+	_graph_data._edges_count_in_mem++;
 	return true;
 
 }
@@ -265,12 +269,14 @@ int GraphDisk::SwitchInEdgeList(int switchin_vex_pos)
 	map<VERTEX, gdVertexCacheInfo>::iterator iter = _graph_data._cache_vex_list.find(switchout_vex);
 	_graph_data._cache_vex_list.erase(iter);//don't check if exists
 	GetVertexInfoofPos(switchout_vex)->_status = INDISK;
+	_graph_data._edges_count_in_mem -= GetVertexInfoofPos(switchout_vex)->_degree;
 
 	//insert the switchin
 	switchin_vex = GetVertexInfoofPos(switchin_vex_pos)->_u;
 	gdVertexCacheInfo switchin_info = {switchout_idx_row_adj_matrix, 1, UNLOCK};
 	_graph_data._cache_vex_list.insert(pair<VERTEX, gdVertexCacheInfo>(switchin_vex, switchin_info));
 	GetVertexInfoofPos(switchin_vex_pos)->_status = INMEM;
+	_graph_data._edges_count_in_mem += GetVertexInfoofPos(switchin_vex_pos)->_degree;
 
 	return switchout_idx_row_adj_matrix;
 }

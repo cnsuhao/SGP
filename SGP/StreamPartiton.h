@@ -23,7 +23,7 @@ private:
 	int			_k;
 	//graph disk parameter
 	int			_max_d;
-	int			_max_rows;
+	int			_max_edges;
 
 	bool ReadEdge(EDGE& e);
 	//hash
@@ -44,13 +44,15 @@ private:
 	void doExponentDeterministicTriangleStreamPartition();
 	//NN
 	void doNonNeighborStreamPartition();
+	//Fennel
+	void doFennelStreamPartition();
 
 public:
 	StreamPartiton(void);
 	~StreamPartiton(void);
 
 	void SetMaxDegree(int d) {_max_d = d;};
-	void SetMaxRows(int r) {_max_rows = r;};
+	void SetMaxEdges(int r) {_max_edges = r;};
 	void SetGraphFile(string f) {_graph_file = f;};
 	void SetOutFile(string f) {_outfile = f;};
 	void SetK(int k) {_k = k;};

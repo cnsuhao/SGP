@@ -115,7 +115,7 @@ typedef struct _ReAdjustPartitionPair {
 } ReAdjustPartitionPair;
 
 typedef enum _StreamPartitionMeasure {
-	HASH, BALANCE, DG, LDG, EDG, Tri, LTri, EDTri, NN
+	HASH, BALANCE, DG, LDG, EDG, Tri, LTri, EDTri, NN, FENNEL
 } StreamPartitionMeasure;
 
 int rand(int range_min, int range_max);

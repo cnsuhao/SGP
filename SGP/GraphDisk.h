@@ -40,9 +40,9 @@ typedef struct _gdAdjTable {
 	map<VERTEX, gdVertexCacheInfo>	_cache_vex_list;//the vex list in the cache
 	
 	int _max_d;
-	int _max_rows;
-
-	int _edge_count;
+	int _max_edges;
+	int _edges_count_in_mem;
+	int _total_edge_count;
 } gdAdjTable;
 
 class GraphDisk
@@ -79,14 +79,16 @@ public:
 	void SetMaxDegree(int d) {_graph_data._max_d = d;};
 	int GetMaxDegree() {return _graph_data._max_d;};
 
-	void SetMaxRows(int r) {_graph_data._max_rows = r;};
-	int GetMaxRows() {return _graph_data._max_rows;};
+	//void SetMaxRows(int r) {_graph_data._max_rows = r;};
+	//int GetMaxRows() {return _graph_data._max_rows;};
+	void SetMaxEdges(int r) {_graph_data._max_edges = r;};
+	int GetMaxEdges() {return _graph_data._max_edges;};
 
 	void SetTmpFile(string f) { _tmp_file = f;};
 	void SetGraphFile(string f) {_graph_file = f;};
 
 	int GetVertexNum() {return _graph_data._vertex_list.size();};
-	int GetEdgeNum() {return _graph_data._edge_count;};
+	int GetEdgeNum() {return _graph_data._total_edge_count;};
 
 	void InitAdjTable();
 
