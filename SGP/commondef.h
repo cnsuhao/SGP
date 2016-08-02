@@ -12,7 +12,7 @@ using namespace std;
 /**
 Graph
 */
-typedef unsigned __int32 VERTEX;
+typedef unsigned __int32 VERTEX; 
 
 typedef struct _EDGE {
 	VERTEX _u;
