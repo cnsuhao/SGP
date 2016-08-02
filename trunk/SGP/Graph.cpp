@@ -378,17 +378,12 @@ void Graph::WriteGraphToFileByBFS(string& file)
 					edge_visited = true;
 				}
 
-				if(v_info->_visisted)
-				{
-					
-					if(!edge_visited)//to confirm a edge written once
-					{
-						os<<u<<" "<<v<<endl;
-					}
-				}
-				else
+				if(!v_info->_visisted)
 				{
 					bfs_queue.push(v_pos);
+				}
+				if(!edge_visited)//to confirm a edge written once
+				{
 					os<<u<<" "<<v<<endl;
 				}
 			}
