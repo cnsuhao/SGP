@@ -193,7 +193,9 @@ void Graph::InsertEdge(EDGE e)
 	}
 
 	if(isConnectbyPos(u_pos, v_pos))//the edge exists
+	{
 		return;
+	}
 
 	EdgeInfo u_adj, v_adj;
 	u_adj._adj_vex_pos = v_pos;
@@ -462,7 +464,7 @@ void Graph::WriteGraphToFileByDFS(string& file)
 
 void Graph::WriteGraphToFileByRand(string& in, string& out)
 {
-	hash_set<EdgeID> edges;
+	map<EdgeID,int> edges;
 	int total_edges = 0;
 	int exclusive_edges=0;
 
@@ -499,10 +501,11 @@ void Graph::WriteGraphToFileByRand(string& in, string& out)
 						float r = randf(0.0f, 1.0f);
 						if(r<0.5f)
 						{
-							edges.insert(id);
+							edges.insert(pair<EdgeID, int> (id,0));
 						}
 						else
 						{
+							edges.insert(pair<EdgeID, int> (id,1));
 							ofs<<u<<" "<<v<<endl;
 						}
 						total_edges++;
@@ -516,10 +519,11 @@ void Graph::WriteGraphToFileByRand(string& in, string& out)
 			}
 		}
 	}
-	for(hash_set<EdgeID>::iterator iter = edges.begin(); iter!=edges.end(); iter++)
+	for(map<EdgeID,int>::iterator iter = edges.begin(); iter!=edges.end(); iter++)
 	{
-		EDGE e = GetEdgeofID(*iter);
-		ofs<<e._u<<" "<<e._v<<endl;
+		EDGE e = GetEdgeofID(iter->first);
+		if(iter->second == 0)
+			ofs<<e._u<<" "<<e._v<<endl;
 	}
 	Log::log("Total Edges: \t");
 	Log::logln(total_edges);
