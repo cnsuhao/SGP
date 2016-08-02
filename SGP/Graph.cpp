@@ -460,6 +460,77 @@ void Graph::WriteGraphToFileByDFS(string& file)
 	os.close();
 }
 
+void Graph::WriteGraphToFileByRand(string& in, string& out)
+{
+	hash_set<EdgeID> edges;
+	int total_edges = 0;
+	int exclusive_edges=0;
+
+	ofstream ofs(out);
+
+	string path = in.substr(0, in.find_last_of('\\'));
+	_finddata_t file;
+	long lf;
+	if((lf = _findfirst(in.c_str(), &file))==-1l)
+	{
+		return;
+	}
+	else
+	{
+		while( _findnext( lf, &file ) == 0 )
+		{
+			if(file.attrib == _A_NORMAL || file.attrib == _A_ARCH)
+			{
+
+				std::ifstream is(path+"\\"+string(file.name));
+				std::string buf;
+				while(std::getline(is, buf))
+				{
+					if(buf.empty()) continue;
+
+					int idx = buf.find_first_of(" ");
+					string temp = buf.substr(0, idx);
+					int u = stoi(temp);
+					temp = buf.substr(idx+1, buf.length()-idx-1);
+					int v= stoi(temp);
+					EdgeID id = MakeEdgeID(u,v);
+					if(edges.find(id)==edges.end() && u!=v)
+					{
+						float r = randf(0.0f, 1.0f);
+						if(r<0.5f)
+						{
+							edges.insert(id);
+						}
+						else
+						{
+							ofs<<u<<" "<<v<<endl;
+						}
+						total_edges++;
+					}
+					else
+					{
+						exclusive_edges++;
+					}
+				}
+				is.close();
+			}
+		}
+	}
+	for(hash_set<EdgeID>::iterator iter = edges.begin(); iter!=edges.end(); iter++)
+	{
+		EDGE e = GetEdgeofID(*iter);
+		ofs<<e._u<<" "<<e._v<<endl;
+	}
+	Log::log("Total Edges: \t");
+	Log::logln(total_edges);
+	Log::log("Total Exclusive Edges: \t");
+	Log::logln(exclusive_edges);
+
+	_findclose(lf);
+	ofs.close();
+
+}
+
 void Graph::BuildGraphFromEdgesCache(vector<EDGE>& edges_cache)
 {
 	vector<EDGE>::const_iterator iter = edges_cache.begin();

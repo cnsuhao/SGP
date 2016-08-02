@@ -56,6 +56,7 @@ public:
 
 	void WriteGraphToFileByBFS(string& file);
 	void WriteGraphToFileByDFS(string& file);
+	void WriteGraphToFileByRand(string& in, string& out);
 	
 	//compute the lengths of the shortest paths from u to all the others . if no path, it's set by INT_MAX. 
 	//the return vector is corresponding to the vector of graph vex table
