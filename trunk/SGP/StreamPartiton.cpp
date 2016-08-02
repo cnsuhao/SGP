@@ -65,9 +65,9 @@ bool StreamPartiton::ReadEdge(EDGE& e)
 
 		int idx = buf.find_first_of(" ");
 		string temp = buf.substr(0, idx);
-		int u = stoi(temp);
+		VERTEX u = stoul(temp);
 		temp = buf.substr(idx+1, buf.length()-idx-1);
-		int v= stoi(temp);
+		VERTEX v= stoul(temp);
 		e._u = u;
 		e._v = v;
 		return true;

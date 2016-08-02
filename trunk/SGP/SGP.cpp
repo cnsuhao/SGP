@@ -14,7 +14,7 @@
 using namespace std;
 
 string usage = 
-	"sgp -CMD [DFS|BFS|RAND|KL|MaxMin|SGPKL|SGPMaxMin|SGPStreamKL|SGPStreamMaxMin|StreamPartition|Test] ...\n"
+	"sgp -CMD [DFS|BFS|RAND|KL|SGPKL|SGPStreamKL|StreamPartition|GraphNorm|Test] ...\n"
 	"DFS:\n"
 	"convert edges order by dfs.\n"
 	"params: -i <inputfile> -o <outputfile> -log <log file>\n"
@@ -27,24 +27,18 @@ string usage =
 	"KL:\n"
 	"partitioning a graph by kl algorithm in memory.\n"
 	"params: -i <inputfile> -o <outputdir> -k <clusters num> -log <log file>\n"
-	"MaxMin:\n"
-	"partitioning a graph by max-min algorithm in memory.\n"
-	"params: -i <inputfile> -o <outputdir> -k <clusters num> -log <log file>\n"
 	"SGPKL:\n"
 	"partitioning a graph by sgp of kl algorithm.\n"
-	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs> -maxd <max degree if sample mode is uneq>\n"
-	"SGPMaxMin:\n"
-	"partitioning a graph by sgp of max-min algorithm\n"
 	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs> -maxd <max degree if sample mode is uneq>\n"
 	"SGPStreamKL:\n"
 	"partitioning a graph by stream sgp of kl algorithm.\n"
 	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs> -maxd <max degree if sample mode is uneq> -ec <edge cache size for dbs>\n"
-	"SGPStreamMaxMin:\n"
-	"partitioning a graph by stream sgp  of max-min algorithm.\n"
-	"params: -i <inputfile> -o <outputdir> -k <clusters num> -m <edge order: dfs, bfs, random> -log <log file> -aw <assign window size> -ew <edges limits> -sm <sample mode: eq, uneq,dbs> -maxd <max degree if sample mode is uneq>\n"
 	"StreamPartition:\n"
 	"streamly partitioning a graph by a series of vertex assigning measure.\n"
 	"params: -i <inputfile> -o <outputdir> -k <clusters num> -log <log file> -asm <assign measure: hash, balance, DG, LDG, EDG, Tri, LTri, EDTri, NN, Fennel> -maxd <max degree> -ew <edges limits>\n"
+	"GraphNorm:\n"
+	"Normalize the graph file as <nodeid nodeid> and nodeid is in the int32 range.\n"
+	"params: -i <inputdir> -o <outputfile> -log <log file> -recode [0|1]<0:false, 1:true> -sep <separator: 9 or 32(space) or self-defined digital>\n"
 	"Test:\n"
 	"do a test!!!!"
 	"params: -i <input file> -log <log file>";
@@ -201,10 +195,6 @@ void doKLPartitioning(string inputfile, string outputfile, int k, string logfile
 	Log::log(partitioner.ComputeCutValue());
 }
 
-void doMaxMinPartitioning(string inputfile, string outputfile, int k, string logfile)
-{
-}
-
 void doSGPKLPartitioning(string inputfile, string outputfile, int k, string logfile,EdgeOrderMode ordermode, int assign_win_size, int edges_limits, SampleMode sample_mode, int max_d)
 {
 	TimeTicket::reset();
@@ -254,11 +244,6 @@ void doSGPKLPartitioning(string inputfile, string outputfile, int k, string logf
 
 }
 
-void doSGPMaxMinPartitioning(string inputfile, string outputfile, int k, string logfile,EdgeOrderMode ordermode, int assign_win_size, int edges_limits, SampleMode sample_mode, int max_d)
-{
-	
-}
-
 void doSGPStreamKLPartitioning(string inputfile, string outputfile, int k, string logfile,EdgeOrderMode ordermode, int assign_win_size, int edges_limits, SampleMode sample_mode, int max_d, int edge_cache_size)
 {
 	TimeTicket::reset();
@@ -283,10 +268,6 @@ void doSGPStreamKLPartitioning(string inputfile, string outputfile, int k, strin
 	loader.doSGPStatistic();
 }
 
-void doSGPStreamMaxMinPartitioning(string inputfile, string outputfile, int k, string logfile,EdgeOrderMode ordermode, int assign_win_size, int edges_limits, SampleMode sample_mode, int max_d)
-{
-}
-
 void doStreamPartitioning(string inputfile, string outputfile, int k, string logfile, StreamPartitionMeasure measure, int max_d, int max_edges)
 {
 	TimeTicket::reset();
@@ -302,13 +283,158 @@ void doStreamPartitioning(string inputfile, string outputfile, int k, string log
 	loader.doStreamPartition(measure);
 }
 
-void doTest(string inputfile, string logfile)
+bool isDigitString(string& str, char separator)
 {
+	for(basic_string <char>::iterator iter = str.begin(); iter!=str.end(); iter++)
+	{
+		char c = *iter;
+		if(c>='0' && c<='9' || c==separator)
+			continue;
+		else
+			return false;
+	}
+	return true;
+}
+
+void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool recode, char separator)
+{
+	cout<<"GraphNorm:";	
+	TimeTicket::reset();
 	Log::CreateLog(logfile);
 
+	unsigned int total_edges = 0, total_vexs=0;
+	ofstream ofs(outputfile);
+	map<string, unsigned int> vex_code;
+	map<unsigned int, int> vex_degree;
+	hash_set<EdgeID> edges;
+	VERTEX recode_id=0;
+	
+	string path = inputdir.substr(0, inputdir.find_last_of('\\'));
+	_finddata_t file;
+	long lf;
+	if((lf = _findfirst(inputdir.c_str(), &file))==-1l)
+	{
+		return;
+	}
+	else
+	{
+		while( _findnext( lf, &file ) == 0 )
+		{
+			if(file.attrib == _A_NORMAL || file.attrib == _A_ARCH)
+			{
+
+				std::ifstream is(path+"\\"+string(file.name));
+				std::string buf;
+				while(std::getline(is, buf))
+				{
+					if(buf.empty() || !isDigitString(buf, separator)) continue;
+					string temp1, temp2;
+					VERTEX u,v;
+					int idx = buf.find_first_of(separator);
+					temp1 = buf.substr(0, idx);
+					int idx2 = buf.find_first_of(separator, idx+1);
+					temp2 = buf.substr(idx+1, idx2-idx);
+
+					if(!recode)
+					{
+						u = stoul(temp1);
+						v = stoul(temp2);
+					}
+					else
+					{
+						map<string, unsigned int>::iterator  iter = vex_code.find(temp1);
+						if(iter==vex_code.end())
+						{
+							recode_id++;
+							vex_code.insert(pair<string, unsigned int>(temp1, recode_id++));
+							u = recode_id;
+						}
+						else
+						{
+							u=iter->second;
+						}
+
+						iter = vex_code.find(temp2);
+						if(iter==vex_code.end())
+						{
+							recode_id++;
+							vex_code.insert(pair<string, unsigned int>(temp2, recode_id++));
+							v = recode_id;
+						}
+						else
+						{
+							v=iter->second;
+						}
+					}
+					EdgeID id = MakeEdgeID(u,v);
+					if(edges.find(id) == edges.end())
+					{
+						edges.insert(id);
+						map<unsigned int, int>::iterator iter = vex_degree.find(u);
+						if( iter == vex_degree.end())
+						{
+							vex_degree.insert(pair<unsigned int, int>(u, 1));
+						}
+						else
+						{
+							iter->second++;
+						}
+						iter = vex_degree.find(v);
+						if( iter == vex_degree.end())
+						{
+							vex_degree.insert(pair<unsigned int, int>(v, 1));
+						}
+						else
+						{
+							iter->second++;
+						}
+						ofs<<u<<" "<<v<<endl;
+						cout<<++total_edges<<endl;
+					}
+
+					
+				}
+				is.close();
+			}
+		}
+	}
+
+	cout<<endl<<"GraphNorm Finished"<<endl;
+	_findclose(lf);
+	ofs.close();
+
+	stringstream str;
+	str<<"Total Vex Num: \t"<<vex_degree.size()
+		<<"\nTotal Edges Num: \t"<<total_edges
+		<<"\nElapse: \t"<<TimeTicket::total_elapse()
+		<<"\nDegree Distribution <degree : count>";
+	map<int, int> degree_distribution;
+	for(map<unsigned int, int>::iterator iter = vex_degree.begin(); iter!= vex_degree.end(); iter++)
+	{
+		map<int, int>::iterator iter_d = degree_distribution.find(iter->second);
+		if(iter_d == degree_distribution.end())
+		{
+			degree_distribution.insert(pair<int,int>(iter->second,1));
+		}
+		else
+		{
+			iter_d->second++;
+		}
+	}
+	for(map<int, int>::iterator iter_d = degree_distribution.begin(); iter_d!= degree_distribution.end(); iter_d++)
+	{
+		str<<"\n"<<iter_d->first<<":"<<iter_d->second;
+	}
+	Log::logln(str.str());
+
+}
+
+void doTest(string inputfile, string logfile)
+{
+/*
+	Log::CreateLog(logfile);
 	Log::logln("TEST : shortest path");
 	Log::logln("inputfile : a graph");
-
 	Graph graph;
 	graph.BuildGraphFromFile(inputfile);
 	int begin_vex_pos = 0;
@@ -329,6 +455,36 @@ void doTest(string inputfile, string logfile)
 		Log::logln(log_str.str());
 		vex_pos++;
 	}
+*/
+	hash_set<EdgeInfo, EdgeInfoCompare> edges;
+	EdgeInfo e;
+	for(int i=0; i<10000;i++)
+	{
+		e._adj_vex_pos = i;
+		edges.insert(e);
+	}
+	for(int i=0; i<10000;i++)
+	{
+		e._adj_vex_pos = i;
+		if(edges.find(e) == edges.end())
+		{
+			cout<<"not found :"<<i<<endl;
+		}
+		else
+		{
+			cout<<"found :"<<i<<endl;
+		}
+	}
+	e._adj_vex_pos = 10000;
+	if(edges.find(e) == edges.end())
+	{
+		cout<<"not found 10000"<<endl;
+	}
+	else
+	{
+		cout<<"found 10000"<<endl;
+	}
+
 }
 
 bool GetParam(map<string, string>& command_params, string& cmd, string& param)
@@ -421,25 +577,6 @@ bool ParseCommand(map<string, string> &command_params)
 		}
 	}
 
-	if(cmd == "maxmin")
-	{
-		//inputfile, outputfile
-		string inputfile, outputfile, logfile, k_str;
-		if(GetParam(command_params, string("-i"), inputfile) && 
-			GetParam(command_params, string("-o"), outputfile) &&
-			GetParam(command_params, string("-log"), logfile)&&
-			GetParam(command_params, string("-k"), k_str))
-		{
-			int k = stoi(k_str); 
-			doMaxMinPartitioning(inputfile, outputfile, k, logfile);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
 	if(cmd == "sgpkl")
 	{
 		//inputfile, outputfile
@@ -475,50 +612,6 @@ bool ParseCommand(map<string, string> &command_params)
 			}
 
 			doSGPKLPartitioning(inputfile, outputfile, k, logfile, ordermode, aw_size, ew_size, mode, max_d);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	if(cmd == "sgpmaxmin")
-	{
-		//inputfile, outputfile
-		string inputfile, outputfile, logfile, k_str, order_mode, assign_win, edges_limit, sample_mode, max_d_str;
-		if(GetParam(command_params, string("-i"), inputfile) && 
-			GetParam(command_params, string("-o"), outputfile) &&
-			GetParam(command_params, string("-log"), logfile)&&
-			GetParam(command_params, string("-k"), k_str)&&
-			GetParam(command_params, string("-m"), order_mode)&&
-			GetParam(command_params, string("-aw"), assign_win)&&
-			GetParam(command_params, string("-ew"), edges_limit)&&
-			GetParam(command_params, string("-sm"), sample_mode))
-		{
-			int k = stoi(k_str); 
-			int aw_size = stoi(assign_win);
-			int ew_size = stoi(edges_limit);
-
-			SampleMode mode;
-			if(sample_mode.compare("eq")==0) mode = FIX_MEM_EQ;
-			if(sample_mode.compare("uneq")==0) mode = FIX_MEM_UNEQ;
-			if(sample_mode.compare("dbs")==0) mode = RESERVOIR_DBS;
-
-			EdgeOrderMode ordermode;
-			if(order_mode.compare("dfs") == 0) ordermode = DFS;
-			if(order_mode.compare("bfs") == 0) ordermode = BFS;
-			if(order_mode.compare("random") == 0) ordermode = RANDOM;
-
-			int max_d = 0;
-			if(mode == FIX_MEM_UNEQ)
-			{
-				GetParam(command_params, string("-maxd"), max_d_str);
-				max_d = stoi(max_d_str);
-			}
-
-
-			doSGPMaxMinPartitioning(inputfile, outputfile, k, logfile, ordermode, aw_size, ew_size, mode, max_d);
 			return true;
 		}
 		else
@@ -576,49 +669,6 @@ bool ParseCommand(map<string, string> &command_params)
 		}
 	}
 
-	if(cmd == "sgpstreammaxmin")
-	{
-		//inputfile, outputfile
-		string inputfile, outputfile, logfile, k_str, order_mode,assign_win, edges_limit, sample_mode, max_d_str;
-		if(GetParam(command_params, string("-i"), inputfile) && 
-			GetParam(command_params, string("-o"), outputfile) &&
-			GetParam(command_params, string("-log"), logfile)&&
-			GetParam(command_params, string("-k"), k_str)&&
-			GetParam(command_params, string("-m"), order_mode)&&
-			GetParam(command_params, string("-aw"), assign_win)&&
-			GetParam(command_params, string("-ew"), edges_limit)&&
-			GetParam(command_params, string("-sm"), sample_mode))
-		{
-			int k = stoi(k_str); 
-			int aw_size = stoi(assign_win);
-			int ew_size = stoi(edges_limit);
-
-			SampleMode mode;
-			if(sample_mode.compare("eq")==0) mode = FIX_MEM_EQ;
-			if(sample_mode.compare("uneq")==0) mode = FIX_MEM_UNEQ;
-			if(sample_mode.compare("dbs")==0) mode = RESERVOIR_DBS;
-
-			EdgeOrderMode ordermode;
-			if(order_mode.compare("dfs") == 0) ordermode = DFS;
-			if(order_mode.compare("bfs") == 0) ordermode = BFS;
-			if(order_mode.compare("random") == 0) ordermode = RANDOM;
-
-			int max_d = 0;
-			if(mode == FIX_MEM_UNEQ)
-			{
-				GetParam(command_params, string("-maxd"), max_d_str);
-				max_d = stoi(max_d_str);
-			}
-
-			doSGPStreamMaxMinPartitioning(inputfile, outputfile, k, logfile, ordermode, aw_size, ew_size, mode, max_d);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
 	if(cmd == "streampartition")
 	{
 		//inputfile, outputfile
@@ -655,6 +705,30 @@ bool ParseCommand(map<string, string> &command_params)
 			return false;
 		}
 	}
+
+	if(cmd == "graphnorm")
+	{
+		//inputfile, outputfile
+		string inputdir, outputfile, logfile, recode_str, sep_str;
+		if(GetParam(command_params, string("-i"), inputdir) && 
+			GetParam(command_params, string("-o"), outputfile) &&
+			GetParam(command_params, string("-log"), logfile) &&
+			GetParam(command_params, string("-recode"), recode_str) &&
+			GetParam(command_params, string("-sep"), sep_str))
+		{
+			bool recode;
+			if(recode_str=="0") recode = false;
+			if(recode_str=="1") recode = true;
+			char separator = stoi(sep_str);
+			doGraphNorm(inputdir, outputfile, logfile, recode, separator);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
 
 	if(cmd == "test")
 	{

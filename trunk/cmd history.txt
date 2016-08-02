@@ -17,3 +17,5 @@
 -cmd streampartition -i D:\workspace\data\20119746_dfs.graph  -o D:\workspace\out\20119746_dfs_sp -log D:\workspace\out\log_20119746_dfs_sp.txt -k 4 -maxd 200 -ew 10 -asm tri
 
 hash, balance, DG, LDG, EDG, Tri, LTri, EDTri, NN, Fennel
+
+-cmd graphnorm -i D:\workspace\data\test\*.*  -o D:\workspace\data\test.graph -log D:\workspace\out\test.txt -recode 0 -sep 32

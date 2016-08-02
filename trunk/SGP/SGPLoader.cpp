@@ -696,9 +696,9 @@ bool SGPLoader::ReadEdge(EDGE& e)
 
 		int idx = buf.find_first_of(" ");
 		string temp = buf.substr(0, idx);
-		int u = stoi(temp);
+		VERTEX u = stoul(temp);
 		temp = buf.substr(idx+1, buf.length()-idx-1);
-		int v= stoi(temp);
+		VERTEX v= stoul(temp);
 		e._u = u;
 		e._v = v;
 		return true;
@@ -1207,7 +1207,7 @@ bool SGPLoader::UpdateStorageNode_Debug()
 			int idx =0;
 			int idx_next = buf.find_first_of(" ", idx);
 			string temp = buf.substr(idx, idx_next-idx);
-			VERTEX u = stoi(temp);
+			VERTEX u = stoul(temp);
 
 			idx = ++idx_next;
 			idx_next = buf.find_first_of(" ", idx);
@@ -1217,7 +1217,7 @@ bool SGPLoader::UpdateStorageNode_Debug()
 			idx = ++idx_next;
 			idx_next = buf.find_first_of(" ", idx);
 			temp = buf.substr(idx, idx_next-idx);
-			VERTEX v= stoi(temp);
+			VERTEX v= stoul(temp);
 
 			temp = buf.substr(idx_next+1, buf.length()-idx_next-1);
 			int v_assign_partition = stoi(temp);
@@ -1358,7 +1358,7 @@ DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
 		int idx =0;
 		int idx_next = buf.find_first_of(" ", idx);
 		string temp = buf.substr(idx, idx_next-idx);
-		VERTEX u = stoi(temp);
+		VERTEX u = stoul(temp);
 
 		idx = ++idx_next;
 		idx_next = buf.find_first_of(" ", idx);
@@ -1368,7 +1368,7 @@ DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
 		idx = ++idx_next;
 		idx_next = buf.find_first_of(" ", idx);
 		temp = buf.substr(idx, idx_next-idx);
-		VERTEX v= stoi(temp);
+		VERTEX v= stoul(temp);
 
 		temp = buf.substr(idx_next+1, buf.length()-idx_next-1);
 		int v_assign_partition = stoi(temp);
@@ -1601,7 +1601,7 @@ void SGPLoader::Debug_7()
 			int idx =0;
 			int idx_next = buf.find_first_of(" ", idx);
 			string temp = buf.substr(idx, idx_next-idx);
-			VERTEX u = stoi(temp);
+			VERTEX u = stoul(temp);
 
 			idx = ++idx_next;
 			idx_next = buf.find_first_of(" ", idx);
@@ -1611,7 +1611,7 @@ void SGPLoader::Debug_7()
 			idx = ++idx_next;
 			idx_next = buf.find_first_of(" ", idx);
 			temp = buf.substr(idx, idx_next-idx);
-			VERTEX v= stoi(temp);
+			VERTEX v= stoul(temp);
 
 			temp = buf.substr(idx_next+1, buf.length()-idx_next-1);
 			int v_assign_partition = stoi(temp);
@@ -1650,7 +1650,7 @@ void SGPLoader::Debug_7()
 			int idx =0;
 			int idx_next = buf.find_first_of(" ", idx);
 			string temp = buf.substr(idx, idx_next-idx);
-			VERTEX u = stoi(temp);
+			VERTEX u = stoul(temp);
 
 			idx = ++idx_next;
 			idx_next = buf.find_first_of(" ", idx);
@@ -1660,7 +1660,7 @@ void SGPLoader::Debug_7()
 			idx = ++idx_next;
 			idx_next = buf.find_first_of(" ", idx);
 			temp = buf.substr(idx, idx_next-idx);
-			VERTEX v= stoi(temp);
+			VERTEX v= stoul(temp);
 
 			temp = buf.substr(idx_next+1, buf.length()-idx_next-1);
 			int v_assign_partition = stoi(temp);

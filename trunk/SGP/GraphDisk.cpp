@@ -27,9 +27,9 @@ bool GraphDisk::ReadEdge(EDGE& e)
 
 		int idx = buf.find_first_of(" ");
 		string temp = buf.substr(0, idx);
-		int u = stoi(temp);
+		VERTEX u = stoul(temp);
 		temp = buf.substr(idx+1, buf.length()-idx-1);
-		int v= stoi(temp);
+		VERTEX v= stoul(temp);
 		e._u = u;
 		e._v = v;
 		return true;
@@ -173,7 +173,7 @@ gdVertexInfo* GraphDisk::GetVertexInfoofPos(int pos)
 VERTEX GraphDisk::GetVertexAtPos(int pos)
 {
 	if(pos<0 || pos>_graph_data._vertex_list.size()-1)
-		return -1;
+		return VEX_NOTFOUND;
 
 	return _graph_data._vertex_list.at(pos)._u;
 }
@@ -297,7 +297,7 @@ void GraphDisk::LockVertex(VERTEX& u)
 void GraphDisk::LockVertexofPos(int pos)
 {
 	VERTEX u = GetVertexAtPos(pos);
-	if(u == -1)
+	if(u == VEX_NOTFOUND)
 	{
 		Log::logln("Error::GraphDisk::LockVertexofPos::the vertex info not found");
 		return;
@@ -322,7 +322,7 @@ void GraphDisk::UnLockVertex(VERTEX& u)
 void GraphDisk::UnLockVertexofPos(int pos)
 {
 	VERTEX u = GetVertexAtPos(pos);
-	if(u == -1)
+	if(u == VEX_NOTFOUND)
 	{
 		Log::logln("Error::GraphDisk::UnLockVertexofPos::the vertex info not found");
 		return;
@@ -351,7 +351,7 @@ bool GraphDisk::isLockVertex(VERTEX u)
 bool GraphDisk::isLockVertexofPos(int pos)
 {
 	VERTEX u = GetVertexAtPos(pos);
-	if(u == -1)
+	if(u == VEX_NOTFOUND)
 	{
 		Log::logln("Error::GraphDisk::isLockVertexofPos::the vertex info not found");
 		return false;
