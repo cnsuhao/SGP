@@ -6,8 +6,11 @@
 #include <map>
 #include <unordered_set>
 #include <set>
+#include <hash_set>
 
 using namespace std;
+
+#define VEX_NOTFOUND UINT_MAX
 
 /**
 Graph
@@ -20,10 +23,31 @@ typedef struct _EDGE {
 } EDGE, *PEDGE;
 
 typedef struct _EdgeInfo {
-	int			_adj_vex_pos;
+	int _adj_vex_pos;
+
+	bool operator==(const _EdgeInfo& e)
+	{
+		return _adj_vex_pos==e._adj_vex_pos;
+	}
 } EdgeInfo;
 
-typedef std::vector <EdgeInfo> EdgeInfoArray;
+typedef struct _EdgeInfoCompare{
+	bool operator()(const EdgeInfo& lhs,const EdgeInfo& rhs) const 
+	{         
+		return !(lhs._adj_vex_pos==rhs._adj_vex_pos); //注意这里的逻辑     
+	}     
+	// hashing function     
+	size_t operator()(const EdgeInfo& key) const 
+	{         
+		return key._adj_vex_pos;     
+	}     
+	// bucket information     
+	static const size_t bucket_size=4u;     
+	static const size_t min_buckets=8u; 
+} EdgeInfoCompare; 
+
+//typedef std::vector <EdgeInfo> EdgeInfoArray;
+typedef hash_set<EdgeInfo, EdgeInfoCompare> EdgeInfoArray;
 
 typedef enum _VertexStatus {
 	NORM=0,

@@ -281,7 +281,16 @@ void Partitioner::ComputeGain(ClusterNode& node_in_aCluster, Cluster* aCluster, 
 int Partitioner::SetIntersectionBetweenEdgeListAndCluster(EdgeInfoArray* vexlist, Cluster* cluster)
 {
 	int num=0;
-	for(int i=0; i<vexlist->size(); i++)
+	for(EdgeInfoArray::iterator iter = vexlist->begin(); iter!=vexlist->end(); iter++)
+	{
+		ClusterNode node;
+		node._pos = iter->_adj_vex_pos;
+		int found = GetClusterNode(cluster, node);
+		if(found >=0)
+			num++;
+	}
+	return num;
+	/*for(int i=0; i<vexlist->size(); i++)
 	{
 		for(int j=0; j<cluster->_cluster.size(); j++)
 		{
@@ -291,7 +300,7 @@ int Partitioner::SetIntersectionBetweenEdgeListAndCluster(EdgeInfoArray* vexlist
 			}
 		}
 	}
-	return num;
+	return num;*/
 }
 
 void Partitioner::InsertSort(Cluster* aCluster, int end_pos)

@@ -97,11 +97,12 @@ bool Graph::isConnectbyPos(int vex1_pos, int vex2_pos)
 		return false;
 
 	EdgeInfoArray* vex1_edges = GetAdjEdgeListofPos(vex1_pos);
-	for(EdgeInfoArray::iterator iter = vex1_edges->begin(); iter!=vex1_edges->end(); iter++)
-	{
-		if(iter->_adj_vex_pos == vex2_pos) return true;
-	}
-	return false;
+	EdgeInfo v2;
+	v2._adj_vex_pos = vex2_pos;
+	if(vex1_edges->find(v2) != vex1_edges->end())
+		return true;
+	else
+		return false;
 }
 
 bool Graph::isConnect(VERTEX v1, VERTEX v2)
@@ -142,12 +143,18 @@ int Graph::InsertVertex(VERTEX u)
 void Graph::DeleteVertex(VERTEX& u)
 {
 	int u_pos = GetVertexPos(u);
-	if(u_pos == -1) return;
+	if(u_pos == -1) 
+		return;
 
-	VertexInfo* v_info = GetVertexInfoofVertex(u);
-	
-	EdgeInfoArray::iterator iter_e = v_info->_edge_list.begin();
-	while(iter_e != v_info->_edge_list.end())
+	EdgeInfoArray* u_edge_list = GetAdjEdgeListofPos(u_pos);
+	if(u_edge_list == NULL) 
+		return;
+
+	EdgeInfo u_info;
+	u_info._adj_vex_pos = u_pos;
+
+	EdgeInfoArray::iterator iter_e = u_edge_list->begin();
+	while(iter_e != u_edge_list->end())
 	{
 		//对邻接点的边列表进行相应处理
 		int adj_pos = (*iter_e)._adj_vex_pos;
@@ -155,12 +162,10 @@ void Graph::DeleteVertex(VERTEX& u)
 		if(adj_info->_indicator != NORM)
 			continue;
 
-		EdgeInfoArray::iterator iter_adj = adj_info->_edge_list.begin();
-		while(iter_adj != adj_info->_edge_list.end() &&
-			(*iter_adj)._adj_vex_pos != u_pos)
-			iter_adj++;
-		if(iter_adj != adj_info->_edge_list.end())//找到，删除
+		EdgeInfoArray::iterator iter_adj = adj_info->_edge_list.find(u_info);
+		if(iter_adj!=adj_info->_edge_list.end())
 		{
+			//在u的邻接点的邻接列表中找到u，删除
 			adj_info->_edge_list.erase(iter_adj);
 			adj_info->_degree--;
 		}
@@ -168,6 +173,7 @@ void Graph::DeleteVertex(VERTEX& u)
 		iter_e++;
 	}
 
+	VertexInfo* v_info = GetVertexInfoofPos(u_pos);
 	v_info->_indicator = REMOVED;
 	v_info->_degree = -1;
 	v_info->_edge_list.clear();
@@ -201,9 +207,9 @@ void Graph::InsertEdge(EDGE e)
 	u_adj._adj_vex_pos = v_pos;
 	v_adj._adj_vex_pos = u_pos;
 
-	GetVertexInfoofPos(u_pos)->_edge_list.push_back(u_adj);
+	GetVertexInfoofPos(u_pos)->_edge_list.insert(u_adj);
 	GetVertexInfoofPos(u_pos)->_degree++;
-	GetVertexInfoofPos(v_pos)->_edge_list.push_back(v_adj);
+	GetVertexInfoofPos(v_pos)->_edge_list.insert(v_adj);
 	GetVertexInfoofPos(v_pos)->_degree++;
 
 }
@@ -215,23 +221,19 @@ void Graph::DeleteEdge(EDGE& e)
 	EdgeInfoArray* u_edges = GetAdjEdgeListofVertex(e._u);
 	EdgeInfoArray* v_edges = GetAdjEdgeListofVertex(e._v);
 
-	for(EdgeInfoArray::iterator iter=u_edges->begin(); iter!=u_edges->end(); iter++)
+	EdgeInfo u_info, v_info;
+	u_info._adj_vex_pos = u_pos;
+	v_info._adj_vex_pos = v_pos;
+	EdgeInfoArray::iterator iter = u_edges->find(v_info);
+	if(iter!=u_edges->end())
 	{
-		if(iter->_adj_vex_pos == v_pos)
-		{
-			u_edges->erase(iter);
-			break;
-		}
+		u_edges->erase(iter);
 	}
-	for(EdgeInfoArray::iterator iter=v_edges->begin(); iter!=v_edges->end(); iter++)
+	iter = v_edges->find(u_info);
+	if(iter!=v_edges->end())
 	{
-		if(iter->_adj_vex_pos == u_pos)
-		{
-			v_edges->erase(iter);
-			break;
-		}
-	}
-	
+		v_edges->erase(iter);
+	}	
 	GetVertexInfoofPos(u_pos)->_degree--;
 	GetVertexInfoofPos(v_pos)->_degree--;
 }
@@ -326,9 +328,9 @@ void Graph::BuildGraphFromFile(string& file)
 
 		int idx = buf.find_first_of(" ");
 		string temp = buf.substr(0, idx);
-		int u = stoi(temp);
+		VERTEX u = stoul(temp);
 		temp = buf.substr(idx+1, buf.length()-idx-1);
-		int v= stoi(temp);
+		VERTEX v= stoul(temp);
 		EDGE e={u, v};
 		this->InsertEdge(e);
 	}
@@ -487,9 +489,9 @@ void Graph::WriteGraphToFileByRand(string& in, string& out)
 
 					int idx = buf.find_first_of(" ");
 					string temp = buf.substr(0, idx);
-					int u = stoi(temp);
+					VERTEX u = stoul(temp);
 					temp = buf.substr(idx+1, buf.length()-idx-1);
-					int v= stoi(temp);
+					VERTEX v= stoul(temp);
 					EdgeID id = MakeEdgeID(u,v);
 					if(edges.find(id)==edges.end() && u!=v)
 					{
