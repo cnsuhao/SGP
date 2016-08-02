@@ -159,6 +159,17 @@ void doBFSConvert(string inputfile, string outputfile, string logfile)
 
 void doRANDConvert(string inputfile, string outputfile, string logfile)
 {
+	Graph graph;
+	TimeTicket::reset();
+	Log::CreateLog(logfile);
+	Log::log(" writing graph by random into "+outputfile+"... \n");
+	graph.WriteGraphToFileByRand(inputfile, outputfile);
+	Log::log(" writing graph finished! elapse time: ");
+	Log::log(TimeTicket::total_elapse());
+	Log::log(" sec\n");
+
+	graph.doGraphStatistic();
+
 }
 
 void doKLPartitioning(string inputfile, string outputfile, int k, string logfile)
