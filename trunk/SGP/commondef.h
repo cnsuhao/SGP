@@ -43,7 +43,7 @@ typedef struct _EdgeInfoCompare{
 	}     
 	// bucket information     
 	static const size_t bucket_size=4u;     
-	static const size_t min_buckets=8u; 
+	static const size_t min_buckets=8u; //初始值最好大一些，防止rehash
 } EdgeInfoCompare; 
 
 //typedef std::vector <EdgeInfo> EdgeInfoArray;

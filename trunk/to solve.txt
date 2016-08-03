@@ -209,3 +209,7 @@ e）UpdateStorageThread中if(u_partition == partition &&  v_partition == partition
 19.
 TODO：修改统计方法
 已改
+
+20.性能问题：
+hash_set, unordered_set，均是hash表，最好用rehash函数将初始bucket数设的越大越好。否则重哈希的时间非常长。但也不能过分大，否则在遍历时会慢。
+map是用二叉树实现的，应该没有这个问题。

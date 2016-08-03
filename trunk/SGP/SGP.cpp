@@ -10,6 +10,8 @@
 #include <sstream>
 #include "TimeTicket.h"
 #include "StreamPartiton.h"
+#include <unordered_set>
+#include "windows.h"
 
 using namespace std;
 
@@ -38,11 +40,11 @@ string usage =
 	"params: -i <inputfile> -o <outputdir> -k <clusters num> -log <log file> -asm <assign measure: hash, balance, DG, LDG, EDG, Tri, LTri, EDTri, NN, Fennel> -maxd <max degree> -ew <edges limits>\n"
 	"GraphNorm:\n"
 	"Normalize the graph file as <nodeid nodeid> and nodeid is in the int32 range.\n"
-	"params: -i <inputdir> -o <outputfile> -log <log file> -recode [0|1]<0:false, 1:true> -sep <separator: 9 or 32(space) or self-defined digital>\n"
+	"params: -i <inputdir> -o <outputfile> -log <log file> -recode [0|1]<0:false, 1:true> -sep <separator: 9 or 32(space) or self-defined digital> -maxcomments <max comments lines to check>\n"
 	"Test:\n"
 	"do a test!!!!"
 	"params: -i <input file> -log <log file>";
-	
+
 
 string lowercase(const string& s) {
 	string lower(s);
@@ -61,7 +63,7 @@ wstring lowercase(const wstring& s) {
 }
 
 /*
-	string 转换为 wstring 
+string 转换为 wstring 
 */
 wstring c2w(const char *pc)
 {
@@ -85,20 +87,20 @@ wstring c2w(const char *pc)
 	return val;
 }
 /*
-	wstring 转换为 string
+wstring 转换为 string
 */
 string w2c(const wchar_t * pw)
 {
 	std::string val = "";
 	if(!pw)
 	{
-   		return val;
+		return val;
 	}
 	size_t size= wcslen(pw)*sizeof(wchar_t);
 	char *pc = NULL;
 	if(!(pc = (char*)malloc(size)))
 	{
-   		return val;
+		return val;
 	}
 	size_t destlen = wcstombs(pc,pw,size);
 	/*转换不为空时，返回值为-1。如果为空，返回值0*/
@@ -175,8 +177,8 @@ void doKLPartitioning(string inputfile, string outputfile, int k, string logfile
 	graph.BuildGraphFromDir(inputfile);
 	Log::log(" graph vertex:\t");
 	Log::log(graph.GetVertexNumber());
-    Log::log("\n graph edges:\t");
-    Log::log(graph.GetEdgesNumber());
+	Log::log("\n graph edges:\t");
+	Log::log(graph.GetEdgesNumber());
 	Log::log("\n building elaplse time: ");
 	Log::log(TimeTicket::check());
 	Log::log(" sec\n");
@@ -296,118 +298,136 @@ bool isDigitString(string& str, char separator)
 	return true;
 }
 
-void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool recode, char separator)
-{
-	cout<<"GraphNorm:";	
-	TimeTicket::reset();
-	Log::CreateLog(logfile);
+typedef struct _ReadDataInfo {
+	string _file_name;
+	int _start;
+	int _end;
+} ReadDataInfo;
 
-	unsigned int total_edges = 0, total_vexs=0;
-	ofstream ofs(outputfile);
+typedef struct _GraphReaderParam {
+	HANDLE  _hMutex;
+	string* _sBuf; //lines buffer
+	int _bufSize; //最大行数
+	int _read_lines; //有效行数
+	vector<ReadDataInfo> _read_data_info;
+	bool _read_over;
+	char _sep;//separator
+	int _max_comments;
+} GraphReaderParam;
+
+typedef struct _GraphWriterParam {
+	GraphReaderParam* _reader_params;
+	int _reader_count;
+	ofstream* _ofs;
+	bool _recode;
+	int _hash_reserved;
+}GraphWriterParam;
+
+DWORD WINAPI GraphNormReaderThread( LPVOID lpParam )
+{
+	DWORD dwWaitResult; 
+	string tmp;
+	int file_comments = 0;
+	GraphReaderParam* param = (GraphReaderParam*) lpParam;
+	param->_read_over = false;
+	for(int i=0; i<param->_read_data_info.size(); i++)
+	{
+		ifstream ifs(param->_read_data_info[i]._file_name);
+		ifs.seekg(param->_read_data_info[i]._start);
+		bool next_file = false;
+		file_comments = 0;
+		while(!next_file)
+		{
+			//get access to buffer
+			dwWaitResult = WaitForSingleObject(param->_hMutex,INFINITE);
+			if(dwWaitResult == WAIT_OBJECT_0)
+			{
+				if(param->_read_lines > 0)
+				{
+					ReleaseMutex(param->_hMutex);
+					Sleep(50);
+					continue;
+				}
+			}
+			else
+			{
+				cout<<"WAIT_FAIL, wait again"<<endl;
+				continue;
+			}
+
+			param->_read_lines = 0;
+			while(param->_read_lines<param->_bufSize && ifs.tellg()< param->_read_data_info[i]._end)
+			{
+				getline(ifs, tmp);			
+				if(file_comments++<param->_max_comments)
+				{
+					if(!isDigitString(tmp, param->_sep))
+						continue;
+				}
+
+				param->_sBuf[param->_read_lines] = tmp;
+				param->_read_lines++;
+			}
+
+			if(ifs.tellg()>= param->_read_data_info[i]._end)
+			{
+				next_file = true;
+			}
+
+			ReleaseMutex(param->_hMutex);
+		}
+	}
+	param->_read_over = true;
+	return 1;
+}
+
+DWORD WINAPI GraphNormWriterThread( LPVOID lpParam )
+{
+	DWORD dwWaitResult; 
+	GraphWriterParam* param = (GraphWriterParam*) lpParam;
 	map<string, unsigned int> vex_code;
 	map<unsigned int, int> vex_degree;
 	hash_set<EdgeID> edges;
+	edges.rehash(param->_hash_reserved); 
 	VERTEX recode_id=0;
+	int total_edges =0;
 	
-	string path = inputdir.substr(0, inputdir.find_last_of('\\'));
-	_finddata_t file;
-	long lf;
-	if((lf = _findfirst(inputdir.c_str(), &file))==-1l)
+	while(true)
 	{
-		return;
-	}
-	else
-	{
-		while( _findnext( lf, &file ) == 0 )
+		bool all_reader_over = true;
+		for(int i=0; i<param->_reader_count; i++)
 		{
-			if(file.attrib == _A_NORMAL || file.attrib == _A_ARCH)
+			dwWaitResult = WaitForSingleObject(param->_reader_params[i]._hMutex,INFINITE);
+			if(dwWaitResult == WAIT_OBJECT_0)
 			{
-
-				std::ifstream is(path+"\\"+string(file.name));
-				std::string buf;
-				while(std::getline(is, buf))
+				if(param->_reader_params[i]._read_lines>0)
 				{
-					if(buf.empty() || !isDigitString(buf, separator)) continue;
-					string temp1, temp2;
-					VERTEX u,v;
-					int idx = buf.find_first_of(separator);
-					temp1 = buf.substr(0, idx);
-					int idx2 = buf.find_first_of(separator, idx+1);
-					temp2 = buf.substr(idx+1, idx2-idx);
-
-					if(!recode)
+					//get the lines in the buffer
+					for(int j=0; j<param->_reader_params[i]._read_lines; j++)
 					{
-						u = stoul(temp1);
-						v = stoul(temp2);
+						WriteBuffer(param->_ofs, param->_reader_params[i]._sBuf[j], param->_reader_params[i]._sep, 
+							param->_recode, vex_code, vex_degree, edges, recode_id);
+						
+						total_edges++;
 					}
-					else
-					{
-						map<string, unsigned int>::iterator  iter = vex_code.find(temp1);
-						if(iter==vex_code.end())
-						{
-							recode_id++;
-							vex_code.insert(pair<string, unsigned int>(temp1, recode_id++));
-							u = recode_id;
-						}
-						else
-						{
-							u=iter->second;
-						}
-
-						iter = vex_code.find(temp2);
-						if(iter==vex_code.end())
-						{
-							recode_id++;
-							vex_code.insert(pair<string, unsigned int>(temp2, recode_id++));
-							v = recode_id;
-						}
-						else
-						{
-							v=iter->second;
-						}
-					}
-					EdgeID id = MakeEdgeID(u,v);
-					if(edges.find(id) == edges.end())
-					{
-						edges.insert(id);
-						map<unsigned int, int>::iterator iter = vex_degree.find(u);
-						if( iter == vex_degree.end())
-						{
-							vex_degree.insert(pair<unsigned int, int>(u, 1));
-						}
-						else
-						{
-							iter->second++;
-						}
-						iter = vex_degree.find(v);
-						if( iter == vex_degree.end())
-						{
-							vex_degree.insert(pair<unsigned int, int>(v, 1));
-						}
-						else
-						{
-							iter->second++;
-						}
-						ofs<<u<<" "<<v<<endl;
-						cout<<++total_edges<<endl;
-					}
-
-					
+					param->_reader_params[i]._read_lines = 0;
 				}
-				is.close();
+				all_reader_over = all_reader_over && param->_reader_params[i]._read_over;
+				ReleaseMutex(param->_reader_params[i]._hMutex);
 			}
 		}
+		if(all_reader_over)
+		{
+			break;
+		}
 	}
-
-	cout<<endl<<"GraphNorm Finished"<<endl;
-	_findclose(lf);
-	ofs.close();
 
 	stringstream str;
 	str<<"Total Vex Num: \t"<<vex_degree.size()
 		<<"\nTotal Edges Num: \t"<<total_edges
 		<<"\nElapse: \t"<<TimeTicket::total_elapse()
 		<<"\nDegree Distribution <degree : count>";
+	
 	map<int, int> degree_distribution;
 	for(map<unsigned int, int>::iterator iter = vex_degree.begin(); iter!= vex_degree.end(); iter++)
 	{
@@ -425,13 +445,179 @@ void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool rec
 	{
 		str<<"\n"<<iter_d->first<<":"<<iter_d->second;
 	}
-	Log::logln(str.str());
 
+	Log::logln(str.str());
+	return 1;
+}
+
+void WriteBuffer(ofstream* ofs, string& buf, char separator, bool recode, 
+	map<string, unsigned int>& vex_code, map<unsigned int, int>& vex_degree, hash_set<EdgeID>& edges, VERTEX& recode_id)
+{
+	string temp1, temp2;
+	VERTEX u,v;
+	int idx = buf.find_first_of(separator);
+	temp1 = buf.substr(0, idx);
+	int idx2 = buf.find_first_of(separator, idx+1);
+	temp2 = buf.substr(idx+1, idx2-idx);
+
+	if(!recode)
+	{
+		u = stoul(temp1);
+		v = stoul(temp2);
+	}
+	else
+	{
+		map<string, unsigned int>::iterator  iter = vex_code.find(temp1);
+		if(iter==vex_code.end())
+		{
+			recode_id++;
+			vex_code.insert(pair<string, unsigned int>(temp1, recode_id++));
+			u = recode_id;
+		}
+		else
+		{
+			u=iter->second;
+		}
+
+		iter = vex_code.find(temp2);
+		if(iter==vex_code.end())
+		{
+			recode_id++;
+			vex_code.insert(pair<string, unsigned int>(temp2, recode_id++));
+			v = recode_id;
+		}
+		else
+		{
+			v=iter->second;
+		}
+	}
+
+	EdgeID id = MakeEdgeID(u,v);
+	if(edges.find(id) == edges.end())
+	{
+		edges.insert(id);
+
+		map<unsigned int, int>::iterator iter = vex_degree.find(u);
+		if( iter == vex_degree.end())
+		{
+			vex_degree.insert(pair<unsigned int, int>(u, 1));
+		}
+		else
+		{
+			iter->second++;
+		}
+		iter = vex_degree.find(v);
+		if( iter == vex_degree.end())
+		{
+			vex_degree.insert(pair<unsigned int, int>(v, 1));
+		}
+		else
+		{
+			iter->second++;
+		}
+
+		*ofs<<u<<" "<<v<<endl;
+	}
+}
+
+void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool recode, char separator, int max_comments, int reader_count, int hash_reserved, int reader_buffer_size)
+{
+	typedef struct {
+		string _file_name;
+		int _size;
+	} File_Info;
+
+	std::cout<<"GraphNorm:";	
+	TimeTicket::reset();
+	Log::CreateLog(logfile);
+	ofstream ofs(outputfile);
+	vector<File_Info> file_info_list;
+	int total_file_size = 0;
+
+	
+	string path = inputdir.substr(0, inputdir.find_last_of('\\'));
+	_finddata_t file;
+	long lf;
+	if((lf = _findfirst(inputdir.c_str(), &file))==-1l)
+	{
+		return;
+	}
+	else
+	{
+		while( _findnext( lf, &file ) == 0 )
+		{
+			if(file.attrib == _A_NORMAL || file.attrib == _A_ARCH)
+			{
+				File_Info f_info;
+				f_info._file_name = path+"\\"+string(file.name);
+				f_info._size = file.size;
+			}
+		}
+	}
+	_findclose(lf);
+
+	
+	GraphReaderParam* reader_params = new GraphReaderParam[reader_count];
+	int reader_data_size = total_file_size/reader_count;
+	vector<File_Info>::iterator iter_file = file_info_list.begin();
+
+	for(int i=0; i<reader_count; i++)
+	{
+		reader_params[i]._bufSize = reader_buffer_size;
+		reader_params[i]._sBuf = new string[reader_params[i]._bufSize];
+		
+		reader_params[i]._max_comments = max_comments;
+		reader_params[i]._read_lines = 0;
+		reader_params[i]._read_over = false;
+		reader_params[i]._sep = separator;
+		
+		reader_params[i]._hMutex = = CreateMutex( 
+			NULL,                       // default security attributes
+			FALSE,                      // initially not owned
+			NULL);                      // unnamed mutex
+		
+		int cur_reader_data_size = 0;
+		while(iter_file!= file_info_list.end())
+		{
+			cur_reader_data_size += iter_file->_size;
+			if(cur_reader_size<reader_data_size)
+			{
+				ReadDataInfo rdi;
+				rdi._file_name = iter_file->_file_name;
+				rdi._start = 0;
+				rdi._end = iter_file->_size;
+				reader_params[i]._read_data_info.push_back();
+			}
+		}
+		reader_params[i]._read_data_info_size = ?;
+		reader_params[i]._read_data_info = new ReadInfo[reader_params[i]._read_data_info_size];
+		for(int j=0; j<reader_params[i]._read_data_info_size; j++)
+		{
+			//...
+		}
+	}
+
+	//create reader thread
+
+	//create writer thread
+
+	//wait writer
+
+	//uninitialization
 }
 
 void doTest(string inputfile, string logfile)
 {
-/*
+	TimeTicket::reset();
+	ifstream ifs1(inputfile);
+	string buf1;
+	int c=0;
+	while(getline(ifs1, buf1)) 
+	{
+		cout<<c++<<"\t\t:"<<TimeTicket::total_elapse()<<endl;
+	}
+
+	/*
 	Log::CreateLog(logfile);
 	Log::logln("TEST : shortest path");
 	Log::logln("inputfile : a graph");
@@ -441,50 +627,51 @@ void doTest(string inputfile, string logfile)
 	VERTEX vex = graph.GetVertexInfoofPos(begin_vex_pos)->_u;
 	vector<int> shortest_path_lens;
 	graph.ComputeShortestPathsFromVertex(vex, shortest_path_lens);
-	
+
 	stringstream log_str;
 	log_str<<" the start vertex : \t" <<vex;
 	Log::logln(log_str.str());
 	int vex_pos = 0;
 	for(vector<int>::iterator iter = shortest_path_lens.begin(); iter!=shortest_path_lens.end(); iter++)
 	{
-		VERTEX vex = graph.GetVertexInfoofPos(vex_pos)->_u;
-		int len = *iter;
-		log_str.str("");
-		log_str<<"the shortest path to \t"<<vex<<" : "<<len;
-		Log::logln(log_str.str());
-		vex_pos++;
+	VERTEX vex = graph.GetVertexInfoofPos(vex_pos)->_u;
+	int len = *iter;
+	log_str.str("");
+	log_str<<"the shortest path to \t"<<vex<<" : "<<len;
+	Log::logln(log_str.str());
+	vex_pos++;
 	}
-*/
+	*/
+	/*
 	hash_set<EdgeInfo, EdgeInfoCompare> edges;
 	EdgeInfo e;
 	for(int i=0; i<10000;i++)
 	{
-		e._adj_vex_pos = i;
-		edges.insert(e);
+	e._adj_vex_pos = i;
+	edges.insert(e);
 	}
 	for(int i=0; i<10000;i++)
 	{
-		e._adj_vex_pos = i;
-		if(edges.find(e) == edges.end())
-		{
-			cout<<"not found :"<<i<<endl;
-		}
-		else
-		{
-			cout<<"found :"<<i<<endl;
-		}
+	e._adj_vex_pos = i;
+	if(edges.find(e) == edges.end())
+	{
+	cout<<"not found :"<<i<<endl;
+	}
+	else
+	{
+	cout<<"found :"<<i<<endl;
+	}
 	}
 	e._adj_vex_pos = 10000;
 	if(edges.find(e) == edges.end())
 	{
-		cout<<"not found 10000"<<endl;
+	cout<<"not found 10000"<<endl;
 	}
 	else
 	{
-		cout<<"found 10000"<<endl;
+	cout<<"found 10000"<<endl;
 	}
-
+	*/
 }
 
 bool GetParam(map<string, string>& command_params, string& cmd, string& param)
@@ -593,7 +780,7 @@ bool ParseCommand(map<string, string> &command_params)
 			int k = stoi(k_str); 
 			int aw_size = stoi(assign_win);
 			int ew_size = stoi(edges_limit);
-			
+
 			SampleMode mode;
 			if(sample_mode.compare("eq")==0) mode = FIX_MEM_EQ;
 			if(sample_mode.compare("uneq")==0) mode = FIX_MEM_UNEQ;
@@ -696,7 +883,7 @@ bool ParseCommand(map<string, string> &command_params)
 			if(assign_measure.compare("edtri")==0) measure = EDTri;
 			if(assign_measure.compare("nn")==0) measure = NN;
 			if(assign_measure.compare("fennel")==0) measure = FENNEL;
-		
+
 			doStreamPartitioning(inputfile, outputfile, k, logfile, measure, max_d, max_edges);
 			return true;
 		}
@@ -709,18 +896,20 @@ bool ParseCommand(map<string, string> &command_params)
 	if(cmd == "graphnorm")
 	{
 		//inputfile, outputfile
-		string inputdir, outputfile, logfile, recode_str, sep_str;
+		string inputdir, outputfile, logfile, recode_str, sep_str, maxcomments_str;
 		if(GetParam(command_params, string("-i"), inputdir) && 
 			GetParam(command_params, string("-o"), outputfile) &&
 			GetParam(command_params, string("-log"), logfile) &&
 			GetParam(command_params, string("-recode"), recode_str) &&
-			GetParam(command_params, string("-sep"), sep_str))
+			GetParam(command_params, string("-sep"), sep_str) &&
+			GetParam(command_params, string("-maxcomments"), maxcomments_str))
 		{
 			bool recode;
 			if(recode_str=="0") recode = false;
 			if(recode_str=="1") recode = true;
 			char separator = stoi(sep_str);
-			doGraphNorm(inputdir, outputfile, logfile, recode, separator);
+			int maxc = stoi(maxcomments_str);
+			doGraphNorm(inputdir, outputfile, logfile, recode, separator, maxc);
 			return true;
 		}
 		else
@@ -728,7 +917,7 @@ bool ParseCommand(map<string, string> &command_params)
 			return false;
 		}
 	}
-	
+
 
 	if(cmd == "test")
 	{
