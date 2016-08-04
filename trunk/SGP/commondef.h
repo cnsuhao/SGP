@@ -11,7 +11,7 @@
 using namespace std;
 
 #define VEX_NOTFOUND UINT_MAX
-
+#define VERTEX_ID_MAX_LEN 10
 /**
 Graph
 */
