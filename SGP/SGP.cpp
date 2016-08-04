@@ -41,6 +41,9 @@ string usage =
 	"GraphNorm:\n"
 	"Normalize the graph file as <nodeid nodeid> and nodeid is in the int32 range.\n"
 	"params: -i <inputdir> -o <outputfile> -log <log file> -recode [0|1]<0:false, 1:true> -sep <separator: 9 or 32(space) or self-defined digital> -maxcomments <max comments lines to check> -readercount <reader thread count> -hashreserved <hash bins> -readerbuffer <reader buffer size(lines)>\n"
+	"SplitBigFile:\n"
+	"split the big file into max_reader files.\n"
+	"params: -i <inputfile> -o <outputdir> -log <log file>  -readercount <reader thread count>\n"
 	"Test:\n"
 	"do a test!!!!"
 	"params: -i <input file> -log <log file>";
@@ -323,9 +326,6 @@ typedef struct _GraphWriterParam {
 	int _hash_reserved;
 }GraphWriterParam;
 
-int g_debug_total_edges = 0, g_debug_duplication = 0;
-
-
 bool WriteBuffer(ofstream* ofs, string& buf, char separator, bool recode, 
 	map<string, unsigned int>& vex_code, map<unsigned int, int>& vex_degree, hash_set<EdgeID>& edges, VERTEX& recode_id)
 {
@@ -406,12 +406,37 @@ bool WriteBuffer(ofstream* ofs, string& buf, char separator, bool recode,
 	}
 	else
 	{
-		g_debug_duplication++;
 		return false;
 	}
 }
 
-//int g_debug = 0;
+bool GetLine(ifstream& ifs, string& buf)
+{
+	buf.clear();
+	char c = 0;
+	while(!ifs.eof())
+	{
+		ifs.read(&c, 1);
+		if(c!=0x0d && c!=0x0a )
+		{
+			buf.append(&c, 1);
+		}
+		else
+		{
+			break;
+		}
+	}
+	if(c==0 && ifs.eof())
+	{
+		return false;
+	}
+	else
+	{
+		if(c==0x0d)
+			ifs.read(&c, 1);
+		return true;
+	}
+}
 
 DWORD WINAPI GraphNormReaderThread( LPVOID lpParam )
 {
@@ -420,9 +445,12 @@ DWORD WINAPI GraphNormReaderThread( LPVOID lpParam )
 	int file_comments = 0;
 	GraphReaderParam* param = (GraphReaderParam*) lpParam;
 	param->_read_over = false;
+
+	int debug_sum = 0;
+
 	for(int i=0; i<param->_read_data_info.size(); i++)
 	{
-		ifstream ifs(param->_read_data_info[i]._file_name);
+		ifstream ifs(param->_read_data_info[i]._file_name, ios::in|ios::binary);
 		ifs.seekg(param->_read_data_info[i]._start);
 		bool next_file = false;
 		file_comments = 0;
@@ -445,25 +473,24 @@ DWORD WINAPI GraphNormReaderThread( LPVOID lpParam )
 				continue;
 			}
 			param->_read_lines = 0;
-			while(param->_read_lines<param->_bufSize && ifs.tellg()< param->_read_data_info[i]._end)
+			while(param->_read_lines<param->_bufSize 
+				&& ifs.tellg()< param->_read_data_info[i]._end
+				&& -1 != ifs.tellg())
 			{
-				getline(ifs, tmp);			
+				GetLine(ifs, tmp);
 				if(file_comments++<param->_max_comments)
 				{
 					if(!isDigitString(tmp, param->_sep))
 					{
-						cout<<"non digital"<<endl;
+						//cout<<"non digital"<<endl;
 						continue;
 					}
 				}
 
 				param->_sBuf[param->_read_lines] = tmp;
 				param->_read_lines++;
-
-				////debug
-				//cout<<"reader: "<<g_debug++<<endl;
 			}
-
+			
 			if(ifs.tellg()>= param->_read_data_info[i]._end)
 			{
 				next_file = true;
@@ -504,9 +531,8 @@ DWORD WINAPI GraphNormWriterThread( LPVOID lpParam )
 							param->_recode, vex_code, vex_degree, edges, recode_id))
 						{
 							total_edges++;
-							cout<<total_edges<<endl;
+							cout<<total_edges<<" : "<<TimeTicket::total_elapse()<<endl;
 						}
-						g_debug_total_edges++;
 					}
 					param->_reader_params[i]._read_lines = 0;
 				}
@@ -523,8 +549,6 @@ DWORD WINAPI GraphNormWriterThread( LPVOID lpParam )
 	stringstream str;
 	str<<"Total Vex Num: \t"<<vex_degree.size()
 		<<"\nTotal Edges Num (Valid): \t"<<total_edges
-		<<"\n Total Edges Num (Read): \t"<<g_debug_total_edges
-		<<"\n Total Edges Num (Duplication): \t"<<g_debug_duplication
 		<<"\nElapse: \t"<<TimeTicket::total_elapse()
 		<<"\nDegree Distribution <degree : count>";
 	
@@ -623,7 +647,7 @@ void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool rec
 		int reader_data_remain = 0;//approximate
 		if(i==reader_count-1)
 		{
-			reader_data_remain = total_file_size-reader_data_size*(i-1);
+			reader_data_remain = total_file_size-reader_data_size*i;
 		}
 		else
 		{
@@ -637,9 +661,9 @@ void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool rec
 				ReadDataInfo rdi;
 				rdi._file_name = iter_file->_file_name;
 				rdi._start = g_file_pos;
-				rdi._end = iter_file->_size;
+				rdi._end = iter_file->_size;//g_file_pos+file_remain
 				reader_params[i]._read_data_info.push_back(rdi);
-				reader_data_remain -= iter_file->_size;
+				reader_data_remain -= file_remain;
 				//next file
 				iter_file++;
 				if(iter_file!= file_info_list.end())
@@ -663,18 +687,15 @@ void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool rec
 				rdi._end = g_file_pos +reader_data_remain ;
 				
 				ifstream tmp_ifs(rdi._file_name, ios::in|ios::binary);
-				if(!tmp_ifs.is_open())
-					cout<<"opend failed"<<endl;
-
 				tmp_ifs.seekg(rdi._end);
 				char c;
 				do{
 					tmp_ifs.read(&c, 1);
 				}
-				while(c!=0x0d && c!=0x0a);
+				while(c!=0x0d && c!=0x0a && !tmp_ifs.eof());
 				rdi._end = tmp_ifs.tellg();
 
-				if(c==0x0d) rdi._end ++;
+				if(c==0x0d) rdi._end ++;//0a
 
 				tmp_ifs.close();
 				reader_params[i]._read_data_info.push_back(rdi);
@@ -701,19 +722,10 @@ void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool rec
 
 	}
 
-	///////debug
-	//DWORD dwEvent;
-	//dwEvent = WaitForMultipleObjects( 
-	//	reader_count,           // number of objects in array
-	//	hReaderThreads,     // array of objects
-	//	TRUE,       // wait for all
-	//	INFINITE);   // indefinite wait
-
-
 	//create writer thread
 	GraphWriterParam writer_param;
 	writer_param._hash_reserved=hash_reserved;
-	writer_param._ofs = new ofstream(outputfile);
+	writer_param._ofs = new ofstream(outputfile, ios::out|ios::binary);
 	writer_param._reader_count = reader_count;
 	writer_param._reader_params = reader_params;
 	writer_param._recode = recode;
@@ -744,16 +756,102 @@ void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool rec
 	cout<<">>>>>GraphNorm Finish";
 }
 
+void doSplitBigFile(string& inputfile, string& outputdir, string& logfile, int reader_count)
+{
+	cout<<"do Spliting Big File Start"<<endl;
+
+	ifstream ifs(inputfile, ios::in|ios::binary);
+	ifs.seekg(0, ios::end);
+	int file_size = ifs.tellg();
+	int block_size = file_size/reader_count;
+	int reader_data_remain = 0;//approximate
+	int file_remain = file_size;
+	int g_file_pos=0;
+	for(int i=0; i<reader_count && file_remain>0; i++)
+	{
+		if(i==reader_count-1)
+		{
+			reader_data_remain = file_size-block_size*i;
+		}
+		else
+		{
+			reader_data_remain = block_size;
+		}
+		int start = 0, end=0;
+		if(reader_data_remain >= file_remain)
+		{
+			start = g_file_pos;
+			end = file_size;//g_file_pos+file_remain
+			//reader_data_remain -= file_remain;
+			reader_data_remain = 0;//only one file
+			file_remain = 0;
+		}
+		else //reader_data_remain < file_remain
+		{
+			start = g_file_pos;
+			//reset the rdi.end as the end of a line
+			end = g_file_pos +reader_data_remain ;
+
+			ifs.seekg(end);
+			char c;
+			do{
+				ifs.read(&c, 1);
+			}
+			while(c!=0x0d && c!=0x0a && !ifs.eof());
+			
+			end = ifs.tellg();
+			
+			if(c==0x0d) end ++;//0a
+
+			g_file_pos = end;
+			file_remain -= end-start;
+			reader_data_remain = 0;
+		}
+		
+		stringstream str;
+		str<<outputdir<<".s"<<i;
+
+		cout<<"Create Split File: "<<str.str()<<" size: "<<end-start<<endl;
+		
+		ofstream ofs(str.str(), ios::out|ios::binary|ios::trunc);
+		ifs.seekg(start);
+		char* buf = new char[end-start];
+		ifs.read(buf, end-start);
+		ofs.write(buf, end-start);
+		ofs.close();
+		delete[] buf;
+	}
+	cout<<"do Spliting Big File Over"<<endl;
+}
+
 void doTest(string inputfile, string logfile)
 {
+	ifstream ifs("D:\\workspace\\data\\test\\20060293.edges");
+	string buf;
+	int c=0;
+	while(getline(ifs, buf))
+	{
+		cout<<"file pos:"<<ifs.tellg()<<":"<<buf<<endl;
+		c++;
+	}
+	cout<<"total lines: "<<c<<endl;
+	ifs.close();
+/*
+	ofstream ofs(inputfile, ios::out|ios::binary|ios::trunc);
+	char c = 'a';
+	ofs.write(&c, 1);
+	c = 0x0a;
+	ofs.write(&c, 1);
+	ofs.close();
+
 	ifstream ifs1(inputfile);
 	string buf1;
-	int c=0;
 	while(getline(ifs1, buf1)) 
 	{
 		int i = ifs1.tellg();
+		cout<<i<<endl;
 	}
-
+*/
 	/*
 	Log::CreateLog(logfile);
 	Log::logln("TEST : shortest path");
@@ -1062,6 +1160,23 @@ bool ParseCommand(map<string, string> &command_params)
 		}
 	}
 
+	if(cmd == "splitbigfile")
+	{
+		string inputfile, outputdir, logfile, reader_count_str;
+		if(GetParam(command_params, string("-i"), inputfile) && 
+			GetParam(command_params, string("-o"), outputdir) &&
+			GetParam(command_params, string("-log"), logfile) &&
+			GetParam(command_params, string("-readercount"), reader_count_str))
+		{
+			int reader_count = stoi(reader_count_str);
+			doSplitBigFile(inputfile, outputdir, logfile, reader_count);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 
 	if(cmd == "test")
 	{

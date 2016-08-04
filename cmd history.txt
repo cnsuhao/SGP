@@ -18,3 +18,9 @@
 <hash, balance, DG, LDG, EDG, Tri, LTri, EDTri, NN, Fennel>
 
 -cmd graphnorm -i D:\workspace\data\web-Stanford\*.*  -o D:\workspace\data\web-Stanford.graph -log D:\workspace\out\web-Stanford.txt -recode 0 -sep 9 -maxcomments 10 -readercount 16 -hashreserved 2000000 -readerbuffer 5000
+-cmd graphnorm -i D:\workspace\data\test\*.*  -o D:\workspace\data\test.graph -log D:\workspace\out\test.log -recode 0 -sep 9 -maxcomments 10 -readercount 16 -hashreserved 8000 -readerbuffer 5000
+
+-cmd splitbigfile -i D:\workspace\data\test\20060293.edges  -o D:\workspace\data\293 -log D:\workspace\out\293.log -readercount 2 
+-cmd splitbigfile -i D:\workspace\data\web-Stanford\web-Stanford.txt  -o D:\workspace\data\web-Stanford\web-Stanford -log D:\workspace\out\web-Stanford.log -readercount 32 
+
+-cmd graphnorm -i C:\workspace\web-Stanford\*.*  -o D:\workspace\data\web-Stanford.graph -log D:\workspace\out\web-Stanford.log -recode 0 -sep 9 -maxcomments 10 -readercount 32 -hashreserved 2000000 -readerbuffer 5000
