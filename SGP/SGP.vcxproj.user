@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>-cmd graphnorm -i D:\workspace\data\web-Stanford\*.*  -o D:\workspace\data\web-Stanford.graph -log D:\workspace\out\web-Stanford.txt -recode 0 -sep 9 -maxcomments 10 -readercount 8 -hashreserved 2000000 -readerbuffer 5000</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-cmd graphnorm -i D:\workspace\data\web-Stanford\*.*  -o D:\workspace\data\web-Stanford.graph -log D:\workspace\out\web-Stanford.txt -recode 0 -sep 9 -maxcomments 10 -readercount 1024 -hashreserved 2000000 -readerbuffer 5000</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>
