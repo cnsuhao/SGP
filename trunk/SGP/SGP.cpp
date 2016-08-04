@@ -323,6 +323,9 @@ typedef struct _GraphWriterParam {
 	int _hash_reserved;
 }GraphWriterParam;
 
+int g_debug_total_edges = 0, g_debug_duplication = 0;
+
+
 bool WriteBuffer(ofstream* ofs, string& buf, char separator, bool recode, 
 	map<string, unsigned int>& vex_code, map<unsigned int, int>& vex_degree, hash_set<EdgeID>& edges, VERTEX& recode_id)
 {
@@ -403,6 +406,7 @@ bool WriteBuffer(ofstream* ofs, string& buf, char separator, bool recode,
 	}
 	else
 	{
+		g_debug_duplication++;
 		return false;
 	}
 }
@@ -502,6 +506,7 @@ DWORD WINAPI GraphNormWriterThread( LPVOID lpParam )
 							total_edges++;
 							cout<<total_edges<<endl;
 						}
+						g_debug_total_edges++;
 					}
 					param->_reader_params[i]._read_lines = 0;
 				}
@@ -517,7 +522,9 @@ DWORD WINAPI GraphNormWriterThread( LPVOID lpParam )
 
 	stringstream str;
 	str<<"Total Vex Num: \t"<<vex_degree.size()
-		<<"\nTotal Edges Num: \t"<<total_edges
+		<<"\nTotal Edges Num (Valid): \t"<<total_edges
+		<<"\n Total Edges Num (Read): \t"<<g_debug_total_edges
+		<<"\n Total Edges Num (Duplication): \t"<<g_debug_duplication
 		<<"\nElapse: \t"<<TimeTicket::total_elapse()
 		<<"\nDegree Distribution <degree : count>";
 	
@@ -654,13 +661,22 @@ void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool rec
 
 				//reset the rdi.end as the end of a line
 				rdi._end = g_file_pos +reader_data_remain ;
-				ifstream tmp_ifs(rdi._file_name);
-				tmp_ifs.seekg(rdi._end);
-				string tmp_buf;
-				getline(tmp_ifs, tmp_buf);
-				rdi._end = tmp_ifs.tellg();
-				tmp_ifs.close();
+				
+				ifstream tmp_ifs(rdi._file_name, ios::in|ios::binary);
+				if(!tmp_ifs.is_open())
+					cout<<"opend failed"<<endl;
 
+				tmp_ifs.seekg(rdi._end);
+				char c;
+				do{
+					tmp_ifs.read(&c, 1);
+				}
+				while(c!=0x0d && c!=0x0a);
+				rdi._end = tmp_ifs.tellg();
+
+				if(c==0x0d) rdi._end ++;
+
+				tmp_ifs.close();
 				reader_params[i]._read_data_info.push_back(rdi);
 
 				g_file_pos = rdi._end;
@@ -719,6 +735,7 @@ void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool rec
 		delete[] reader_params[i]._sBuf;
 	}
 	delete[] reader_params;
+	writer_param._ofs->flush();
 	writer_param._ofs->close();
 	delete writer_param._ofs;
 	delete[] hReaderThreads;
