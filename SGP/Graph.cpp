@@ -320,21 +320,34 @@ void Graph::BuildGraphFromDir(string& dir)
 
 void Graph::BuildGraphFromFile(string& file)
 {
-	std::ifstream is(file);
-	std::string buf;
-	while(std::getline(is, buf))
+	std::ifstream is(file, ios::in|ios::binary);
+	while(!is.eof())
 	{
-		if(buf.empty()) continue;
-
-		int idx = buf.find_first_of(" ");
-		string temp = buf.substr(0, idx);
-		VERTEX u = stoul(temp);
-		temp = buf.substr(idx+1, buf.length()-idx-1);
-		VERTEX v= stoul(temp);
+		VERTEX u,v;
+		is.read((char*)&u, sizeof(VERTEX));
+		is.read((char*)&v, sizeof(VERTEX));
 		EDGE e={u, v};
 		this->InsertEdge(e);
 	}
 }
+
+//void Graph::BuildGraphFromFile(string& file)
+//{
+//	std::ifstream is(file);
+//	std::string buf;
+//	while(std::getline(is, buf))
+//	{
+//		if(buf.empty()) continue;
+//
+//		int idx = buf.find_first_of(" ");
+//		string temp = buf.substr(0, idx);
+//		VERTEX u = stoul(temp);
+//		temp = buf.substr(idx+1, buf.length()-idx-1);
+//		VERTEX v= stoul(temp);
+//		EDGE e={u, v};
+//		this->InsertEdge(e);
+//	}
+//}
 
 void Graph::WriteGraphToFileByBFS(string& file)
 {
@@ -386,7 +399,9 @@ void Graph::WriteGraphToFileByBFS(string& file)
 				}
 				if(!edge_visited)//to confirm a edge written once
 				{
-					os<<u<<" "<<v<<endl;
+					//os<<u<<" "<<v<<endl;
+					os.write((char*)&u, sizeof(VERTEX));
+					os.write((char*)&v, sizeof(VERTEX));
 				}
 			}
 		}
@@ -441,13 +456,17 @@ void Graph::WriteGraphToFileByDFS(string& file)
 				{
 					if(!edge_visited)//to confirm a edge written once
 					{
-						os<<u<<" "<<v<<endl;
+						//os<<u<<" "<<v<<endl;
+						os.write((char*)&u, sizeof(VERTEX));
+						os.write((char*)&v, sizeof(VERTEX));
 					}
 				}
 				else
 				{
 					dfs_stack.push(v_pos);
-					os<<u<<" "<<v<<endl;
+					//os<<u<<" "<<v<<endl;
+					os.write((char*)&u, sizeof(VERTEX));
+					os.write((char*)&v, sizeof(VERTEX));
 					all_adj_vexs_visisted = false;
 					break;
 				}
@@ -481,17 +500,12 @@ void Graph::WriteGraphToFileByRand(string& in, string& out)
 			if(file.attrib == _A_NORMAL || file.attrib == _A_ARCH)
 			{
 
-				std::ifstream is(path+"\\"+string(file.name));
-				std::string buf;
-				while(std::getline(is, buf))
+				std::ifstream is(path+"\\"+string(file.name), ios::in|ios::binary);
+				while(!is.eof())
 				{
-					if(buf.empty()) continue;
-
-					int idx = buf.find_first_of(" ");
-					string temp = buf.substr(0, idx);
-					VERTEX u = stoul(temp);
-					temp = buf.substr(idx+1, buf.length()-idx-1);
-					VERTEX v= stoul(temp);
+					VERTEX u,v;
+					is.read((char*)&u, sizeof(VERTEX));
+					is.read((char*)&v, sizeof(VERTEX));
 					EdgeID id = MakeEdgeID(u,v);
 					if(edges.find(id)==edges.end() && u!=v)
 					{
@@ -503,7 +517,8 @@ void Graph::WriteGraphToFileByRand(string& in, string& out)
 						else
 						{
 							edges.insert(pair<EdgeID, int> (id,1));
-							ofs<<u<<" "<<v<<endl;
+							ofs.write((char*)&u, sizeof(VERTEX));
+							ofs.write((char*)&v, sizeof(VERTEX));
 						}
 						total_edges++;
 					}
@@ -520,7 +535,10 @@ void Graph::WriteGraphToFileByRand(string& in, string& out)
 	{
 		EDGE e = GetEdgeofID(iter->first);
 		if(iter->second == 0)
-			ofs<<e._u<<" "<<e._v<<endl;
+		{
+			ofs.write((char*)&e._u, sizeof(VERTEX));
+			ofs.write((char*)&e._v, sizeof(VERTEX));
+		}
 	}
 	Log::log("Total Edges: \t");
 	Log::logln(total_edges);

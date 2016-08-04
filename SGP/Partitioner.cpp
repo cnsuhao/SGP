@@ -474,7 +474,7 @@ void Partitioner::WriteVerticesOfPartitions()
 	{
 		stringstream out;
 		out<<_outfile<<"_cluster_vertices."<<i;
-		ofstream ofs(out.str());
+		ofstream ofs(out.str(), ios::out|ios::trunc|ios::binary);
 		
 		stringstream log_str;
 		log_str<<" writing the vertices of the partition " <<i<<" into "<<out.str()<<"\n";
@@ -483,11 +483,14 @@ void Partitioner::WriteVerticesOfPartitions()
 		for(; iter_node!=(*iter)->_cluster.end(); iter_node++)
 		{
 			VERTEX u = _graph->GetVertexInfoofPos(iter_node->_pos)->_u;
-			ofs<<u<<endl;
+			//ofs<<u<<endl;
+			ofs.write((char*)&u, sizeof(VERTEX));
 		}
 		log_str.str("");
 		log_str<<" the number of vertices of the partition "<<i<<" : "<<(*iter)->_cluster.size()<<"\n";
 		Log::log(log_str.str());
+		
+		ofs.close();
 
 		//statistic
 		GetStatistic()->SetPartitionVexNumber(i, (*iter)->_cluster.size());
@@ -546,8 +549,12 @@ void Partitioner::WriteAssignEdge(VERTEX u, int u_cluster, VERTEX v, int v_clust
 	{
 		stringstream str;
 		str<<_outfile<<"_assign_edge."<<u_cluster;
-		ofstream ofs(str.str(), ofstream::app);
-		ofs<<u<<" "<<u_cluster<<" "<<v<<" "<<v_cluster<<endl;
+		ofstream ofs(str.str(), ofstream::app|ios::binary|ios::out);
+		//ofs<<u<<" "<<u_cluster<<" "<<v<<" "<<v_cluster<<endl;
+		ofs.write((char*)&u, sizeof(VERTEX));
+		ofs.write((char*)&u_cluster, sizeof(int));
+		ofs.write((char*)&v, sizeof(VERTEX));
+		ofs.write((char*)&v_cluster, sizeof(int));
 		ofs.close();
 
 		//statistic
@@ -557,14 +564,22 @@ void Partitioner::WriteAssignEdge(VERTEX u, int u_cluster, VERTEX v, int v_clust
 	{
 		stringstream str;
 		str<<_outfile<<"_assign_edge."<<u_cluster;
-		ofstream ofs(str.str(), ofstream::app);
-		ofs<<u<<" "<<u_cluster<<" "<<v<<" "<<v_cluster<<endl;
+		ofstream ofs(str.str(), ofstream::app|ios::binary|ios::out);
+		//ofs<<u<<" "<<u_cluster<<" "<<v<<" "<<v_cluster<<endl;
+		ofs.write((char*)&u, sizeof(VERTEX));
+		ofs.write((char*)&u_cluster, sizeof(int));
+		ofs.write((char*)&v, sizeof(VERTEX));
+		ofs.write((char*)&v_cluster, sizeof(int));
 		ofs.close();
 
 		str.str("");
 		str<<_outfile<<"_assign_edge."<<v_cluster;
-		ofs.open(str.str(), ofstream::app);
-		ofs<<v<<" "<<v_cluster<<" "<<u<<" "<<u_cluster<<endl;
+		ofs.open(str.str(), ofstream::app|ios::binary|ios::out);
+		//ofs<<v<<" "<<v_cluster<<" "<<u<<" "<<u_cluster<<endl;
+		ofs.write((char*)&u, sizeof(VERTEX));
+		ofs.write((char*)&u_cluster, sizeof(int));
+		ofs.write((char*)&v, sizeof(VERTEX));
+		ofs.write((char*)&v_cluster, sizeof(int));
 		ofs.close();
 
 		//statistic
@@ -579,8 +594,12 @@ void Partitioner::WriteClusterEdge(VERTEX u, int u_cluster, VERTEX v, int v_clus
 	{
 		stringstream str;
 		str<<_outfile<<"_cluster_edges."<<u_cluster;
-		ofstream ofs(str.str(), ofstream::app);
-		ofs<<u<<" "<<u_cluster<<" "<<v<<" "<<v_cluster<<endl;
+		ofstream ofs(str.str(), ofstream::app|ios::binary|ios::out);
+//		ofs<<u<<" "<<u_cluster<<" "<<v<<" "<<v_cluster<<endl;
+		ofs.write((char*)&u, sizeof(VERTEX));
+		ofs.write((char*)&u_cluster, sizeof(int));
+		ofs.write((char*)&v, sizeof(VERTEX));
+		ofs.write((char*)&v_cluster, sizeof(int));
 		ofs.close();
 
 		//statistic
@@ -590,14 +609,22 @@ void Partitioner::WriteClusterEdge(VERTEX u, int u_cluster, VERTEX v, int v_clus
 	{
 		stringstream str;
 		str<<_outfile<<"_cluster_edges."<<u_cluster;
-		ofstream ofs(str.str(), ofstream::app);
-		ofs<<u<<" "<<u_cluster<<" "<<v<<" "<<v_cluster<<endl;
+		ofstream ofs(str.str(), ofstream::app|ios::binary|ios::out);
+//		ofs<<u<<" "<<u_cluster<<" "<<v<<" "<<v_cluster<<endl;
+		ofs.write((char*)&u, sizeof(VERTEX));
+		ofs.write((char*)&u_cluster, sizeof(int));
+		ofs.write((char*)&v, sizeof(VERTEX));
+		ofs.write((char*)&v_cluster, sizeof(int));
 		ofs.close();
 
 		str.str("");
 		str<<_outfile<<"_cluster_edges."<<v_cluster;
-		ofs.open(str.str(), ofstream::app);
-		ofs<<v<<" "<<v_cluster<<" "<<u<<" "<<u_cluster<<endl;
+		ofs.open(str.str(),ofstream::app|ios::binary|ios::out);
+//		ofs<<v<<" "<<v_cluster<<" "<<u<<" "<<u_cluster<<endl;
+		ofs.write((char*)&u, sizeof(VERTEX));
+		ofs.write((char*)&u_cluster, sizeof(int));
+		ofs.write((char*)&v, sizeof(VERTEX));
+		ofs.write((char*)&v_cluster, sizeof(int));
 		ofs.close();
 
 		//statistic
@@ -615,7 +642,7 @@ void Partitioner::WriteAssignVerticesOfPartitions()
 	{
 		stringstream out;
 		out<<_outfile<<"_assign_vertices."<<i;
-		ofs_arry[i].open(out.str());
+		ofs_arry[i].open(out.str(), ios::binary|ios::out);
 	}
 
 	for(map<VERTEX, int>::iterator iter = ac_vexs->begin(); iter != ac_vexs->end(); iter++)
@@ -634,7 +661,7 @@ void Partitioner::WriteAssignVerticesOfPartitions()
 			//log_str<<" writing the assigned vertice "<< v << " into the partition " << partition <<"\n";
 			//Log::log(log_str.str());
 
-			ofs_arry[partition]<<v<<endl;
+			ofs_arry[partition].write((char*)&v, sizeof(VERTEX));
 
 			GetStatistic()->IncreaseAssignVexNumber(partition);
 		}
@@ -1005,24 +1032,24 @@ void Partitioner::InitPartitionerOutFile()
 	{
 		str.str("");
 		str<<_outfile<<"_cluster_edges."<<i;
-		ofstream ofs1(str.str(), ofstream::trunc);
+		ofstream ofs1(str.str(), ofstream::trunc|ios::binary);
 		ofs1.close();
 		str.str("");
 		str<<_outfile<<"_cluster_vertices."<<i;
-		ofstream ofs2(str.str(), ofstream::trunc);
+		ofstream ofs2(str.str(), ofstream::trunc|ios::binary);
 		ofs2.close();
 
 		str.str("");
 		str<<_outfile<<"_assign_edge."<<i;
-		ofstream ofs3(str.str(), ofstream::trunc);
+		ofstream ofs3(str.str(), ofstream::trunc|ios::binary);
 		ofs3.close();
 		str.str("");
 		str<<_outfile<<"_assign_edge_tmp."<<i;
-		ofstream ofs4(str.str(), ofstream::trunc);
+		ofstream ofs4(str.str(), ofstream::trunc|ios::binary);
 		ofs4.close();
 		str.str("");
 		str<<_outfile<<"_assign_vertices."<<i;
-		ofstream ofs5(str.str(), ofstream::trunc);
+		ofstream ofs5(str.str(), ofstream::trunc|ios::binary);
 		ofs5.close();
 	}
 }

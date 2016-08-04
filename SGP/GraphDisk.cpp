@@ -19,17 +19,11 @@ GraphDisk::~GraphDisk(void)
 
 bool GraphDisk::ReadEdge(EDGE& e)
 {
-	string buf;
-
-	while(getline(_ifs_graph, buf))//empty line maybe exists
+	while(!_ifs_graph.eof())//empty line maybe exists
 	{	
-		if(buf.empty()) continue;
-
-		int idx = buf.find_first_of(" ");
-		string temp = buf.substr(0, idx);
-		VERTEX u = stoul(temp);
-		temp = buf.substr(idx+1, buf.length()-idx-1);
-		VERTEX v= stoul(temp);
+		VERTEX u, v;
+		_ifs_graph.read((char*)&u, sizeof(VERTEX));
+		_ifs_graph.read((char*)&v, sizeof(VERTEX));
 		e._u = u;
 		e._v = v;
 		return true;
@@ -37,10 +31,30 @@ bool GraphDisk::ReadEdge(EDGE& e)
 	return false;
 }
 
+//bool GraphDisk::ReadEdge(EDGE& e)
+//{
+//	string buf;
+//
+//	while(getline(_ifs_graph, buf))//empty line maybe exists
+//	{	
+//		if(buf.empty()) continue;
+//
+//		int idx = buf.find_first_of(" ");
+//		string temp = buf.substr(0, idx);
+//		VERTEX u = stoul(temp);
+//		temp = buf.substr(idx+1, buf.length()-idx-1);
+//		VERTEX v= stoul(temp);
+//		e._u = u;
+//		e._v = v;
+//		return true;
+//	}
+//	return false;
+//}
+
 
 void GraphDisk::InitAdjTable()
 {
-	_ifs_graph.open(_graph_file);
+	_ifs_graph.open(_graph_file, ios::in|ios::binary);
 	_ofs_tmp.open(_tmp_file, ios::trunc|ios::in|ios::out|ios::binary);
 	_graph_data._edges_count_in_mem = 0;
 	_graph_data._total_edge_count = 0;
