@@ -323,7 +323,7 @@ typedef struct _GraphWriterParam {
 	int _hash_reserved;
 }GraphWriterParam;
 
-void WriteBuffer(ofstream* ofs, string& buf, char separator, bool recode, 
+bool WriteBuffer(ofstream* ofs, string& buf, char separator, bool recode, 
 	map<string, unsigned int>& vex_code, map<unsigned int, int>& vex_degree, hash_set<EdgeID>& edges, VERTEX& recode_id)
 {
 	string temp1, temp2;
@@ -335,8 +335,15 @@ void WriteBuffer(ofstream* ofs, string& buf, char separator, bool recode,
 
 	if(!recode)
 	{
-		u = stoul(temp1);
-		v = stoul(temp2);
+		try{
+			u = stoul(temp1);
+			v = stoul(temp2);
+		}
+		catch(...)
+		{
+			cout<<"parse buffer error"<<endl;
+			return false;
+		}
 	}
 	else
 	{
@@ -389,7 +396,14 @@ void WriteBuffer(ofstream* ofs, string& buf, char separator, bool recode,
 			iter->second++;
 		}
 
-		*ofs<<u<<" "<<v<<endl;
+		//*ofs<<u<<" "<<v<<endl;
+		ofs->write((char*)(&u), sizeof(VERTEX));
+		ofs->write((char*)(&v), sizeof(VERTEX));
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
@@ -433,7 +447,10 @@ DWORD WINAPI GraphNormReaderThread( LPVOID lpParam )
 				if(file_comments++<param->_max_comments)
 				{
 					if(!isDigitString(tmp, param->_sep))
+					{
+						cout<<"non digital"<<endl;
 						continue;
+					}
 				}
 
 				param->_sBuf[param->_read_lines] = tmp;
@@ -479,12 +496,12 @@ DWORD WINAPI GraphNormWriterThread( LPVOID lpParam )
 					//get the lines in the buffer
 					for(int j=0; j<param->_reader_params[i]._read_lines; j++)
 					{
-						WriteBuffer(param->_ofs, param->_reader_params[i]._sBuf[j], param->_reader_params[i]._sep, 
-							param->_recode, vex_code, vex_degree, edges, recode_id);
-						
-						total_edges++;
-
-						cout<<total_edges<<endl;
+						if(WriteBuffer(param->_ofs, param->_reader_params[i]._sBuf[j], param->_reader_params[i]._sep, 
+							param->_recode, vex_code, vex_degree, edges, recode_id))
+						{
+							total_edges++;
+							cout<<total_edges<<endl;
+						}
 					}
 					param->_reader_params[i]._read_lines = 0;
 				}
@@ -536,7 +553,13 @@ void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool rec
 	std::cout<<">>>>>GraphNorm Start";	
 	TimeTicket::reset();
 	Log::CreateLog(logfile);
-	ofstream ofs(outputfile);
+	ofstream ofs(outputfile, ios::out|ios::trunc|ios::binary);
+	if(!ofs.is_open())
+	{
+		cout<<"open output file error :"<<outputfile<<endl;
+		return;
+	}
+
 	vector<File_Info> file_info_list;
 	int total_file_size = 0;
 

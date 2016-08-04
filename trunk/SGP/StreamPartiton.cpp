@@ -57,17 +57,11 @@ void StreamPartiton::doStreamPartition(StreamPartitionMeasure measure)
 
 bool StreamPartiton::ReadEdge(EDGE& e)
 {
-	string buf;
-
-	while(getline(_ifs, buf))//empty line maybe exists
+	while(!_ifs.eof())//empty line maybe exists
 	{	
-		if(buf.empty()) continue;
-
-		int idx = buf.find_first_of(" ");
-		string temp = buf.substr(0, idx);
-		VERTEX u = stoul(temp);
-		temp = buf.substr(idx+1, buf.length()-idx-1);
-		VERTEX v= stoul(temp);
+		VERTEX u,v;
+		_ifs.read((char*)&u, sizeof(VERTEX));
+		_ifs.read((char*)&v, sizeof(VERTEX));
 		e._u = u;
 		e._v = v;
 		return true;
@@ -100,9 +94,9 @@ void StreamPartiton::doHashStreamPartition()
 	{
 		str.str("");
 		str<<_outfile<<"_edge."<<i;
-		ofs[i].open(str.str(), ios_base::trunc);
+		ofs[i].open(str.str(), ios_base::trunc|ios::out|ios::binary);
 	}
-	_ifs.open(_graph_file);
+	_ifs.open(_graph_file, ios::in|ios::binary);
 
 	int iread = 0, interlinks =0, exterlinks=0, vex_num=0;
 	EDGE e;
@@ -116,13 +110,19 @@ void StreamPartiton::doHashStreamPartition()
 
 		if(u_partition == v_partition)
 		{
-			ofs[u_partition]<<e._u<<" "<<e._v<<endl;
+			//ofs[u_partition]<<e._u<<" "<<e._v<<endl;
+			ofs[u_partition].write((char*)&e._u, sizeof(VERTEX));
+			ofs[u_partition].write((char*)&e._v, sizeof(VERTEX));
 			interlinks++;
 		}
 		else
 		{
-			ofs[u_partition]<<e._u<<" "<<e._v<<endl;
-			ofs[v_partition]<<e._u<<" "<<e._v<<endl;
+			//ofs[u_partition]<<e._u<<" "<<e._v<<endl;
+			//ofs[v_partition]<<e._u<<" "<<e._v<<endl;
+			ofs[u_partition].write((char*)&e._u, sizeof(VERTEX));
+			ofs[u_partition].write((char*)&e._v, sizeof(VERTEX));
+			ofs[v_partition].write((char*)&e._u, sizeof(VERTEX));
+			ofs[v_partition].write((char*)&e._v, sizeof(VERTEX));
 			exterlinks++;
 		}
 
@@ -134,10 +134,12 @@ void StreamPartiton::doHashStreamPartition()
 	{
 		str.str("");
 		str<<_outfile<<"_vertices."<<i;
-		ofs_v->open(str.str(), ios_base::trunc);
+		ofs_v->open(str.str(), ios_base::trunc|ios_base::out|ios_base::binary);
 		for(hash_set<VERTEX>::iterator iter = partitions[i].begin(); iter!=partitions[i].end(); iter++)
 		{
-			(*ofs_v)<<*iter<<endl;
+			//(*ofs_v)<<*iter<<endl;
+			VERTEX u = *iter;
+			ofs_v->write((char*)&u, sizeof(VERTEX));
 			vex_num++;
 		}
 		ofs_v->close();
@@ -206,9 +208,9 @@ void StreamPartiton::doBalanceStreamPartition()
 	{
 		str.str("");
 		str<<_outfile<<"_edge."<<i;
-		ofs[i].open(str.str(), ios_base::trunc);
+		ofs[i].open(str.str(), ios_base::trunc|ios::out|ios::binary);
 	}
-	_ifs.open(_graph_file);
+	_ifs.open(_graph_file, ios::in|ios::binary);
 
 	int iread = 0, interlinks =0, exterlinks=0, vex_num=0;
 	EDGE e;
@@ -222,13 +224,19 @@ void StreamPartiton::doBalanceStreamPartition()
 
 		if(u_partition == v_partition)
 		{
-			ofs[u_partition]<<e._u<<" "<<e._v<<endl;
+			//ofs[u_partition]<<e._u<<" "<<e._v<<endl;
+			ofs[u_partition].write((char*)&e._u, sizeof(VERTEX));
+			ofs[u_partition].write((char*)&e._v, sizeof(VERTEX));
 			interlinks++;
 		}
 		else
 		{
-			ofs[u_partition]<<e._u<<" "<<e._v<<endl;
-			ofs[v_partition]<<e._u<<" "<<e._v<<endl;
+//			ofs[u_partition]<<e._u<<" "<<e._v<<endl;
+//			ofs[v_partition]<<e._u<<" "<<e._v<<endl;
+			ofs[u_partition].write((char*)&e._u, sizeof(VERTEX));
+			ofs[u_partition].write((char*)&e._v, sizeof(VERTEX));
+			ofs[v_partition].write((char*)&e._u, sizeof(VERTEX));
+			ofs[v_partition].write((char*)&e._v, sizeof(VERTEX));
 			exterlinks++;
 		}
 
@@ -240,10 +248,12 @@ void StreamPartiton::doBalanceStreamPartition()
 	{
 		str.str("");
 		str<<_outfile<<"_vertices."<<i;
-		ofs_v->open(str.str(), ios_base::trunc);
+		ofs_v->open(str.str(), ios_base::trunc|ios::out|ios::binary);
 		for(hash_set<VERTEX>::iterator iter = partitions[i].begin(); iter!=partitions[i].end(); iter++)
 		{
-			(*ofs_v)<<*iter<<endl;
+			//(*ofs_v)<<*iter<<endl;
+			VERTEX u = *iter;
+			ofs_v->write((char*)&u, sizeof(VERTEX));
 			vex_num++;
 		}
 		ofs_v->close();
@@ -331,7 +341,7 @@ void write_partitions(hash_set<VERTEX>* partitions, int k, GraphDisk* graph, str
 	{
 		str.str("");
 		str<<outfile<<"_edge."<<i;
-		ofs[i].open(str.str(), ios_base::trunc);
+		ofs[i].open(str.str(), ios_base::trunc|ios::out|ios::binary);
 	}
 
 	//write edges
@@ -355,13 +365,19 @@ void write_partitions(hash_set<VERTEX>* partitions, int k, GraphDisk* graph, str
 
 				if(u_c == adj_u_c)
 				{
-					ofs[u_c]<<u<<" "<<adj_u<<endl;
+					//ofs[u_c]<<u<<" "<<adj_u<<endl;
+					ofs[u_c].write((char*)&u, sizeof(VERTEX));
+					ofs[u_c].write((char*)&adj_u, sizeof(VERTEX));
 					interlinks++;
 				}
 				else
 				{
-					ofs[u_c]<<u<<" "<<adj_u<<endl;
-					ofs[adj_u_c]<<u<<" "<<adj_u<<endl;
+					//ofs[u_c]<<u<<" "<<adj_u<<endl;
+					ofs[u_c].write((char*)&u, sizeof(VERTEX));
+					ofs[u_c].write((char*)&adj_u, sizeof(VERTEX));
+					//ofs[adj_u_c]<<u<<" "<<adj_u<<endl;
+					ofs[adj_u_c].write((char*)&u, sizeof(VERTEX));
+					ofs[adj_u_c].write((char*)&adj_u, sizeof(VERTEX));
 					exterlinks++;
 				}
 			}
@@ -379,10 +395,12 @@ void write_partitions(hash_set<VERTEX>* partitions, int k, GraphDisk* graph, str
 	{
 		str.str("");
 		str<<outfile<<"_vertices."<<i;
-		ofs_v->open(str.str(), ios_base::trunc);
+		ofs_v->open(str.str(), ios_base::trunc|ios::out|ios::binary);
 		for(hash_set<VERTEX>::iterator iter = partitions[i].begin(); iter!=partitions[i].end(); iter++)
 		{
-			(*ofs_v)<<*iter<<endl;
+			//(*ofs_v)<<*iter<<endl;
+			VERTEX u = *iter;
+			ofs_v->write((char*)&u, sizeof(VERTEX));
 		}
 		ofs_v->close();
 	}

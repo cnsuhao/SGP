@@ -20,7 +20,7 @@ SGPLoader::~SGPLoader(void)
 
 bool SGPLoader::doGraphSampling()
 {
-	_ifs.open(_graph_file.c_str());
+	_ifs.open(_graph_file.c_str(), ios::in|ios::binary);
 	_sample_vertex_items.clear();
 	_sample_edge_items.clear();
 
@@ -688,23 +688,37 @@ bool SGPLoader::isEdgeExist(EDGE& e)
 
 bool SGPLoader::ReadEdge(EDGE& e)
 {
-	string buf;
-
-	while(getline(_ifs, buf))//empty line maybe exists
+	while(!_ifs.eof())//empty line maybe exists
 	{	
-		if(buf.empty()) continue;
-
-		int idx = buf.find_first_of(" ");
-		string temp = buf.substr(0, idx);
-		VERTEX u = stoul(temp);
-		temp = buf.substr(idx+1, buf.length()-idx-1);
-		VERTEX v= stoul(temp);
+		VERTEX u,v;
+		_ifs.read((char*)&u, sizeof(VERTEX));
+		_ifs.read((char*)&v, sizeof(VERTEX));
 		e._u = u;
 		e._v = v;
 		return true;
 	}
 	return false;
 }
+
+//bool SGPLoader::ReadEdge(EDGE& e)
+//{
+//	string buf;
+//
+//	while(getline(_ifs, buf))//empty line maybe exists
+//	{	
+//		if(buf.empty()) continue;
+//
+//		int idx = buf.find_first_of(" ");
+//		string temp = buf.substr(0, idx);
+//		VERTEX u = stoul(temp);
+//		temp = buf.substr(idx+1, buf.length()-idx-1);
+//		VERTEX v= stoul(temp);
+//		e._u = u;
+//		e._v = v;
+//		return true;
+//	}
+//	return false;
+//}
 //SGLs
 bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 {
@@ -712,7 +726,7 @@ bool SGPLoader::doStreamLoadByDBS(PartitionAlgorithm partition_algorithm)
 	_sample_vertex_items.clear();
 	_dbs_edges_cache_to_process.clear();
 
-	_ifs.open(_graph_file.c_str());
+	_ifs.open(_graph_file.c_str(), ios::in|ios::binary);
 
 	//step1
 	if(ReadInitSamples_DBS() < _edges_limition)
@@ -1134,10 +1148,10 @@ bool SGPLoader::UpdateStorageNode()
 		stringstream str;
 		str.str("");
 		str<<GetPartitioner().GetOutFile()<<"_assign_edge."<<i;
-		thread_param[i].ifs.open(str.str());
+		thread_param[i].ifs.open(str.str(), ios::in|ios::out|ios::binary);
 		str.str("");
 		str<<GetPartitioner().GetOutFile()<<"_assign_edge_tmp."<<i;
-		thread_param[i].ofs.open(str.str());
+		thread_param[i].ofs.open(str.str(),ios::in|ios::out|ios::binary);
 
 		thread_param[i].hMutex = CreateMutex( 
 			NULL,                       // default security attributes
@@ -1191,36 +1205,23 @@ bool SGPLoader::UpdateStorageNode_Debug()
 	{
 		str.str("");
 		str<<GetPartitioner().GetOutFile()<<"_assign_edge."<<i;
-		ifs[i].open(str.str());
+		ifs[i].open(str.str(),ios::in|ios::out|ios::binary);
 		str.str("");
 		str<<GetPartitioner().GetOutFile()<<"_assign_edge_tmp."<<i;
-		ofs[i].open(str.str());
+		ofs[i].open(str.str(),ios::in|ios::out|ios::binary);
 	}
+	//TODO: binary file
 	for(int i=0; i<_k; i++)
 	{
 		int partition = i;
-		string buf;
-		while(getline(ifs[partition], buf))
+		while(!ifs[partition].eof())
 		{
-			if(buf.empty()) continue;
-
-			int idx =0;
-			int idx_next = buf.find_first_of(" ", idx);
-			string temp = buf.substr(idx, idx_next-idx);
-			VERTEX u = stoul(temp);
-
-			idx = ++idx_next;
-			idx_next = buf.find_first_of(" ", idx);
-			temp = buf.substr(idx, idx_next-idx);
-			int u_assign_partition = stoi(temp);
-
-			idx = ++idx_next;
-			idx_next = buf.find_first_of(" ", idx);
-			temp = buf.substr(idx, idx_next-idx);
-			VERTEX v= stoul(temp);
-
-			temp = buf.substr(idx_next+1, buf.length()-idx_next-1);
-			int v_assign_partition = stoi(temp);
+			VERTEX u , v;
+			int u_assign_partition , v_assign_partition;
+			ifs[partition].read((char*)&u, sizeof(VERTEX));
+			ifs[partition].read((char*)&u_assign_partition, sizeof(int));
+			ifs[partition].read((char*)&v, sizeof(VERTEX));
+			ifs[partition].read((char*)&v_assign_partition, sizeof(int));
 
 			AssignContextManager* acm = AssignContextManager::GetAssignManager();
 			int u_partition = acm->GetAssignVertexPartition(u);
@@ -1278,7 +1279,10 @@ bool SGPLoader::UpdateStorageNode_Debug()
 
 void ReWriteAssignEdgeToPartition_Debug(int to_partition, VERTEX u, int u_partition, VERTEX v, int v_partition, SGPLoader* loader, ofstream* ofs)
 {
-	ofs[to_partition]<<u<<" "<<u_partition<<" "<<v<<" "<<v_partition<<endl;
+	ofs[to_partition].write((char*)&u, sizeof(VERTEX));
+	ofs[to_partition].write((char*)&u_partition, sizeof(int));
+	ofs[to_partition].write((char*)&v, sizeof(VERTEX));
+	ofs[to_partition].write((char*)&v_partition, sizeof(int));
 
 	// update statistic
 	if(u_partition == v_partition)
@@ -1302,7 +1306,11 @@ void ReWriteAssignEdgeToPartition(int to_partition, VERTEX u, int u_partition, V
 		if(dwWaitResult == WAIT_OBJECT_0)
 		{
 			// The thread got mutex ownership, write the edge
-			thread_param[to_partition].ofs<<u<<" "<<u_partition<<" "<<v<<" "<<v_partition<<endl;
+			//thread_param[to_partition].ofs<<u<<" "<<u_partition<<" "<<v<<" "<<v_partition<<endl;
+			thread_param[to_partition].ofs.write((char*)&u, sizeof(VERTEX));
+			thread_param[to_partition].ofs.write((char*)&u_partition, sizeof(int));
+			thread_param[to_partition].ofs.write((char*)&v, sizeof(VERTEX));
+			thread_param[to_partition].ofs.write((char*)&v_partition, sizeof(int));
 
 			// update statistic
 			if(u_partition == v_partition)
@@ -1349,29 +1357,15 @@ DWORD WINAPI UpdateStorageThread( LPVOID lpParam )
 	int partition = param->_partition_number;
 
 	//find the assigned vertex that the assigned partition is differed from the one in the sampling partitions, and remove it from the assigned file
-	string buf;
 	stringstream str;
-	while(getline(param->ifs, buf))
+	while(!param->ifs.eof())
 	{
-		if(buf.empty()) continue;
-
-		int idx =0;
-		int idx_next = buf.find_first_of(" ", idx);
-		string temp = buf.substr(idx, idx_next-idx);
-		VERTEX u = stoul(temp);
-
-		idx = ++idx_next;
-		idx_next = buf.find_first_of(" ", idx);
-		temp = buf.substr(idx, idx_next-idx);
-		int u_assign_partition = stoi(temp);
-
-		idx = ++idx_next;
-		idx_next = buf.find_first_of(" ", idx);
-		temp = buf.substr(idx, idx_next-idx);
-		VERTEX v= stoul(temp);
-
-		temp = buf.substr(idx_next+1, buf.length()-idx_next-1);
-		int v_assign_partition = stoi(temp);
+		VERTEX u , v;
+		int u_assign_partition , v_assign_partition;
+		param->ifs.read((char*)&u, sizeof(VERTEX));
+		param->ifs.read((char*)&u_assign_partition, sizeof(int));
+		param->ifs.read((char*)&v, sizeof(VERTEX));
+		param->ifs.read((char*)&v_assign_partition, sizeof(int));
 
 		AssignContextManager* acm = AssignContextManager::GetAssignManager();
 		int u_partition = acm->GetAssignVertexPartition(u);
@@ -1591,30 +1585,18 @@ void SGPLoader::Debug_7()
 	{
 		str.str("");
 		str<<GetPartitioner().GetOutFile()<<"_assign_edge_tmp."<<i;
-		ifs.open(str.str());
+		ifs.open(str.str(), ios::in|ios::out|ios::binary);
 
 		string buf;
-		while(getline(ifs, buf))
+		while(!ifs.eof())
 		{
-			if(buf.empty()) continue;
+			VERTEX u , v;
+			int u_assign_partition , v_assign_partition;
+			ifs.read((char*)&u, sizeof(VERTEX));
+			ifs.read((char*)&u_assign_partition, sizeof(int));
+			ifs.read((char*)&v, sizeof(VERTEX));
+			ifs.read((char*)&v_assign_partition, sizeof(int));
 
-			int idx =0;
-			int idx_next = buf.find_first_of(" ", idx);
-			string temp = buf.substr(idx, idx_next-idx);
-			VERTEX u = stoul(temp);
-
-			idx = ++idx_next;
-			idx_next = buf.find_first_of(" ", idx);
-			temp = buf.substr(idx, idx_next-idx);
-			int u_assign_partition = stoi(temp);
-
-			idx = ++idx_next;
-			idx_next = buf.find_first_of(" ", idx);
-			temp = buf.substr(idx, idx_next-idx);
-			VERTEX v= stoul(temp);
-
-			temp = buf.substr(idx_next+1, buf.length()-idx_next-1);
-			int v_assign_partition = stoi(temp);
 			EdgeID id = ::MakeEdgeID(u,v);
 			edges_tmp.insert(id);
 
@@ -1639,31 +1621,17 @@ void SGPLoader::Debug_7()
 	{
 		str.str("");
 		str<<GetPartitioner().GetOutFile()<<"_assign_edge."<<i;
-		ifs.open(str.str());
+		ifs.open(str.str(), ios::in|ios::out|ios::binary);
 
-		string buf;
 		str<<"\n the edge in assign is not found in the assign edge tmp. u : u_partition : v : v_partition \n";
-		while(getline(ifs, buf))
+		while(!ifs.eof())
 		{
-			if(buf.empty()) continue;
-
-			int idx =0;
-			int idx_next = buf.find_first_of(" ", idx);
-			string temp = buf.substr(idx, idx_next-idx);
-			VERTEX u = stoul(temp);
-
-			idx = ++idx_next;
-			idx_next = buf.find_first_of(" ", idx);
-			temp = buf.substr(idx, idx_next-idx);
-			int u_assign_partition = stoi(temp);
-
-			idx = ++idx_next;
-			idx_next = buf.find_first_of(" ", idx);
-			temp = buf.substr(idx, idx_next-idx);
-			VERTEX v= stoul(temp);
-
-			temp = buf.substr(idx_next+1, buf.length()-idx_next-1);
-			int v_assign_partition = stoi(temp);
+			VERTEX u , v;
+			int u_assign_partition , v_assign_partition;
+			ifs.read((char*)&u, sizeof(VERTEX));
+			ifs.read((char*)&u_assign_partition, sizeof(int));
+			ifs.read((char*)&v, sizeof(VERTEX));
+			ifs.read((char*)&v_assign_partition, sizeof(int));
 
 			EdgeID id = ::MakeEdgeID(u,v);
 			edges.insert(id);
