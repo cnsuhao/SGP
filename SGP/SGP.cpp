@@ -305,9 +305,15 @@ typedef struct _ReadDataInfo {
 	string _file_name;
 } ReadDataInfo;
 
+typedef struct _Read_Buf {
+	vector<VERTEX*> _buffer;
+	int _len; //current rows
+	int _total_len;//total space
+}Read_Buf;
+
 typedef struct _GraphReaderParam {
 	HANDLE  _hMutex;
-	vector<EDGE> _sBuf; //lines buffer
+	Read_Buf _read_buf;
 	vector<ReadDataInfo> _read_data_info;
 	char _sep;//separator
 	int _max_comments;
@@ -320,6 +326,11 @@ typedef struct _GraphWriterParam {
 	ofstream* _ofs;
 	int _hash_reserved;
 }GraphWriterParam;
+
+typedef struct {
+	string _file_name;
+	int _size;
+} File_Info;
 
 //bool GetLine(ifstream& ifs, string& buf)
 //{
@@ -348,42 +359,53 @@ typedef struct _GraphWriterParam {
 //		return true;
 //	}
 //}
-
-bool WriteBuffer(ofstream* ofs, EDGE& e, map<unsigned int, int>& vex_degree, hash_set<EdgeID>& edges)
+int g_dup = 0;
+int WriteBuffer(ofstream* ofs, Read_Buf& buffer, map<unsigned int, int>& vex_degree, hash_set<EdgeID>& edges)
 {
-	EdgeID id = MakeEdgeID(e._u,e._v);
-	if(edges.find(id) == edges.end())
+	int count = 0, total_count=0, write_edge_count=0;
+	EDGE e;
+	for(vector<VERTEX*>::iterator iter= buffer._buffer.begin(); iter!= buffer._buffer.end(); iter++)
 	{
-		edges.insert(id);
+		VERTEX* block = *iter;
+		for(count=0; total_count<buffer._len && count<READ_DATA_LEN; count+=2, total_count+=2)
+		{
+			e._u = block[count];
+			e._v = block[count+1];
+			EdgeID id = MakeEdgeID(e._u,e._v);
+			if(edges.find(id) == edges.end())
+			{
+				edges.insert(id);
 
-		map<unsigned int, int>::iterator iter = vex_degree.find(e._u);
-		if( iter == vex_degree.end())
-		{
-			vex_degree.insert(pair<unsigned int, int>(e._u, 1));
-		}
-		else
-		{
-			iter->second++;
-		}
-		iter = vex_degree.find(e._v);
-		if( iter == vex_degree.end())
-		{
-			vex_degree.insert(pair<unsigned int, int>(e._v, 1));
-		}
-		else
-		{
-			iter->second++;
-		}
+				map<unsigned int, int>::iterator iter = vex_degree.find(e._u);
+				if( iter == vex_degree.end())
+				{
+					vex_degree.insert(pair<unsigned int, int>(e._u, 1));
+				}
+				else
+				{
+					iter->second++;
+				}
+				iter = vex_degree.find(e._v);
+				if( iter == vex_degree.end())
+				{
+					vex_degree.insert(pair<unsigned int, int>(e._v, 1));
+				}
+				else
+				{
+					iter->second++;
+				}
 
-		//*ofs<<u<<" "<<v<<endl;
-		ofs->write((char*)(&e._u), sizeof(VERTEX));
-		ofs->write((char*)(&e._v), sizeof(VERTEX));
-		return true;
+				ofs->write((char*)(&e._u), sizeof(VERTEX));//TODO: IMPROVE....
+				ofs->write((char*)(&e._v), sizeof(VERTEX));
+				write_edge_count++;
+			}
+			else
+			{
+				g_dup++;
+			}
+		}
 	}
-	else
-	{
-		return false;
-	}
+	return write_edge_count;
 }
 
 bool ProcessLines(string& buf, bool recode, EDGE& e, char separator)
@@ -420,6 +442,74 @@ bool ProcessLines(string& buf, bool recode, EDGE& e, char separator)
 	return true;
 }
 
+void ProcessFile(string& file, char separator, bool recode, Read_Buf& read_buf, int max_comments )
+{
+	ifstream ifs(file, ios::in|ios::binary);
+	ifs.seekg(0, ios::end);
+	int size = ifs.tellg();
+	char* tmp_buf = new char[size];
+	ifs.seekg(0);
+	ifs.read(tmp_buf, size);
+	ifs.close();
+
+	char c;
+	int start=0, end=0;
+	int file_pos=0;
+	bool line_finished = false;
+	int file_comments = 0;
+	EDGE e;
+	while(file_pos<size)
+	{
+		c = tmp_buf[file_pos];
+		switch(c)
+		{
+		case 0x0d:
+			end = file_pos;
+			file_pos += 2;//skip 0x0a
+			line_finished = true;
+			break;
+		case 0x0a:
+			end = file_pos;
+			file_pos ++;
+			line_finished = true;
+			break;
+		default:
+			file_pos++;
+			line_finished = false;
+			break;
+		}
+		if(!line_finished) continue;
+
+		string str(tmp_buf+start, end-start);
+		if(file_comments++<max_comments)
+		{
+			if(!isDigitString(str, separator))
+			{
+				start = file_pos;
+				continue;
+			}
+		}
+
+		if(ProcessLines(str, recode, e, separator))
+		{
+			if(read_buf._len > read_buf._total_len-2)//full
+			{
+				VERTEX* block = new VERTEX[READ_DATA_LEN];
+				read_buf._buffer.push_back(block);
+				read_buf._total_len += READ_DATA_LEN;
+			}
+
+			VERTEX* last_block = read_buf._buffer.back();
+			int pos = read_buf._len - READ_DATA_LEN * (read_buf._buffer.size()-1);
+			last_block[pos]=e._u;
+			last_block[pos+1]=e._v;
+			read_buf._len += 2;
+		}
+		start = file_pos;
+	}
+	delete[] tmp_buf;
+}
+
 DWORD WINAPI GraphNormReaderThread( LPVOID lpParam )
 {
 	GraphReaderParam* param = (GraphReaderParam*) lpParam;
@@ -439,29 +529,9 @@ DWORD WINAPI GraphNormReaderThread( LPVOID lpParam )
 		}
 	}
 
-
-	string buf;
-	int file_comments = 0;
 	for(int i=0; i<param->_read_data_info.size(); i++)
 	{
-		ifstream ifs(param->_read_data_info[i]._file_name);
-		file_comments = 0;
-		while(getline(ifs, buf))
-		{
-			if(file_comments++<param->_max_comments)
-			{
-				if(!isDigitString(buf, param->_sep))
-				{
-					continue;
-				}
-			}
-			EDGE e;
-			if(ProcessLines(buf, param->_recode, e, param->_sep))
-			{
-				param->_sBuf.push_back(e);
-			}
-		}
-		ifs.close();
+		ProcessFile(param->_read_data_info[i]._file_name, param->_sep, param->_recode, param->_read_buf, param->_max_comments );
 	}
 	ReleaseMutex(param->_hMutex);
 	cout<<"GraphNormReaderThread: "<<param->_read_data_info[0]._file_name<<"<<<END"<<endl;
@@ -484,30 +554,27 @@ DWORD WINAPI GraphNormWriterThread( LPVOID lpParam )
 			dwWaitResult = WaitForSingleObject(param->_reader_params[i]._hMutex,INFINITE);
 			if(dwWaitResult == WAIT_OBJECT_0)
 			{
-				if(param->_reader_params[i]._sBuf.size()>0)
+				if(param->_reader_params[i]._read_buf._len>0)
 				{
-					//get the lines in the buffer
-					for(vector<EDGE>::iterator iter = param->_reader_params[i]._sBuf.begin(); iter!=param->_reader_params[i]._sBuf.end(); iter++ )
-					{
-						if(WriteBuffer(param->_ofs, *iter, vex_degree, edges))
-						{
-							total_edges++;
-							cout<<total_edges<<" : "<<TimeTicket::total_elapse()<<endl;
-						}
-					}
+					int lines = WriteBuffer(param->_ofs, param->_reader_params[i]._read_buf, vex_degree, edges);
+					total_edges += lines;;
+					cout<<"Write Edge : Thread Reader : "<< i <<"Total Edges: "<<total_edges<<" : "<<TimeTicket::total_elapse()<<endl;
 					ReleaseMutex(param->_reader_params[i]._hMutex);
 					break;//while
 				}
 			}
-
-			ReleaseMutex(param->_reader_params[i]._hMutex);
-			Sleep(10);
+			else
+			{
+				ReleaseMutex(param->_reader_params[i]._hMutex);
+				Sleep(10);
+			}
 		}
 	}
 
 	stringstream str;
 	str<<"Total Vex Num: \t"<<vex_degree.size()
 		<<"\nTotal Edges Num (Valid): \t"<<total_edges
+		<<"\nTotal Edges Num (Dup): \t"<<g_dup
 		<<"\nElapse: \t"<<TimeTicket::total_elapse()
 		<<"\nDegree Distribution <degree : count>";
 	
@@ -532,11 +599,6 @@ DWORD WINAPI GraphNormWriterThread( LPVOID lpParam )
 	Log::logln(str.str());
 	return 1;
 }
-
-typedef struct {
-	string _file_name;
-	int _size;
-} File_Info;
 
 void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool recode, char separator, int max_comments, int reader_count, int hash_reserved, int reader_buffer_size)
 {
@@ -584,7 +646,8 @@ void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool rec
 		reader_params[i]._max_comments = max_comments;
 		reader_params[i]._recode = recode;
 		reader_params[i]._sep = separator;
-		
+		reader_params[i]._read_buf._len = 0;
+		reader_params[i]._read_buf._total_len = 0;
 		//init mutex
 		reader_params[i]._hMutex = CreateMutex( 
 			NULL,                       // default security attributes
