@@ -40,7 +40,7 @@ string usage =
 	"params: -i <inputfile> -o <outputdir> -k <clusters num> -log <log file> -asm <assign measure: hash, balance, DG, LDG, EDG, Tri, LTri, EDTri, NN, Fennel> -maxd <max degree> -ew <edges limits>\n"
 	"GraphNorm:\n"
 	"Normalize the graph file as <nodeid nodeid> and nodeid is in the int32 range.\n"
-	"params: -i <inputdir> -o <outputfile> -log <log file> -recode [0|1]<0:false, 1:true> -sep <separator: 9 or 32(space) or self-defined digital> -maxcomments <max comments lines to check> -readercount <reader thread count>\n"
+	"params: -i <inputdir> -o <outputfile> -log <log file> -recode [0|1]<0:false, 1:true> -sep <separator: 9 or 32(space) or self-defined digital> -maxcomments <max comments lines to check> -readercount <reader thread count> -maxdegree <max degree>\n"
 	"SplitBigFile:\n"
 	"split the big file into max_reader files.\n"
 	"params: -i <inputfile> -o <outputdir> -log <log file>  -readercount <reader thread count>\n"
@@ -324,6 +324,7 @@ typedef struct _GraphWriterParam {
 	GraphReaderParam* _reader_params;
 	int _reader_count;
 	ofstream* _ofs;
+	int _max_degree;
 }GraphWriterParam;
 
 typedef struct {
@@ -331,7 +332,7 @@ typedef struct {
 	int _size;
 } File_Info;
 
-bool ProcessEdge(EDGE& e, map<unsigned int, int>& vex_degree, map<EdgeID, int>& edges)
+bool ProcessEdge(EDGE& e, map<unsigned int, int>& vex_degree, map<EdgeID, int>& edges, int max_degree)
 {
 	EdgeID id = MakeEdgeID(e._u,e._v);
 	if(edges.find(id) == edges.end())
@@ -345,7 +346,14 @@ bool ProcessEdge(EDGE& e, map<unsigned int, int>& vex_degree, map<EdgeID, int>& 
 		}
 		else
 		{
-			iter->second++;
+			if(iter->second >= max_degree)
+			{
+				return false;
+			}
+			else
+			{
+				iter->second++;
+			}
 		}
 		iter = vex_degree.find(e._v);
 		if( iter == vex_degree.end())
@@ -354,7 +362,14 @@ bool ProcessEdge(EDGE& e, map<unsigned int, int>& vex_degree, map<EdgeID, int>& 
 		}
 		else
 		{
-			iter->second++;
+			if(iter->second >= max_degree)
+			{
+				return false;
+			}
+			else
+			{
+				iter->second++;
+			}
 		}
 		return true;
 	}
@@ -364,7 +379,7 @@ bool ProcessEdge(EDGE& e, map<unsigned int, int>& vex_degree, map<EdgeID, int>& 
 	}
 }
 
-int WriteBuffer(ofstream* ofs, Read_Buf& buffer, map<unsigned int, int>& vex_degree, map<EdgeID, int>& edges)
+int WriteBuffer(ofstream* ofs, Read_Buf& buffer, map<unsigned int, int>& vex_degree, map<EdgeID, int>& edges, int max_degree)
 {
 	int count = 0, total_count=0, write_edge_count=0;
 	EDGE e;
@@ -377,7 +392,7 @@ int WriteBuffer(ofstream* ofs, Read_Buf& buffer, map<unsigned int, int>& vex_deg
 			e._u = block[count];
 			e._v = block[count+1];
 
-			bool bret = ProcessEdge(e, vex_degree, edges);
+			bool bret = ProcessEdge(e, vex_degree, edges, max_degree);
 			if(bret)
 			{
 				w_end += 2;
@@ -502,7 +517,7 @@ void ProcessFile(string& file, char separator, bool recode, Read_Buf& read_buf, 
 DWORD WINAPI GraphNormReaderThread( LPVOID lpParam )
 {
 	GraphReaderParam* param = (GraphReaderParam*) lpParam;
-	//cout<<"\nGraphNormReaderThread: "<<param->_read_data_info[0]._file_name<<endl;
+	cout<<".";
 	DWORD dwWaitResult; 
 	while(true)
 	{
@@ -555,8 +570,8 @@ DWORD WINAPI GraphNormWriterThread( LPVOID lpParam )
 				{
 					if(param->_reader_params[i]._read_buf._len>0)
 					{
-						int lines = WriteBuffer(param->_ofs, param->_reader_params[i]._read_buf, vex_degree, edges);
-						total_edges += lines;;
+						int lines = WriteBuffer(param->_ofs, param->_reader_params[i]._read_buf, vex_degree, edges, param->_max_degree);
+						total_edges += lines;
 						cout<<"Write Edge of Thread Reader : "<< i <<" : Total Edges: "<<total_edges<<" : "<<TimeTicket::total_elapse()<<endl;
 						to_write_list[i]=1;
 						ReleaseMutex(param->_reader_params[i]._hMutex);
@@ -599,9 +614,11 @@ DWORD WINAPI GraphNormWriterThread( LPVOID lpParam )
 	return 1;
 }
 
-void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool recode, char separator, int max_comments, int reader_count)
+void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool recode, char separator, int max_comments, int reader_count, int max_degree)
 {
-	std::cout<<">>>>>GraphNorm Start"<<endl;	
+	cout<<">>>>>GraphNorm Start"<<endl;
+	cout<<"Reading Input Files: ";
+
 	TimeTicket::reset();
 	Log::CreateLog(logfile);
 	ofstream ofs(outputfile, ios::out|ios::trunc|ios::binary);
@@ -713,6 +730,7 @@ void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool rec
 	writer_param._ofs = new ofstream(outputfile, ios::out|ios::binary);
 	writer_param._reader_count = reader_count;
 	writer_param._reader_params = reader_params;
+	writer_param._max_degree = max_degree;
 	HANDLE hWriterThreads;
 
 	hWriterThreads = CreateThread( 
@@ -1111,14 +1129,15 @@ bool ParseCommand(map<string, string> &command_params)
 	if(cmd == "graphnorm")
 	{
 		//inputfile, outputfile
-		string inputdir, outputfile, logfile, recode_str, sep_str, maxcomments_str, reader_count_str;
+		string inputdir, outputfile, logfile, recode_str, sep_str, maxcomments_str, reader_count_str, max_d_str;
 		if(GetParam(command_params, string("-i"), inputdir) && 
 			GetParam(command_params, string("-o"), outputfile) &&
 			GetParam(command_params, string("-log"), logfile) &&
 			GetParam(command_params, string("-recode"), recode_str) &&
 			GetParam(command_params, string("-sep"), sep_str) &&
 			GetParam(command_params, string("-maxcomments"), maxcomments_str)&&
-			GetParam(command_params, string("-readercount"), reader_count_str))
+			GetParam(command_params, string("-readercount"), reader_count_str) &&
+			GetParam(command_params, string("-maxdegree"), max_d_str))
 		{
 			bool recode;
 			if(recode_str=="0") recode = false;
@@ -1126,8 +1145,9 @@ bool ParseCommand(map<string, string> &command_params)
 			char separator = stoi(sep_str);
 			int maxc = stoi(maxcomments_str);
 			int reader_count = stoi(reader_count_str);
+			int max_d = stoi(max_d_str);
 
-			doGraphNorm(inputdir, outputfile, logfile, recode, separator, maxc, reader_count);
+			doGraphNorm(inputdir, outputfile, logfile, recode, separator, maxc, reader_count, max_d);
 			return true;
 		}
 		else
