@@ -332,34 +332,39 @@ typedef struct {
 	int _size;
 } File_Info;
 
-//bool GetLine(ifstream& ifs, string& buf)
-//{
-//	buf.clear();
-//	char c = 0;
-//	while(!ifs.eof())
-//	{
-//		ifs.read(&c, 1);
-//		if(c!=0x0d && c!=0x0a )
-//		{
-//			buf.append(&c, 1);
-//		}
-//		else
-//		{
-//			break;
-//		}
-//	}
-//	if(c==0 && ifs.eof())
-//	{
-//		return false;
-//	}
-//	else
-//	{
-//		if(c==0x0d)
-//			ifs.read(&c, 1);
-//		return true;
-//	}
-//}
-int g_dup = 0;
+bool ProcessEdge(EDGE& e, map<unsigned int, int>& vex_degree, hash_set<EdgeID>& edges)
+{
+	EdgeID id = MakeEdgeID(e._u,e._v);
+	if(edges.find(id) == edges.end())
+	{
+		edges.insert(id);
+
+		map<unsigned int, int>::iterator iter = vex_degree.find(e._u);
+		if( iter == vex_degree.end())
+		{
+			vex_degree.insert(pair<unsigned int, int>(e._u, 1));
+		}
+		else
+		{
+			iter->second++;
+		}
+		iter = vex_degree.find(e._v);
+		if( iter == vex_degree.end())
+		{
+			vex_degree.insert(pair<unsigned int, int>(e._v, 1));
+		}
+		else
+		{
+			iter->second++;
+		}
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 int WriteBuffer(ofstream* ofs, Read_Buf& buffer, map<unsigned int, int>& vex_degree, hash_set<EdgeID>& edges)
 {
 	int count = 0, total_count=0, write_edge_count=0;
@@ -367,41 +372,26 @@ int WriteBuffer(ofstream* ofs, Read_Buf& buffer, map<unsigned int, int>& vex_deg
 	for(vector<VERTEX*>::iterator iter= buffer._buffer.begin(); iter!= buffer._buffer.end(); iter++)
 	{
 		VERTEX* block = *iter;
+		int w_start=0, w_end=0;
 		for(count=0; total_count<buffer._len && count<READ_DATA_LEN; count+=2, total_count+=2)
 		{
 			e._u = block[count];
 			e._v = block[count+1];
-			EdgeID id = MakeEdgeID(e._u,e._v);
-			if(edges.find(id) == edges.end())
+
+			bool bret = ProcessEdge(e, vex_degree, edges);
+			if(bret)
 			{
-				edges.insert(id);
-
-				map<unsigned int, int>::iterator iter = vex_degree.find(e._u);
-				if( iter == vex_degree.end())
-				{
-					vex_degree.insert(pair<unsigned int, int>(e._u, 1));
-				}
-				else
-				{
-					iter->second++;
-				}
-				iter = vex_degree.find(e._v);
-				if( iter == vex_degree.end())
-				{
-					vex_degree.insert(pair<unsigned int, int>(e._v, 1));
-				}
-				else
-				{
-					iter->second++;
-				}
-
-				ofs->write((char*)(&e._u), sizeof(VERTEX));//TODO: IMPROVE....
-				ofs->write((char*)(&e._v), sizeof(VERTEX));
-				write_edge_count++;
+				w_end += 2;
 			}
 			else
 			{
-				g_dup++;
+				if(w_start<w_end)
+				{
+					ofs->write((char*)(block+w_start), (w_end-w_start)*sizeof(VERTEX));
+					write_edge_count += (w_end-w_start)/2;
+				}
+				w_end += 2;
+				w_start = w_end;
 			}
 		}
 	}
@@ -513,7 +503,7 @@ void ProcessFile(string& file, char separator, bool recode, Read_Buf& read_buf, 
 DWORD WINAPI GraphNormReaderThread( LPVOID lpParam )
 {
 	GraphReaderParam* param = (GraphReaderParam*) lpParam;
-	cout<<"GraphNormReaderThread: "<<param->_read_data_info[0]._file_name<<endl;
+	cout<<"\nGraphNormReaderThread: "<<param->_read_data_info[0]._file_name<<endl;
 	DWORD dwWaitResult; 
 	while(true)
 	{
@@ -549,6 +539,7 @@ DWORD WINAPI GraphNormWriterThread( LPVOID lpParam )
 	
 	for(int i=0; i<param->_reader_count; i++)
 	{
+		cout<<"Write Edge of Thread Reader : "<< i << "......"<<endl; 
 		while(true)
 		{
 			dwWaitResult = WaitForSingleObject(param->_reader_params[i]._hMutex,INFINITE);
@@ -558,7 +549,7 @@ DWORD WINAPI GraphNormWriterThread( LPVOID lpParam )
 				{
 					int lines = WriteBuffer(param->_ofs, param->_reader_params[i]._read_buf, vex_degree, edges);
 					total_edges += lines;;
-					cout<<"Write Edge : Thread Reader : "<< i <<"Total Edges: "<<total_edges<<" : "<<TimeTicket::total_elapse()<<endl;
+					cout<<"Write Edge of Thread Reader : "<< i <<" : Total Edges: "<<total_edges<<" : "<<TimeTicket::total_elapse()<<endl;
 					ReleaseMutex(param->_reader_params[i]._hMutex);
 					break;//while
 				}
@@ -567,6 +558,7 @@ DWORD WINAPI GraphNormWriterThread( LPVOID lpParam )
 			{
 				ReleaseMutex(param->_reader_params[i]._hMutex);
 				Sleep(10);
+				cout<<"sleep a little!!! :( "<<endl;
 			}
 		}
 	}
@@ -574,7 +566,6 @@ DWORD WINAPI GraphNormWriterThread( LPVOID lpParam )
 	stringstream str;
 	str<<"Total Vex Num: \t"<<vex_degree.size()
 		<<"\nTotal Edges Num (Valid): \t"<<total_edges
-		<<"\nTotal Edges Num (Dup): \t"<<g_dup
 		<<"\nElapse: \t"<<TimeTicket::total_elapse()
 		<<"\nDegree Distribution <degree : count>";
 	
