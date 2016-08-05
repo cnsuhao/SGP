@@ -40,7 +40,7 @@ string usage =
 	"params: -i <inputfile> -o <outputdir> -k <clusters num> -log <log file> -asm <assign measure: hash, balance, DG, LDG, EDG, Tri, LTri, EDTri, NN, Fennel> -maxd <max degree> -ew <edges limits>\n"
 	"GraphNorm:\n"
 	"Normalize the graph file as <nodeid nodeid> and nodeid is in the int32 range.\n"
-	"params: -i <inputdir> -o <outputfile> -log <log file> -recode [0|1]<0:false, 1:true> -sep <separator: 9 or 32(space) or self-defined digital> -maxcomments <max comments lines to check> -readercount <reader thread count> -hashreserved <hash bins> -readerbuffer <reader buffer size(lines)>\n"
+	"params: -i <inputdir> -o <outputfile> -log <log file> -recode [0|1]<0:false, 1:true> -sep <separator: 9 or 32(space) or self-defined digital> -maxcomments <max comments lines to check> -readercount <reader thread count>\n"
 	"SplitBigFile:\n"
 	"split the big file into max_reader files.\n"
 	"params: -i <inputfile> -o <outputdir> -log <log file>  -readercount <reader thread count>\n"
@@ -324,7 +324,6 @@ typedef struct _GraphWriterParam {
 	GraphReaderParam* _reader_params;
 	int _reader_count;
 	ofstream* _ofs;
-	int _hash_reserved;
 }GraphWriterParam;
 
 typedef struct {
@@ -332,12 +331,12 @@ typedef struct {
 	int _size;
 } File_Info;
 
-bool ProcessEdge(EDGE& e, map<unsigned int, int>& vex_degree, hash_set<EdgeID>& edges)
+bool ProcessEdge(EDGE& e, map<unsigned int, int>& vex_degree, map<EdgeID, int>& edges)
 {
 	EdgeID id = MakeEdgeID(e._u,e._v);
 	if(edges.find(id) == edges.end())
 	{
-		edges.insert(id);
+		edges.insert(pair<EdgeID, int>(id, 1));
 
 		map<unsigned int, int>::iterator iter = vex_degree.find(e._u);
 		if( iter == vex_degree.end())
@@ -365,7 +364,7 @@ bool ProcessEdge(EDGE& e, map<unsigned int, int>& vex_degree, hash_set<EdgeID>& 
 	}
 }
 
-int WriteBuffer(ofstream* ofs, Read_Buf& buffer, map<unsigned int, int>& vex_degree, hash_set<EdgeID>& edges)
+int WriteBuffer(ofstream* ofs, Read_Buf& buffer, map<unsigned int, int>& vex_degree, map<EdgeID, int>& edges)
 {
 	int count = 0, total_count=0, write_edge_count=0;
 	EDGE e;
@@ -503,7 +502,7 @@ void ProcessFile(string& file, char separator, bool recode, Read_Buf& read_buf, 
 DWORD WINAPI GraphNormReaderThread( LPVOID lpParam )
 {
 	GraphReaderParam* param = (GraphReaderParam*) lpParam;
-	cout<<"\nGraphNormReaderThread: "<<param->_read_data_info[0]._file_name<<endl;
+	//cout<<"\nGraphNormReaderThread: "<<param->_read_data_info[0]._file_name<<endl;
 	DWORD dwWaitResult; 
 	while(true)
 	{
@@ -524,7 +523,7 @@ DWORD WINAPI GraphNormReaderThread( LPVOID lpParam )
 		ProcessFile(param->_read_data_info[i]._file_name, param->_sep, param->_recode, param->_read_buf, param->_max_comments );
 	}
 	ReleaseMutex(param->_hMutex);
-	cout<<"GraphNormReaderThread: "<<param->_read_data_info[0]._file_name<<"<<<END"<<endl;
+	//cout<<"GraphNormReaderThread: "<<param->_read_data_info[0]._file_name<<"<<<END"<<endl;
 	return 1;
 }
 
@@ -533,8 +532,8 @@ DWORD WINAPI GraphNormWriterThread( LPVOID lpParam )
 	DWORD dwWaitResult; 
 	GraphWriterParam* param = (GraphWriterParam*) lpParam;
 	map<unsigned int, int> vex_degree;
-	hash_set<EdgeID> edges;
-	edges.rehash(param->_hash_reserved); 
+	map<EdgeID, int> edges;
+	//edges.rehash(param->_hash_reserved); 
 	int total_edges =0;
 	
 	for(int i=0; i<param->_reader_count; i++)
@@ -591,9 +590,9 @@ DWORD WINAPI GraphNormWriterThread( LPVOID lpParam )
 	return 1;
 }
 
-void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool recode, char separator, int max_comments, int reader_count, int hash_reserved, int reader_buffer_size)
+void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool recode, char separator, int max_comments, int reader_count)
 {
-	std::cout<<">>>>>GraphNorm Start";	
+	std::cout<<">>>>>GraphNorm Start"<<endl;	
 	TimeTicket::reset();
 	Log::CreateLog(logfile);
 	ofstream ofs(outputfile, ios::out|ios::trunc|ios::binary);
@@ -692,7 +691,6 @@ void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool rec
 
 	//create writer thread
 	GraphWriterParam writer_param;
-	writer_param._hash_reserved=hash_reserved;
 	writer_param._ofs = new ofstream(outputfile, ios::out|ios::binary);
 	writer_param._reader_count = reader_count;
 	writer_param._reader_params = reader_params;
@@ -716,7 +714,7 @@ void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool rec
 	delete[] hReaderThreads;
 
 	cout<<"Total Elapse: \t"<<TimeTicket::total_elapse()<<endl;
-	cout<<">>>>>GraphNorm Finish";
+	cout<<">>>>>GraphNorm Finish"<<endl;
 }
 
 void doSplitBigFile(string& inputfile, string& outputdir, string& logfile, int reader_count)
@@ -1094,16 +1092,14 @@ bool ParseCommand(map<string, string> &command_params)
 	if(cmd == "graphnorm")
 	{
 		//inputfile, outputfile
-		string inputdir, outputfile, logfile, recode_str, sep_str, maxcomments_str, reader_count_str, hash_reserved_str, reader_buffer_size_str;
+		string inputdir, outputfile, logfile, recode_str, sep_str, maxcomments_str, reader_count_str;
 		if(GetParam(command_params, string("-i"), inputdir) && 
 			GetParam(command_params, string("-o"), outputfile) &&
 			GetParam(command_params, string("-log"), logfile) &&
 			GetParam(command_params, string("-recode"), recode_str) &&
 			GetParam(command_params, string("-sep"), sep_str) &&
 			GetParam(command_params, string("-maxcomments"), maxcomments_str)&&
-			GetParam(command_params, string("-readercount"), reader_count_str)&&
-			GetParam(command_params, string("-hashreserved"), hash_reserved_str)&&
-			GetParam(command_params, string("-readerbuffer"), reader_buffer_size_str))
+			GetParam(command_params, string("-readercount"), reader_count_str))
 		{
 			bool recode;
 			if(recode_str=="0") recode = false;
@@ -1111,10 +1107,8 @@ bool ParseCommand(map<string, string> &command_params)
 			char separator = stoi(sep_str);
 			int maxc = stoi(maxcomments_str);
 			int reader_count = stoi(reader_count_str);
-			int	hash_reserved = stoi(hash_reserved_str); 
-			int	reader_buffer_size = stoi(reader_buffer_size_str);
 
-			doGraphNorm(inputdir, outputfile, logfile, recode, separator, maxc, reader_count, hash_reserved, reader_buffer_size);
+			doGraphNorm(inputdir, outputfile, logfile, recode, separator, maxc, reader_count);
 			return true;
 		}
 		else

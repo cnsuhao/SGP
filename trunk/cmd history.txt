@@ -17,9 +17,9 @@
 -cmd streampartition -i D:\workspace\data\20119746_dfs.graph  -o D:\workspace\out\20119746_dfs_sp -log D:\workspace\out\log_20119746_dfs_sp.txt -k 4 -maxd 200 -ew 10 -asm tri
 <hash, balance, DG, LDG, EDG, Tri, LTri, EDTri, NN, Fennel>
 
--cmd graphnorm -i D:\workspace\data\web-Stanford\*.*  -o D:\workspace\data\web-Stanford.graph -log D:\workspace\out\web-Stanford.txt -recode 0 -sep 9 -maxcomments 10 -readercount 1024 -hashreserved 2000000 -readerbuffer 5000
--cmd graphnorm -i D:\workspace\data\test\*.*  -o D:\workspace\data\test.graph -log D:\workspace\out\test.log -recode 0 -sep 32 -maxcomments 10 -readercount 2 -hashreserved 8000 -readerbuffer 5000
--cmd graphnorm -i C:\workspace\web-Stanford\*.*  -o D:\workspace\data\web-Stanford.graph -log D:\workspace\out\web-Stanford.log -recode 0 -sep 9 -maxcomments 10 -readercount 32 -hashreserved 2000000 -readerbuffer 5000
+-cmd graphnorm -i D:\workspace\data\web-Stanford\*.*  -o D:\workspace\data\web-Stanford.graph -log D:\workspace\out\web-Stanford.log -recode 0 -sep 9 -maxcomments 10 -readercount 1024
+-cmd graphnorm -i D:\workspace\data\test\*.*  -o D:\workspace\data\test.graph -log D:\workspace\out\test.log -recode 0 -sep 32 -maxcomments 10 -readercount 2
+-cmd graphnorm -i D:\workspace\data\as-733\*.*  -o D:\workspace\data\as-733.graph -log D:\workspace\out\as-733.log -recode 0 -sep 9 -maxcomments 10 -readercount 1024
 
 -cmd splitbigfile -i D:\workspace\data\test\20060293.edges  -o D:\workspace\data\293 -log D:\workspace\out\293.log -readercount 2 
 -cmd splitbigfile -i D:\workspace\data\web-Stanford\web-Stanford.txt  -o D:\workspace\data\web-Stanford\web-Stanford -log D:\workspace\out\web-Stanford.log -readercount 1024 
