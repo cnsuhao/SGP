@@ -10,8 +10,10 @@
 
 using namespace std;
 
-#define VEX_NOTFOUND UINT_MAX
-#define VERTEX_ID_MAX_LEN 10
+#define VEX_NOTFOUND		UINT_MAX
+#define VERTEX_ID_MAX_LEN	10
+#define READ_DATA_LEN		65536 //64k MUST even
+
 /**
 Graph
 */
