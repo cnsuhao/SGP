@@ -527,40 +527,49 @@ DWORD WINAPI GraphNormReaderThread( LPVOID lpParam )
 	return 1;
 }
 
+#define WRITE_THREAD_WAIT	10000
+
 DWORD WINAPI GraphNormWriterThread( LPVOID lpParam )
 {
 	DWORD dwWaitResult; 
 	GraphWriterParam* param = (GraphWriterParam*) lpParam;
 	map<unsigned int, int> vex_degree;
 	map<EdgeID, int> edges;
-	//edges.rehash(param->_hash_reserved); 
+	int* to_write_list = new int[param->_reader_count];
 	int total_edges =0;
-	
+	bool all_write_over = false;
+
 	for(int i=0; i<param->_reader_count; i++)
 	{
-		cout<<"Write Edge of Thread Reader : "<< i << "......"<<endl; 
-		while(true)
+		to_write_list[i]=0;//0: not finish, 1: write over
+	}
+	while(!all_write_over)
+	{
+		all_write_over = true;
+		for(int i=0; i<param->_reader_count; i++)
 		{
-			dwWaitResult = WaitForSingleObject(param->_reader_params[i]._hMutex,INFINITE);
-			if(dwWaitResult == WAIT_OBJECT_0)
+			if(to_write_list[i] == 0)
 			{
-				if(param->_reader_params[i]._read_buf._len>0)
+				dwWaitResult = WaitForSingleObject(param->_reader_params[i]._hMutex, WRITE_THREAD_WAIT);
+				if(dwWaitResult == WAIT_OBJECT_0)
 				{
-					int lines = WriteBuffer(param->_ofs, param->_reader_params[i]._read_buf, vex_degree, edges);
-					total_edges += lines;;
-					cout<<"Write Edge of Thread Reader : "<< i <<" : Total Edges: "<<total_edges<<" : "<<TimeTicket::total_elapse()<<endl;
-					ReleaseMutex(param->_reader_params[i]._hMutex);
-					break;//while
+					if(param->_reader_params[i]._read_buf._len>0)
+					{
+						int lines = WriteBuffer(param->_ofs, param->_reader_params[i]._read_buf, vex_degree, edges);
+						total_edges += lines;;
+						cout<<"Write Edge of Thread Reader : "<< i <<" : Total Edges: "<<total_edges<<" : "<<TimeTicket::total_elapse()<<endl;
+						to_write_list[i]=1;
+						ReleaseMutex(param->_reader_params[i]._hMutex);
+					}
 				}
-			}
-			else
-			{
-				ReleaseMutex(param->_reader_params[i]._hMutex);
-				Sleep(10);
-				cout<<"sleep a little!!! :( "<<endl;
+				else
+				{
+					all_write_over = false;
+				}
 			}
 		}
 	}
+	delete[] to_write_list;
 
 	stringstream str;
 	str<<"Total Vex Num: \t"<<vex_degree.size()
@@ -628,8 +637,18 @@ void doGraphNorm(string& inputdir, string& outputfile, string& logfile, bool rec
 	}
 	_findclose(lf);
 
+	int reader_file_count = 0;
+	if(file_info_list.size() < reader_count)
+	{
+		reader_file_count = 1;
+		reader_count = file_info_list.size();
+	}
+	else
+	{
+	  reader_file_count = file_info_list.size()/reader_count;
+	}
+
 	GraphReaderParam* reader_params = new GraphReaderParam[reader_count];
-	int reader_file_count = file_info_list.size()/reader_count;
 	vector<File_Info>::iterator iter_file = file_info_list.begin();
 	for(int i=0; i<reader_count; i++)
 	{
