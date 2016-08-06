@@ -414,12 +414,12 @@ void StreamPartiton::doDeterministicGreadyStreamPartition()
 
 	GraphDisk graph;
 	graph.SetGraphFile(_graph_file);
-	str.str("");
-	str<<_outfile<<"_cachetmp.bin";
-	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
 	graph.SetMaxEdges(_max_edges);
 	graph.InitAdjTable();
+	str.str("");
+	str<<_outfile<<"_cachetmp.bin";
+	graph.InitTempFile(str.str(), TEMPFILE_MAX_SIZE);
 	graph.BuildAdjTable();
 
 	VertexInfoList* vex_list = graph.GetVertexList();
@@ -512,12 +512,12 @@ void StreamPartiton::doLinearWeightedDeterministicGreadyStreamPartition()
 
 	GraphDisk graph;
 	graph.SetGraphFile(_graph_file);
-	str.str("");
-	str<<_outfile<<"_cachetmp.bin";
-	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
 	graph.SetMaxEdges(_max_edges);
 	graph.InitAdjTable();
+	str.str("");
+	str<<_outfile<<"_cachetmp.bin";
+	graph.InitTempFile(str.str(), TEMPFILE_MAX_SIZE);
 	graph.BuildAdjTable();
 
 	VertexInfoList* vex_list = graph.GetVertexList();
@@ -607,12 +607,12 @@ void StreamPartiton::doExponentialWeightedDeterministicGreadyStreamPartition()
 
 	GraphDisk graph;
 	graph.SetGraphFile(_graph_file);
-	str.str("");
-	str<<_outfile<<"_cachetmp.bin";
-	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
 	graph.SetMaxEdges(_max_edges);
 	graph.InitAdjTable();
+	str.str("");
+	str<<_outfile<<"_cachetmp.bin";
+	graph.InitTempFile(str.str(), TEMPFILE_MAX_SIZE);
 	graph.BuildAdjTable();
 
 	VertexInfoList* vex_list = graph.GetVertexList();
@@ -728,12 +728,12 @@ void StreamPartiton::doTriangleStreamPartition()
 
 	GraphDisk graph;
 	graph.SetGraphFile(_graph_file);
-	str.str("");
-	str<<_outfile<<"_cachetmp.bin";
-	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
 	graph.SetMaxEdges(_max_edges);
 	graph.InitAdjTable();
+	str.str("");
+	str<<_outfile<<"_cachetmp.bin";
+	graph.InitTempFile(str.str(), TEMPFILE_MAX_SIZE);
 	graph.BuildAdjTable();
 
 	VertexInfoList* vex_list = graph.GetVertexList();
@@ -851,12 +851,12 @@ void StreamPartiton::doLinearTriangleStreamPartition()
 
 	GraphDisk graph;
 	graph.SetGraphFile(_graph_file);
-	str.str("");
-	str<<_outfile<<"_cachetmp.bin";
-	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
 	graph.SetMaxEdges(_max_edges);
 	graph.InitAdjTable();
+	str.str("");
+	str<<_outfile<<"_cachetmp.bin";
+	graph.InitTempFile(str.str(), TEMPFILE_MAX_SIZE);
 	graph.BuildAdjTable();
 
 	VertexInfoList* vex_list = graph.GetVertexList();
@@ -972,12 +972,12 @@ void StreamPartiton::doExponentDeterministicTriangleStreamPartition()
 
 	GraphDisk graph;
 	graph.SetGraphFile(_graph_file);
-	str.str("");
-	str<<_outfile<<"_cachetmp.bin";
-	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
 	graph.SetMaxEdges(_max_edges);
 	graph.InitAdjTable();
+	str.str("");
+	str<<_outfile<<"_cachetmp.bin";
+	graph.InitTempFile(str.str(), TEMPFILE_MAX_SIZE);
 	graph.BuildAdjTable();
 
 	VertexInfoList* vex_list = graph.GetVertexList();
@@ -1066,12 +1066,12 @@ void StreamPartiton::doNonNeighborStreamPartition()
 
 	GraphDisk graph;
 	graph.SetGraphFile(_graph_file);
-	str.str("");
-	str<<_outfile<<"_cachetmp.bin";
-	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
 	graph.SetMaxEdges(_max_edges);
 	graph.InitAdjTable();
+	str.str("");
+	str<<_outfile<<"_cachetmp.bin";
+	graph.InitTempFile(str.str(), TEMPFILE_MAX_SIZE);
 	graph.BuildAdjTable();
 
 	VertexInfoList* vex_list = graph.GetVertexList();
@@ -1163,12 +1163,12 @@ void StreamPartiton::doFennelStreamPartition()
 
 	GraphDisk graph;
 	graph.SetGraphFile(_graph_file);
-	str.str("");
-	str<<_outfile<<"_cachetmp.bin";
-	graph.SetTmpFile(str.str());
 	graph.SetMaxDegree(_max_d);
 	graph.SetMaxEdges(_max_edges);
 	graph.InitAdjTable();
+	str.str("");
+	str<<_outfile<<"_cachetmp.bin";
+	graph.InitTempFile(str.str(), TEMPFILE_MAX_SIZE);
 	graph.BuildAdjTable();
 
 	VertexInfoList* vex_list = graph.GetVertexList();

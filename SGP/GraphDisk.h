@@ -45,21 +45,43 @@ typedef struct _gdAdjTable {
 	int _total_edge_count;
 } gdAdjTable;
 
+typedef struct _gdTempFileInfo
+{
+	string _tmp_file;
+	vector<fstream*> _tmp_file_handle_list;
+	int _line_bytes;//the len of each line(byte);
+	int _max_size;//max bytes for each tmp file;
+	int _max_line;//max line for each tmp : _max_line = floor(_max_size/_line_bytes);
+} gdTempFileInfo;
+
+typedef struct _gdFilePhysicalPos
+{
+	fstream* _fs;
+	int _pos;
+} gdFilePhysicalPos;
+
 class GraphDisk
 {
 private:
 	gdAdjTable _graph_data;
-	string _tmp_file;
+
 	string _graph_file;
-	//adjtable temp file (binary): vertex|degree|adj_pos1....adj_pos_{max_d}
-	fstream _ofs_tmp;
 	ifstream _ifs_graph;
+	//adjtable temp file (binary): vertex|degree|adj_pos1....adj_pos_{max_d}
+	gdTempFileInfo _temp_file_info;
 	
+
+	/*******temp file management********/
 	//write the vex at the vex_pos in the adjtable, and its edgelist
 	//if edges is null, write a default value list of -1
 	void WriteEdgeList(int vex_pos, gdEdgeInfoList* edges);
 	void FillEdgeList(int vex_pos,gdEdgeInfoList* edges);
 	void Flush();
+	//check if all temp files reach max size
+	bool isTempFull();
+	void CreateNewTempFile();
+	//To confirm the input parameter is legal.
+	gdFilePhysicalPos GetPhysicalPos(int vex_pos);
 
 	int GetAdjLineSize(){
 		return 
@@ -83,14 +105,16 @@ public:
 	//int GetMaxRows() {return _graph_data._max_rows;};
 	void SetMaxEdges(int r) {_graph_data._max_edges = r;};
 	int GetMaxEdges() {return _graph_data._max_edges;};
-
-	void SetTmpFile(string f) { _tmp_file = f;};
+	
 	void SetGraphFile(string f) {_graph_file = f;};
 
 	int GetVertexNum() {return _graph_data._vertex_list.size();};
 	int GetEdgeNum() {return _graph_data._total_edge_count;};
 
 	void InitAdjTable();
+
+	//temp file management
+	void InitTempFile(string& filename, int file_max_bytes);
 
 	//return the count of edges read
 	int BuildAdjTable();
