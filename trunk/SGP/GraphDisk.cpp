@@ -55,9 +55,18 @@ bool GraphDisk::ReadEdge(EDGE& e)
 void GraphDisk::InitAdjTable()
 {
 	_ifs_graph.open(_graph_file, ios::in|ios::binary);
-	_ofs_tmp.open(_tmp_file, ios::trunc|ios::in|ios::out|ios::binary);
+	//_ofs_tmp.open(_tmp_file, ios::trunc|ios::in|ios::out|ios::binary);
 	_graph_data._edges_count_in_mem = 0;
 	_graph_data._total_edge_count = 0;
+}
+
+void GraphDisk::InitTempFile(string& filename, int file_max_bytes)
+{
+	_temp_file_info._tmp_file = filename;
+	_temp_file_info._line_bytes = GetAdjLineSize();
+	_temp_file_info._max_size = file_max_bytes;
+	_temp_file_info._max_line = file_max_bytes/_temp_file_info._line_bytes;
+	_temp_file_info._tmp_file_handle_list.clear();
 }
 
 int GraphDisk::BuildAdjTable()
@@ -373,6 +382,41 @@ bool GraphDisk::isLockVertexofPos(int pos)
 	return isLockVertex(u);
 }
 
+gdFilePhysicalPos GraphDisk::GetPhysicalPos(int vex_pos)
+{
+	gdFilePhysicalPos file_pos_info;
+	file_pos_info._fs = NULL;
+	file_pos_info._pos = -1;
+
+	int file_id = vex_pos/_temp_file_info._max_line;
+	int vex_phypos = vex_pos-file_id*_temp_file_info._max_line-1;
+
+	file_pos_info._pos = vex_phypos*_temp_file_info._line_bytes;
+	file_pos_info._fs = _temp_file_info._tmp_file_handle_list.at(file_id);
+
+	return file_pos_info;
+}
+
+bool GraphDisk::isTempFull()
+{
+	fstream* fs = _temp_file_info._tmp_file_handle_list.back();
+	fs->seekg(0, ios::end);
+	int size = fs->tellg();
+	int lines = size/_temp_file_info._line_bytes;
+	if(lines >= _temp_file_info._max_line)
+		return true;
+	else
+		return false;
+}
+
+void GraphDisk::CreateNewTempFile()
+{
+	fstream* fs = new fstream();
+	stringstream str;
+	str<<_temp_file_info._tmp_file<<_temp_file_info._tmp_file_handle_list.size();
+	fs->open(str.str(), ios::trunc|ios::in|ios::out|ios::binary);
+	_temp_file_info._tmp_file_handle_list.push_back(fs);
+}
 
 void GraphDisk::WriteEdgeList(int vex_pos, gdEdgeInfoList* edges)
 {
@@ -388,15 +432,18 @@ void GraphDisk::WriteEdgeList(int vex_pos, gdEdgeInfoList* edges)
 		Log::logln("Error::GraphDisk::WriteEdgeList::Not found the vertex");
 		return;
 	}
+	if(isTempFull())
+	{
+		CreateNewTempFile();
+	}
+
+	gdFilePhysicalPos phy_pos = GetPhysicalPos(vex_pos);
+	phy_pos._fs->seekp(phy_pos._pos, ios::beg);
 
 	VERTEX u =v_info->_u;
 	int d = v_info->_degree;
-	int write_pos = vex_pos*GetAdjLineSize();
-	_ofs_tmp.seekp(write_pos, ios::beg);
-	
-	_ofs_tmp.write((char*)(&u), sizeof(VERTEX));
-	_ofs_tmp.write((char*)(&d), sizeof(int));
-	//_ofs_tmp<<u<<d;
+	phy_pos._fs->write((char*)(&u), sizeof(VERTEX));
+	phy_pos._fs->write((char*)(&d), sizeof(int));
 	for(int i=0; i<GetMaxDegree(); i++)
 	{
 		int adj = -1;
@@ -408,8 +455,7 @@ void GraphDisk::WriteEdgeList(int vex_pos, gdEdgeInfoList* edges)
 		{
 			adj = edges->at(i)._adj_vex_pos;
 		}
-		_ofs_tmp.write((char*)(&adj), sizeof(int));
-		//_ofs_tmp<<adj;
+		phy_pos._fs->write((char*)(&adj), sizeof(int));
 	}
 }
 
@@ -424,20 +470,18 @@ void GraphDisk::FillEdgeList(int vex_pos,gdEdgeInfoList* edges)
 
 	edges->clear();
 	
+	gdFilePhysicalPos phy_pos = GetPhysicalPos(vex_pos);
 	VERTEX u = -1;
 	int d = -1;
 	gdEdgeInfo adj_info = {-1};
-	int read_pos = vex_pos*GetAdjLineSize();
-	_ofs_tmp.seekg(read_pos, ios::beg);
 
-	_ofs_tmp.read((char*)(&u), sizeof(VERTEX));
-	_ofs_tmp.read((char*)(&d), sizeof(int));
-	//_ofs_tmp>>u;
-	//_ofs_tmp>>d;
+	phy_pos._fs->seekg(phy_pos._pos, ios::beg);
+
+	phy_pos._fs->read((char*)(&u), sizeof(VERTEX));
+	phy_pos._fs->read((char*)(&d), sizeof(int));
 	for(int i=0; i<d; i++)
 	{
-		_ofs_tmp.read((char*)(&(adj_info._adj_vex_pos)), sizeof(int));
-		//_ofs_tmp>>adj_info._adj_vex_pos;
+		phy_pos._fs->read((char*)(&(adj_info._adj_vex_pos)), sizeof(int));
 		edges->push_back(adj_info);
 	}
 }

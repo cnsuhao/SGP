@@ -13,7 +13,7 @@ using namespace std;
 #define VEX_NOTFOUND		UINT_MAX
 #define VERTEX_ID_MAX_LEN	10
 #define READ_DATA_LEN		65536 //64k MUST even
-
+#define TEMPFILE_MAX_SIZE	268435456//256M
 /**
 Graph
 */
