@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.14)  29 DEC 2016 11:00
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.14)  29 DEC 2016 11:27
 entering extended mode
 **D:/study/big*graph*partition/experiment/paper/sigproc.tex
 ("D:/study/big graph partition/experiment/paper/sigproc.tex"
@@ -327,25 +327,25 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 \c@lemma=\count123
  [6]
 
-LaTeX Warning: Float too large for page by 24.59674pt on input line 467.
+LaTeX Warning: Float too large for page by 24.59674pt on input line 475.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 [7]
-Overfull \hbox (8.61499pt too wide) in paragraph at lines 478--483
+Overfull \hbox (8.61499pt too wide) in paragraph at lines 486--491
 []\T1/aer/m/n/9 For a un-sam-pled ver-tex $\OML/cmm/m/it/9 u[]$\T1/aer/m/n/9 , 
 where $\OML/cmm/m/it/9 u[] \OMS/cmsy/m/n/9 2 []\OML/cmm/m/it/9 ; e[] \OMS/cmsy/
 m/n/9 2$
  []
 
 
-Overfull \hbox (7.14867pt too wide) detected at line 506
+Overfull \hbox (7.14867pt too wide) detected at line 514
 \OML/cmm/m/it/9 w[] \OT1/cmr/m/n/9 = [] []
  []
 
 
-Overfull \hbox (15.69513pt too wide) in paragraph at lines 529--533
+Overfull \hbox (15.69513pt too wide) in paragraph at lines 537--541
 \T1/aer/m/n/9 the num-ber of un-sam-pled ver-tex, that is, $\OML/cmm/m/it/9 O\O
 T1/cmr/m/n/9 ([][] [])$\T1/aer/m/n/9 . 
  []
@@ -357,7 +357,7 @@ T1/cmr/m/n/9 ([][] [])$\T1/aer/m/n/9 .
 Here is how much of TeX's memory you used:
  3282 strings out of 495354
  38649 string characters out of 3183859
- 125057 words of memory out of 3000000
+ 124057 words of memory out of 3000000
  6384 multiletter control sequences out of 15000+200000
  51329 words of font info for 70 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
@@ -377,7 +377,7 @@ b><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/CTEX/MiKTeX/fonts
 w/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/C
 TEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/tim
 es/utmr8a.pfb>
-Output written on sigproc.pdf (10 pages, 299240 bytes).
+Output written on sigproc.pdf (10 pages, 298996 bytes).
 PDF statistics:
  108 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

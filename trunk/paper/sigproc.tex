@@ -177,7 +177,11 @@ We observed that for gain-based partitioning algorithms, the partition of vertex
 For example, suppose that the vertex $v$ of the partition $P_1$ has $n_1$ internal-connections to the partition $P_1$ and $n_2$ external-connections to the partition $P_2$, if $n_1\geq n_2$, i.e the gain $n_1 - n_2 \geq 0$ then $v$ will be stayed in $P_1$, otherwise moved into $P_2$. If the sign of vertex gain for a representative subgraph is consistent with the one for the original graph, we say the partition of vertex for representative subgraph will keep consistence with that for the original graph.
 
 Here, we introduce the notion of \textit{expectation of error gain} to measure the goodness of approximate partitioner instead of the edge-cuts.
-Since recursive bisection partitioning is adopted, without the lost of generality, we assume $k = 2$ and it is easy to extend $k$ to any integer of $2^h$. Given the graph $G$, let $P=\{P_A,P_B\}$ be a set of partitions for $G$, where $P_A \bigcup P_B = V$, and $d_v$ be the degree of the vertex $v \in V$, $d_v \geq 0$. Let $s$ be the probability of edge sampling, and $G^s = (V^s, E^s)$ be a subgraph of $G$ obtained by an edge-sampling on $G$, where $V^s \subseteq V, E^s \subseteq E$. $P^s=\{P_A^s,P_B^s\}$ is the corresponding partitions for $P$, where $P_A^s \subseteq P_A, P_B^s \subseteq P_B$. $d_v^s$ is the degree of $v \in V^s$. We have the expectation of $d_v^s$, $E(d_v^s) = s\cdot d_v$.
+Since recursive bisection partitioning is adopted, without the lost of generality, we assume $k = 2$ and it is easy to extend $k$ to any integer of $2^h$. 
+Given the graph $G$, let $P=\{P_A,P_B\}$ be a set of partitions for $G$, where $P_A \bigcup P_B = V$, and $d$ be the degree of the vertex $v \in V$, $d \geq 0$. 
+Let $s$ be the probability of edge sampling, and $G^s = (V^s, E^s)$ be a subgraph of $G$ selected by an edge-sampling algorithm, where $V^s \subseteq V, E^s \subseteq E$. 
+$P^s=\{P_A^s,P_B^s\}$ is the corresponding partitions for $P$, where $P_A^s \subseteq P_A, P_B^s \subseteq P_B$. 
+$d^s$ is the degree of $v \in V^s$. We have the expectation of $d^s$, $E(d^s) = s\cdot d$.
 
 \newdef{definition}{Definition}
 \begin{definition}\label{def-boundary}
@@ -185,48 +189,52 @@ Since recursive bisection partitioning is adopted, without the lost of generalit
 \end{definition}
 
 \begin{definition}\label{def-gain}
- Given the graph $G$, and its partitions $P$, the $gain$ of vertex $v \in V$ with respect to $P$ is defined as the connection difference of $v$ between $P_A$ and $P_B$, and denoted as $\delta_v$.
- Obviously, we have $-d_v\leq\delta_v\leq d_v$. For $G^s$ and $P^s$, the $gain$ of $v$ with respect to $P^s$ is defined as the connection difference of $v$ between $P_A^s$ and $P_B^s$, and  denoted as $\delta_v^s$.
+ Given the graph $G$, and its partitions $P$, the $gain$ of vertex $v \in V$ with respect to $P$ is defined as the connection difference of $v$ between $P_A$ and $P_B$, and denoted as $\delta$.
+ Obviously, we have $-d\leq\delta\leq d$. For $G^s$ and $P^s$, the $gain$ of $v$ with respect to $P^s$ is defined as the connection difference of $v$ between $P_A^s$ and $P_B^s$, and  denoted as $\delta^s$.
 \end{definition}
 
 \begin{definition}\label{def-inconsistgain}
-For the graph $G$ and its sample $G^s$, given the partitions $P$ and $P^s$, if  $\delta_v^s \cdot \delta_v >0$, where $\delta_v^s \neq 0,  \delta_v \neq 0$, or $\delta_v=0 \land \delta_v^s =0$, we say $\delta_v^s$ is \textit{consistent} with $\delta_v$, denoted as  $\delta_v^s \equiv \delta_v $,  otherwise  $\delta_v^s$ is \textit{inconsistent} with $\delta_v$, denoted as $\delta_v^s \not\equiv \delta_v $. If $\delta_v^s \not\equiv \delta_v $, the error gain of $v$ with the given $\delta_v$ is $ |\delta_v| $ and denoted as $\tilde\delta_v$.
+For the graph $G$ and the graph sample $G^s$, and the corresponding partitions $P$ and $P^s$, given the vertex $v$ and its degree $d$, 
+if $\delta^s \cdot \delta >0$, where $\delta^s \neq 0, \delta \neq 0$, or $\delta=0 \land \delta^s =0$, 
+we say $\delta^s$ is \textit{consistent} with $\delta$, denoted as  $\delta^s \equiv \delta $, 
+otherwise  $\delta^s$ is \textit{inconsistent} with $\delta$, denoted as $\delta^s \not\equiv \delta $. 
+If $\delta^s \not\equiv \delta $, the error gain of $v$ is $ |\delta| $ and denoted as $\tilde\delta$.
 \end{definition}
 
 \newtheorem{theorem}{Theorem}
 \begin{theorem}\label{theorem-partition-error-a-vertex}
-For the graph $G$ and its sample $G^s$ with sample ratio $s$, given the vertex $v \in V$, the expectation of error gain $E(\tilde\delta_v)$  satisfies that
+For the graph $G$ and its sample $G^s$ with sample ratio $s$, given the vertex $v \in V$ and its degree $d$, the expectation of error gain of $v$, denoted as $E(\tilde\delta)$ satisfies that
 \begin{equation}\label{theorem1-eq-0}
-E(\tilde\delta_v) \leq \frac{1}{s} (1-\exp(-\frac{s\cdot d_v}{2}))
+E(\tilde\delta) \leq \frac{1}{s} (1-\exp(-\frac{s d}{2}))
 \end{equation}
 \end{theorem}
 \begin{proof}
-For $v \in V$, let $P(\delta_v^s \not\equiv \delta_v, \delta_v)$ be the probability that $\delta_v^s$ is inconsistent with given $\delta_v$, and we have
+For $v \in V$, let $P(\delta^s \not\equiv \delta, \delta)$ be the probability that $\delta^s$ is inconsistent with given $\delta$, and we have
 \begin{equation}\label{theorem1-eq-1}
-P( \delta_v^s \not\equiv \delta_v, \delta_v) = P(\delta_v)P(\delta_v^s \not\equiv \delta_v |\delta_v)
+P( \delta^s \not\equiv \delta, \delta) = P(\delta)P(\delta^s \not\equiv \delta |\delta)
 \end{equation}
-Since $-d_v\leq\delta_v\leq d_v$, and we assume $\delta_v$ obeys uniform distribution with the interval $[-d_v, d_v]$, then
+Since $-d\leq\delta\leq d$, and we assume $\delta$ obeys uniform distribution with the interval $[-d, d]$, then
 \begin{equation}\label{theorem1-eq-2}
-P(\delta_v)=\frac{1}{2d_v}
+P(\delta)=\frac{1}{2d}
 \end{equation}
-Let $X_1, X_2,...,X_{d_v^s}$ be independent random variables taking on values -1 or 1, which means a connection to $P_A$ or $P_B$ is sampled, then we have $\delta_v^s = \sum_{i=1}^{d_v^s} X_i$. Here let $\epsilon = E\delta_v^s$.
-According to Definition \ref{def-inconsistgain}, for $ \delta_v^s \not\equiv \delta_v$, we have $\delta_v^s < E\delta_v^s - \epsilon$ if $\delta_v > 0 $ , or $\delta_v^s > \epsilon - E\delta_v^s$ if $\delta_v < 0$.
-Obviously, the expectation of $\delta_v^s$ is $s\cdot \delta_v$. According to the \textit{Hoeffding Inequality}, we have
+Let $X_1, X_2,...,X_{d^s}$ be independent random variables taking on values -1 or 1, which means a connection to $P_A$ or $P_B$ is sampled, then we have $\delta^s = \sum_{i=1}^{d^s} X_i$. Here let $\epsilon = E\delta^s$.
+According to Definition \ref{def-inconsistgain}, for $ \delta^s \not\equiv \delta$, we have $\delta^s < E\delta^s - \epsilon$ if $\delta > 0 $ , or $\delta^s > \epsilon - E\delta^s$ if $\delta < 0$.
+Obviously, the expectation of $\delta^s$ is $s\cdot \delta$. According to the \textit{Hoeffding Inequality}, we have
 \begin{equation}\label{theorem1-eq-3}
-P(\delta_v^s \not\equiv \delta_v | \delta_v)  \leq  \exp(-\frac{2\epsilon^2}{4d_v^s}) \\
- = \exp(-\frac{s\cdot \delta_v^2}{2d_v})
+P(\delta^s \not\equiv \delta | \delta)  \leq  \exp(-\frac{2\epsilon^2}{4d^s}) \\
+ = \exp(-\frac{s\cdot \delta^2}{2d})
 \end{equation}
 With \eqref{theorem1-eq-2} and \eqref{theorem1-eq-3}, we have
 \begin{equation}\label{theorem1-eq-4}
-P( \delta_v^s \not\equiv \delta_v, \delta_v) = \frac{1}{2d_v} \cdot \exp(-\frac{s\cdot \delta_v^2}{2d_v})
+P( \delta^s \not\equiv \delta, \delta) = \frac{1}{2d} \cdot \exp(-\frac{s\cdot \delta^2}{2d})
 \end{equation}
 With \eqref{theorem1-eq-4}, we have
 \begin{eqnarray}\label{theorem1-eq-5}
-E(\tilde\delta_v) &\leq& \sum_{\delta_v=-d_v}^{d_v} {|\delta_v| \cdot P( \delta_v^s \not\equiv \delta_v, \delta_v) } \notag \\
-&=& 2\sum_{\delta_v=0}^{d_v} {\delta_v \cdot P( \delta_v^s \not\equiv \delta_v, \delta_v) } \notag \\
-&=& \sum_{\delta_v=0}^{d_v} { \frac{\delta_v}{d_v} \cdot \exp(-\frac{s\cdot \delta_v^2}{2d_v})}
+E(\tilde\delta) &\leq& \sum_{\delta=-d}^{d} {|\delta| \cdot P( \delta^s \not\equiv \delta, \delta) } \notag \\
+&=& 2\sum_{\delta=0}^{d} {\delta \cdot P( \delta^s \not\equiv \delta, \delta) } \notag \\
+&=& \sum_{\delta=0}^{d} { \frac{\delta}{d} \cdot \exp(-\frac{s\cdot \delta^2}{2d})}
 \end{eqnarray}
-Let $x=\frac{\delta_v}{d_v}$ and with the Eq. \eqref{theorem1-eq-5}, then 
+Let $x=\frac{\delta}{d}$ and with the Eq. \eqref{theorem1-eq-5}, then
 \begin{eqnarray}
 E(\tilde\delta) &\leq& \sum_{\delta=0}^{d} {d\cdot x\cdot \exp(-\frac{s d x^2}{2})\cdot \frac{1}{d}} \notag\\
 &=& \int_0^{1} {d \cdot x \cdot exp(-\frac{s d x^2}{2})} d(x)\notag \\
@@ -309,7 +317,7 @@ $E(\tilde\delta_v)$ in Theorem \ref{theorem-partition-error-a-vertex} can be tra
 \end{eqnarray}
 Similar to Lemma \ref{lemma-partitioning-error-func-property} and Lemma \ref{lemma-expection-error-significant}, $\hat{E}(\tilde\delta_v)$ is decreasing function of the expectation of degree $d_v^s$. The change of $\hat{E}(\tilde\delta_v)$ is more significant to $Ed_v^s$ than $d_v$. It implies that if the $\hat{E}(\tilde\delta_v)$ is kept at the same level, the high sampling probability is expected for the vertex of low degree, otherwise the low sampling probability is preferred for the vertex of high degree. \textit{DBS} replaces the edge in the reservoir according to the current degree of its end vertices with the bias to low degree.
 
-The algorithm of \textit{DBS} is shown in Algorithm \ref{alg:degree-bias-sampling}. The element of $V_s$ has two items: \textit{vex} and \textit{d}, representing the information of vertex and its degree respectively. $V_s[v]$ is the element of the vertex $v$. The element in $E_s$ has four items: the item \textit{edge} that includes the vertices $u$ and $v$ of edge, the item \textit{weight} that is the sampling weight determined by the inverse of the minimum degree of $u$ and $v$ and the item with high relative weight has high probability of sampling,  the item \textit{rand} that is a random real in $[0,1]$, and the item \textit{key} that is the key for weighted sampling and calculated by ${rand}^{1/weight}$.   The edge is selected into the reservoir according to the relative $weight$ by the algorithm of weighted random sampling in \textit{DBS}, similar to \textit{A-Res} proposed by Pavlos S. Efraimidis etc \cite{Pavlos:weightedsampling}. The differences between \textit{DBS} and \textit{A-Res} are that
+The algorithm of \textit{DBS} is shown in Algorithm \ref{alg:degree-bias-sampling}. The element of $V_s$ has two items: \textit{vex} and \textit{d}, representing the information of vertex and its degree respectively. $V_s[v]$ is the element of the vertex $v$. The element in $E_s$ has four items: the item \textit{edge} that includes the vertices $u$ and $v$ of edge, the item \textit{weight} that is the sampling weight determined by the inverse of the minimum degree of $u$ and $v$ and the item with high relative weight has high probability of sampling,  the item \textit{rand} that is a random real in $[0,1]$, and the item \textit{key} that is the key for weighted sampling and calculated by ${rand}^{1/weight}$.   The edge is selected into the reservoir according to the relative $weight$ by the algorithm of weighted random sampling in \textit{DBS}, similar to \textit{A-Res} proposed by Pavlos S. Efraimidis etc \cite{Pavlos:weightedsampling}. The differences between \textit{DBS} and \textit{A-Res} are that:
 
 (1)  for \textit{A-Res} the weight of the item of population must be given in advanced, while for \textit{DBS} the degree observed by now is used to determine the weight. The assumption under \textit{DBS} is that  the degree of vertex is relative high in the observations if it is of the high relative degree in the population.  The assumption can be proved by the following:
 Suppose that the degrees of $u_1$ and $u_2$ are $d_1$ and $d_2$, $d_1\ge d_2$,  the total sampling degree of  $u_1$ and $u_2$ is $l$ and let $k$ be the sampling degree of $u_1$, then the probability distribution of $k$ is the distribution of \textit{Bernouli} , that is, if $l$ is big enough,  $ p(k)=C_l^k p^k(1-p)^{l-k} = \frac{\lambda^k}{k!} e^{-\lambda}$ where $p=\frac{d_1}{d_1+d_2}, \lambda = l p$. Since $d_1\ge d_2$, $p\ge1/2$, then we have $p(k\ge l/2)>1/2$.
