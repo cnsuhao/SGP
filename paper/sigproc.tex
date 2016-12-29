@@ -221,14 +221,18 @@ With \eqref{theorem1-eq-2} and \eqref{theorem1-eq-3}, we have
 P( \delta_v^s \not\equiv \delta_v, \delta_v) = \frac{1}{2d_v} \cdot \exp(-\frac{s\cdot \delta_v^2}{2d_v})
 \end{equation}
 With \eqref{theorem1-eq-4}, we have
-\begin{eqnarray}
+\begin{eqnarray}\label{theorem1-eq-5}
 E(\tilde\delta_v) &\leq& \sum_{\delta_v=-d_v}^{d_v} {|\delta_v| \cdot P( \delta_v^s \not\equiv \delta_v, \delta_v) } \notag \\
 &=& 2\sum_{\delta_v=0}^{d_v} {\delta_v \cdot P( \delta_v^s \not\equiv \delta_v, \delta_v) } \notag \\
-&=& \sum_{\delta_v=0}^{d_v} { \frac{\delta_v}{d_v} \cdot \exp(-\frac{s\cdot \delta_v^2}{2d_v})} \notag \\
-&\approx& \int_0^{d_v} {\frac{\delta_v}{d_v} \cdot exp(-\frac{s\cdot \delta_v^2}{2d_v})d\delta_v} \notag \\
-&=& \int_0^{d_v} {-\frac{1}{s} \cdot \exp(-\frac{s\cdot \delta_v^2}{2d_v})d(-\frac{s\cdot \delta_v^2}{2d_v})} \notag \\
-&=& -\frac{1}{s} [\exp(-\frac{s\cdot \delta_v^2}{2d_v})]_0^{d_v} \notag \\
-&=& \frac{1}{s} (1-\exp(-\frac{s\cdot d_v}{2})) \notag
+&=& \sum_{\delta_v=0}^{d_v} { \frac{\delta_v}{d_v} \cdot \exp(-\frac{s\cdot \delta_v^2}{2d_v})}
+\end{eqnarray}
+Let $x=\frac{\delta_v}{d_v}$ and with the Eq. \eqref{theorem1-eq-5}, then 
+\begin{eqnarray}
+E(\tilde\delta) &\leq& \sum_{\delta=0}^{d} {d\cdot x\cdot \exp(-\frac{s d x^2}{2})\cdot \frac{1}{d}} \notag\\
+&=& \int_0^{1} {d \cdot x \cdot exp(-\frac{s d x^2}{2})} d(x)\notag \\
+&=& \int_0^{1} {-\frac{1}{s} \exp(-\frac{s d x^2}{2})d(-\frac{s d x^2}{2})} \notag \\
+&=& -\frac{1}{s} [\exp(-\frac{s d x^2}{2})]_0^{1} \notag \\
+&=& \frac{1}{s} (1-\exp(-\frac{s d}{2})) \notag
 \end{eqnarray}
 \end{proof}
 
@@ -305,7 +309,7 @@ $E(\tilde\delta_v)$ in Theorem \ref{theorem-partition-error-a-vertex} can be tra
 \end{eqnarray}
 Similar to Lemma \ref{lemma-partitioning-error-func-property} and Lemma \ref{lemma-expection-error-significant}, $\hat{E}(\tilde\delta_v)$ is decreasing function of the expectation of degree $d_v^s$. The change of $\hat{E}(\tilde\delta_v)$ is more significant to $Ed_v^s$ than $d_v$. It implies that if the $\hat{E}(\tilde\delta_v)$ is kept at the same level, the high sampling probability is expected for the vertex of low degree, otherwise the low sampling probability is preferred for the vertex of high degree. \textit{DBS} replaces the edge in the reservoir according to the current degree of its end vertices with the bias to low degree.
 
-The algorithm of \textit{DBS} is shown in Algorithm \ref{alg:degree-bias-sampling}. The element of $V_s$ has two items: \textit{vex} and \textit{d}, representing the information of vertex and its degree respectively. $V_s[v]$ is the element of the vertex $v$. The element in $E_s$ has four items: the item \textit{edge} that includes the vertices $u$ and $v$ of edge, the item \textit{weight} that is the sampling weight determined by the inverse of the minimum degree of $u$ and $v$ and the item with high relative weight has high probability of sampling,  the item \textit{rand} that is a random real in $[0,1]$, and the item \textit{key} that is the key for weighted sampling and calculated by ${rand}^{1/weight}$.   The edge is selected into the reservoir according to the relative $weight$ by the algorithm of weighted random sampling in \textit{DBS}, similar to \textit{A-Res} proposed by Pavlos S. Efraimidis etc \cite{Pavlos:weightedsampling}. The differences between \textit{DBS} and \textit{A-Res} are that 
+The algorithm of \textit{DBS} is shown in Algorithm \ref{alg:degree-bias-sampling}. The element of $V_s$ has two items: \textit{vex} and \textit{d}, representing the information of vertex and its degree respectively. $V_s[v]$ is the element of the vertex $v$. The element in $E_s$ has four items: the item \textit{edge} that includes the vertices $u$ and $v$ of edge, the item \textit{weight} that is the sampling weight determined by the inverse of the minimum degree of $u$ and $v$ and the item with high relative weight has high probability of sampling,  the item \textit{rand} that is a random real in $[0,1]$, and the item \textit{key} that is the key for weighted sampling and calculated by ${rand}^{1/weight}$.   The edge is selected into the reservoir according to the relative $weight$ by the algorithm of weighted random sampling in \textit{DBS}, similar to \textit{A-Res} proposed by Pavlos S. Efraimidis etc \cite{Pavlos:weightedsampling}. The differences between \textit{DBS} and \textit{A-Res} are that
 
 (1)  for \textit{A-Res} the weight of the item of population must be given in advanced, while for \textit{DBS} the degree observed by now is used to determine the weight. The assumption under \textit{DBS} is that  the degree of vertex is relative high in the observations if it is of the high relative degree in the population.  The assumption can be proved by the following:
 Suppose that the degrees of $u_1$ and $u_2$ are $d_1$ and $d_2$, $d_1\ge d_2$,  the total sampling degree of  $u_1$ and $u_2$ is $l$ and let $k$ be the sampling degree of $u_1$, then the probability distribution of $k$ is the distribution of \textit{Bernouli} , that is, if $l$ is big enough,  $ p(k)=C_l^k p^k(1-p)^{l-k} = \frac{\lambda^k}{k!} e^{-\lambda}$ where $p=\frac{d_1}{d_1+d_2}, \lambda = l p$. Since $d_1\ge d_2$, $p\ge1/2$, then we have $p(k\ge l/2)>1/2$.
@@ -315,7 +319,7 @@ Suppose that the degrees of $u_1$ and $u_2$ are $d_1$ and $d_2$, $d_1\ge d_2$,  
 \begin{algorithm}[h]
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
 \renewcommand\algorithmicensure {\textbf{Output:} }
-\caption{Degree Bias Sampling}  
+\caption{Degree Bias Sampling}
 \label{alg:degree-bias-sampling}
 \begin{algorithmic}[1]
 \REQUIRE ~~\\ %Input
@@ -333,7 +337,7 @@ Sample Graph $G_s$;
  \STATE $it.rand = random(0,1)$;
  \STATE $it.key = it.rand^{1/it.weight}$
 \ENDFOR
-\REPEAT 
+\REPEAT
   \STATE { Read the next $\eta$ edges into $E'$ from $E_{seq}$ at the begin of the position $\rho+1+i*\eta$ for $i=0,1,...$ }
   \FOR {each $e=(u, v)$ in the set of  $E'$}
     \STATE $V_s=V_s \bigcup (u, V_s[u].d+1)\bigcup (v, V_s[v].d+1)$;
@@ -345,10 +349,10 @@ Sample Graph $G_s$;
     \STATE $r= random(0,1)$;
     \STATE $key = r^{1/w}$;
     \IF {key > T.key }
-      \STATE Replace $T$ by the item $(e, w, r, key)$;  
+      \STATE Replace $T$ by the item $(e, w, r, key)$;
       \STATE $T =\underset{it\in{E_s}} \arg \min \{ it.key\}$;
    \ENDIF
-  \ENDFOR 
+  \ENDFOR
 \UNTIL {the end of $E_{seq}$}
 \STATE Build the sample graph $G_s$ by $E_s$
 \RETURN  $G_s$;
@@ -362,8 +366,8 @@ In the second pass of scanning the graph, \textit{SGL} allocates the unsampled e
 For graph $G=(V, E)$, the $locality$ of vertex $u\in V$ is defined as the set of its adjacent  vertices, that is $LOC(u)=\{v | v\in V, (u,v)\in E \}$.
 \end{definition}
 
-An unsampled vertex is allocated until more than $s \cdot d$ percent of the adjacent vertices in its locality have been read and partitioned, where $s$ is decided by Equation \ref{theorm-sampling-prob-eq} with the bound of given error $\alpha$, otherwise  the vertices of locality should be cached. 
-For a vertex of degree $d$, the likelihood that none of its $d$ edges is sampled is  $(1-s)^d$ and the expectation of the number of unsampled vertex of degree $d$ is $n_d (1-s)^d$, where $n_d$ is the number of vertices of degree $d$. The expectation of required space is $d n_d (1-s)^d$. 
+An unsampled vertex is allocated until more than $s \cdot d$ percent of the adjacent vertices in its locality have been read and partitioned, where $s$ is decided by Equation \ref{theorm-sampling-prob-eq} with the bound of given error $\alpha$, otherwise  the vertices of locality should be cached.
+For a vertex of degree $d$, the likelihood that none of its $d$ edges is sampled is  $(1-s)^d$ and the expectation of the number of unsampled vertex of degree $d$ is $n_d (1-s)^d$, where $n_d$ is the number of vertices of degree $d$. The expectation of required space is $d n_d (1-s)^d$.
 With the sum of expectation with respect to the degree $1\sim d_{max}$, We have the average space complexity of locality cache is $O(\sum_{d=1}^{d_{max}} {d n_d(1-s)^d})$ .
 Since $s<1$, few of vertices are unsampled and the cache will be small.
 Moreover,  the approximate partitioner needn't to be re-adjusted with unsampled vertex allocated, because it is considered to be qualified to allocating the vertex with the bound of error gain.
@@ -373,20 +377,20 @@ For loading the stream graph , it is infeasible visiting the stream graph twice,
 
 \subsection {Streaming Loading Algorithm}
 
-The algorithm of loading stream graph is shown in Algorithm \ref{alg:streaming-loading}.  
-The element of vertex in Algorithm \ref{alg:streaming-loading} has three items: 
-the item $sampled$ represents whether the vertex is selected in $V_s$ or not; 
-the item $partition$ indicates the partition of the vertex; 
-the item $AC$ is the \textit{Allocation Context} of vertex determining the partition of unsampled vertex. 
+The algorithm of loading stream graph is shown in Algorithm \ref{alg:streaming-loading}.
+The element of vertex in Algorithm \ref{alg:streaming-loading} has three items:
+the item $sampled$ represents whether the vertex is selected in $V_s$ or not;
+the item $partition$ indicates the partition of the vertex;
+the item $AC$ is the \textit{Allocation Context} of vertex determining the partition of unsampled vertex.
 The algorithm mainly includes two phases as following.
 
 \textit{Phase I}: For each new arrival edge $e^+$, \textit{DBS} is applied to select $e^+$ into the reservoir $E_s$. If $e^+$ substituted for $e^-$ in $E_s$, and then it will be checked whether the representative graph should be re-partitioned to update the approximate partitioner or not, as shown from Step \ref{alg-sgl-stream-adjust-partitioner-begin} to Step \ref{alg-sgl-stream-adjust-partitioner-end}. if it required, $G_s$ will be repartitioned after $\eta$ edges read, as shown from Step \ref{alg-sgl-stream-repartition-begin} to \ref{alg-sgl-stream-repartition-end}. The details of re-partitioning will be discussed in Chapter \ref{ch-sgls-adjust-ap}.
 Otherwise, $e^+$ will be allocated and saved  immediately into the corresponding storage node in terms of current approximate partitioner and its $AC$ as shown from Step \ref{alg-sgl-stream-allocate-edge-begin} to Step \ref{alg-sgl-stream-allocate-edge-end}.
 Here, \textit{AC} is the expand locality for determining the partition of unsampled vertex of $e^+$, which will be discussed further in Chapter \ref{ch-sgls-ac}.
 
-\textit{Phase II}:  At the end of stream, the partition of unsampled vertex maybe different from the one of its allocation, so the following should be checked in parallel on each storage node. 
+\textit{Phase II}:  At the end of stream, the partition of unsampled vertex maybe different from the one of its allocation, so the following should be checked in parallel on each storage node.
 \begin{enumerate}[i.]
-\item If there are vertices in the storage node that were migrated into different partitions on updating the approximate partitioner, they must be removed from the current node, as shown by Step \ref{alg-sgl-stream-clean-storage-node}; 
+\item If there are vertices in the storage node that were migrated into different partitions on updating the approximate partitioner, they must be removed from the current node, as shown by Step \ref{alg-sgl-stream-clean-storage-node};
 \item For unsampled vertex, if there is the vertex in its $AC$  whose partition is different from the one in the final approximate partitioner, it must be re-allocated, as shown from Step \ref{alg-sgl-stream-ac-change-begin} to Step \ref{alg-sgl-stream-ac-change-end};
 \item After ($i$) and ($ii$), the edge with the partition of its unsampled vertex changed should be re-allocated, as shown from Step \ref{alg-sgl-stream-fix-EP-begin}  to Step \ref{alg-sgl-stream-fix-EP-end}.
 \end{enumerate}
@@ -414,7 +418,7 @@ Graph Partitions $G_P^1,G_P^2,...,G_P^k$ on $k$ storage-nodes;\\
      \IF {$e^+ \in E^+$}\label{alg-sgl-stream-adjust-partitioner-begin}
        \STATE Let $e^- \in E^-$ be the edge substitued by $e^+$;
         \STATE $E_s = E_s\bigcup\{e^+\}/\{e^-\}$;$V_s = V_s \bigcup \{u,v\}$;
-        \STATE $u.sampled = true$;$ v.sampled = true$; 
+        \STATE $u.sampled = true$;$ v.sampled = true$;
         \STATE Check if $G_s$ should be re-partitioned; if yes, set $isRepartition = true$;\label{alg-sgl-stream-adjust-partitioner-end}
         % //NOTE: Don't remove the incident vertex of zero degree
      \ELSE
@@ -428,11 +432,11 @@ Graph Partitions $G_P^1,G_P^2,...,G_P^k$ on $k$ storage-nodes;\\
             \ENDIF
         \ENDFOR
         \STATE $E_P^{u.partition}=E_P^{u.partition}\bigcup\{e^+\}$;
-        \STATE $E_P^{v.partition}=E_P^{v.partition}\bigcup\{e^+\}$; 
+        \STATE $E_P^{v.partition}=E_P^{v.partition}\bigcup\{e^+\}$;
        \ENDIF \label{alg-sgl-stream-allocate-edge-end}
       \ENDFOR
       \IF{ $isRepartition == true$ }\label{alg-sgl-stream-repartition-begin}
-        \STATE Re-partition $G_s$ and update the approximate partitioner $G_P^s$; 
+        \STATE Re-partition $G_s$ and update the approximate partitioner $G_P^s$;
       \ENDIF \label{alg-sgl-stream-repartition-end}
 \UNTIL {the end of $E_{seq}$}
 \STATE //parallel implementation on each storage node
@@ -464,15 +468,15 @@ Graph Partitions $G_P^1,G_P^2,...,G_P^k$ on $k$ storage-nodes;\\
 
 \subsection {Allocation Context}\label{ch-sgls-ac}
 
-Ideally, allocating the unsampled vertex is based on its locality defined by Definition \ref{def-locality}, which is feasible for \textit{SGLd} regardless of the search order. However, retrieving the locality under DFS or mixture order has to wait for the end of stream for \textit{SGLs}. 
+Ideally, allocating the unsampled vertex is based on its locality defined by Definition \ref{def-locality}, which is feasible for \textit{SGLd} regardless of the search order. However, retrieving the locality under DFS or mixture order has to wait for the end of stream for \textit{SGLs}.
 To this problem, the allocation context is proposed here based on the widely accepted observation in the field of \textit{Random Walk}, which is a random walk started inside a good cluster will mostly stay inside the cluster \cite{DBLP:books/sp/social11}. Here, by a good cluster is meant a cluster with relatively fewer number of cross-edges in comparison with the one inside.
 The search of DFS order is generally considered as a kind of \textit{Self-avoiding Random Walk(SARW)}. The difference between DFS and SARW is that DFS allows the search to trace back when all of neighbors are visited, whereas SARW will stop searching in such case. It means that the vertices in DFS traversal besides the adjacent vertices can make the contribution to the determination of partition in some senses. So, the locality of vertex is expanded to the connected vertices to the unsampled vertex in the traversal, which makes the vertex allocated as early as possible.
 
 %All the adjacent vertices following the unsampled vertex can be visited immediately for the order of BFS, while they can't acquired until all the edges are visited for the order of random or DFS. So,\textit{SGL} have to cache the incident edges for each unsampled vertex, and wait to decide their partitions at the end of sequence.
 
 \begin{definition}\label{def-ac}
-For a unsampled vertex $u_0$, where $u_0\in{e_i}, e_i\in{E_{seq}}$,  the \textit{Allocation Context} of $u_0$, denoted as $AC(u_0)$, is defined as the subgraph 
-$(V_{u_0}, E_{u_0})$, where 
+For a unsampled vertex $u_0$, where $u_0\in{e_i}, e_i\in{E_{seq}}$,  the \textit{Allocation Context} of $u_0$, denoted as $AC(u_0)$, is defined as the subgraph
+$(V_{u_0}, E_{u_0})$, where
 $V_{u_0}$ is the set of vertices with  the connection to $u_0$ in the following traversal from $u_0$. Formally, $V_{u_0}=\{u | u$ is connected to $u_0, u\in e_{j}, e_{j}\in E_{seq},  j=i+1,...\}$.
 $E_{u_0}$ is the set of edges attached on $V_{u_0}$.
 $|V_{u_0}|=l$, $l$ is the size of \textit{AC}.
@@ -480,13 +484,13 @@ $|V_{u_0}|=l$, $l$ is the size of \textit{AC}.
 
 According to the observation, if $u_0$ belongs to the partition $i$, the other vertices in its $AC$ would stay in the partition $i$ with high probability. Here two factors of the vertex $u$ in \textit{AC} are considered to contributing to the allocation of $u_0$:
 \begin{enumerate}[(1)]
-\item \textit{Influence} to $u_0$ measured by  the distance from $u$ to $u_0$ is the factor that if $u$ is of less distance to $u_0$, it would stay in the same partition to $u_0$ with higher probability. For $u\in{V_{u_0}}$, the influence of $u$ to $u_0$ is 
+\item \textit{Influence} to $u_0$ measured by  the distance from $u$ to $u_0$ is the factor that if $u$ is of less distance to $u_0$, it would stay in the same partition to $u_0$ with higher probability. For $u\in{V_{u_0}}$, the influence of $u$ to $u_0$ is
 \begin{equation}\label{eq-influence}
 influence(u, u_0)=\frac{1}{sp(u, u_0)}
 \end{equation}
 where $sp(u, u_0)$ is the length of shortest path between $u$ and $u_0$ in the graph $AC(u_0)$.
 
-\item \textit{Attraction} to a partition measured by the proportion of its links to the partition is the factor that the more links to the partition is, the higher probability of traversing in the same partition is. For $u\in{V_{u_0}}$, the attraction of $u$ to the partition $i$ is 
+\item \textit{Attraction} to a partition measured by the proportion of its links to the partition is the factor that the more links to the partition is, the higher probability of traversing in the same partition is. For $u\in{V_{u_0}}$, the attraction of $u$ to the partition $i$ is
 \begin{equation}\label{eq-attraction}
 attraction(u, i)=\frac{d_{u}^{i}}{d_{u}}
 \end{equation}
@@ -506,25 +510,25 @@ w_i = \sum_{partition(u_j)=i\bigwedge u_j\in {V_{u_0}}} {influence(u_j, u_0) att
 When the edge $e^+=(u^+,v^+)$ in $E_{seq}$  is selected to substitute for the edge $e^-=(u^-,v^-)$ in $E_s$, the representative graph $G_s$ should be re-partitioned in case of the gain of associated vertex inverse.
 The procedure of repartitioning needn't start at the root of the binary tree of graph partitioning but at the the internal node $LCA(i, j)$.
 
-For an non-boundary vertex of $G_s$ with adding or removing incident edge, its sign of gain will not change and then it is unnecessary re-partitioning $G_s$. 
+For an non-boundary vertex of $G_s$ with adding or removing incident edge, its sign of gain will not change and then it is unnecessary re-partitioning $G_s$.
 Whereas for an boundary vertex, its sign of gain will be inverse and $G_s$ should be re-partitioned in the following cases.
 \begin{enumerate}[i.]
 \item\label{repartition-cond1}  If $\exists u \in \{u^-, v^-\} \wedge j \in {[1...k]}$, $Partition(u) = i$, $u \in \mathcal{B} \wedge \{u^-, v^-\}\setminus{u} \not\subseteq \mathcal{B} \wedge \delta_{u}^{ij}=0$, where $\delta_{u}^{ij}$ is the gain of $u$ between the partition of $i$ and $j$ before $e^-$ removed, then the partition $i$ and $j$ should be adjusted.
 \item\label{repartition-cond2} If $\{u^+, v^+\} \subseteq \mathcal{B}$, $Partition(u^+)=i$, $Partition(v^+)=j$, $i \neq j$, $\delta_{u^+}^{ij}=0$ or $\delta_{v^+}^{ji}=0$ before $e^+$ added, then the partition $i$ and $j$ should be adjusted.
 \end{enumerate}
 
-As shown by the condition (\ref{repartition-cond1}) and  (\ref{repartition-cond2}) above, the likelihood of adjusting partition is related to the number of boundary vertex of zero gain. 
+As shown by the condition (\ref{repartition-cond1}) and  (\ref{repartition-cond2}) above, the likelihood of adjusting partition is related to the number of boundary vertex of zero gain.
 The probability that a vertex of degree $d$ becomes the boundary vertex with one link at least to the different partitions is  $1-(1-\frac{1}{k})^d$, and the probability that the boundary vertex is of zero gain is $\frac{1}{d}$. Thus the probability that $G_P^s$ is  adjusted when a edge on sample incident to the boundary vertex of degree $d$ is $\frac{s}{d}(1-(1-\frac{1}{k})^d) p(d)$, where $p(d)$ is the probability that the vertex is of the degree $d$.  A constant $c_1<1$, for  simplicity,  is introduced to substitute for $(1-(1-\frac{1}{k})^d)$. Moreover,  we assume the graph follows a \textit{power law} as most of big graph do in the real world, and then $p(d)=\frac{d^{-\beta}}{\zeta (\beta)}$, where $\zeta (\beta) = \sum_{1\leq d \leq \infty} {d^{-\beta}}$, $\beta > 0$, which $\zeta (\beta)$ is \textit{Riemann Zeta Function} for the purpose of normalized constant. Finally, the probability that $G_P^s$ is  adjusted with a edge sampled is $ \sum_{1\leq d \leq \infty} {s c_1 } \frac{d^{-\beta}}{d \zeta (\beta)}= s c_1\frac{\zeta(\beta+1)}{\zeta (\beta)}$.
 In total, the expectation of the number of adjusting is
 $(1-(1-s c_1\frac{\zeta(\beta+1)}{\zeta (\beta)})^{\eta}) m/\eta$.
 
-Obviously, $G_s$ should be re-partitioned in the case that the new vertex is added with the edge sample, while it maybe not in the case that the sample edge attaches the exists vertices in $G_s$, except that the condition (\ref{repartition-cond1}) and  (\ref{repartition-cond2}) satisfied. As a result, $G_s$  will be re-partitioned frequently at the early phase of \textit{SGLs} until most of vertices of the original graph are observed, because $G_s$ in \textit{SGLs} that allocates unsampled edges comes from the partial graph of the current stream under \textit{BFS} or \textit{DFS} search order, not the global graph as \textit{SGL} does. 
-Hence, the tip recommended here to reduce the times of re-partitioning at the early phase is that the size of $E_s$ in \textit{SGLs} in practice should be larger than the one in \textit{SGL}. 
+Obviously, $G_s$ should be re-partitioned in the case that the new vertex is added with the edge sample, while it maybe not in the case that the sample edge attaches the exists vertices in $G_s$, except that the condition (\ref{repartition-cond1}) and  (\ref{repartition-cond2}) satisfied. As a result, $G_s$  will be re-partitioned frequently at the early phase of \textit{SGLs} until most of vertices of the original graph are observed, because $G_s$ in \textit{SGLs} that allocates unsampled edges comes from the partial graph of the current stream under \textit{BFS} or \textit{DFS} search order, not the global graph as \textit{SGL} does.
+Hence, the tip recommended here to reduce the times of re-partitioning at the early phase is that the size of $E_s$ in \textit{SGLs} in practice should be larger than the one in \textit{SGL}.
 \textcolor{red}{it is the better that the analysis on the size of $E_s$ theoretically and the suggestion of size are given.}
 
-Moreover, 
-if an edge wasn't selected by \textit{DBS} in \textit{SGLs}, it should be allocated immediately since the edge stream was never saved persistently at the loader.  
-As the result, the partition of the vertex saved as unsampled in the storage node at early allocation should be re-examined at the end of stream graph, because the vertex itself or the vertex in its $AC$ maybe migrated in the following re-partitioning. 
+Moreover,
+if an edge wasn't selected by \textit{DBS} in \textit{SGLs}, it should be allocated immediately since the edge stream was never saved persistently at the loader.
+As the result, the partition of the vertex saved as unsampled in the storage node at early allocation should be re-examined at the end of stream graph, because the vertex itself or the vertex in its $AC$ maybe migrated in the following re-partitioning.
 The time complexity of the re-allocation in storage node is related to the number of unsampled vertex, that is, $O(\sum_{d=1}^{d_{max}} {d n_d(1-s)^d})$.
 
 
