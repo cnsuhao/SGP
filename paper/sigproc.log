@@ -1,12 +1,11 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2015.11.20)  29 DEC 2016 16:26
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.14)  29 DEC 2016 20:00
 entering extended mode
-**D:/个人工作/研究/big*graph*partition/SGP/trunk/paper/sigproc.tex
-("D:/个人工作/研究/big graph partition/SGP/trunk/paper/sigproc.tex"
+**D:/study/big*graph*partition/experiment/paper/sigproc.tex
+("D:/study/big graph partition/experiment/paper/sigproc.tex"
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for loaded.
-
-("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sig-alternate-2013
-.cls" (C:\CTEX\MiKTeX\tex\latex\graphics\epsfig.sty
+("D:\study\big graph partition\experiment\paper\sig-alternate-2013.cls"
+(C:\CTEX\MiKTeX\tex\latex\graphics\epsfig.sty
 Package: epsfig 1999/02/16 v1.7a (e)psfig emulation (SPQR)
 
 (C:\CTEX\MiKTeX\tex\latex\graphics\graphicx.sty
@@ -243,7 +242,7 @@ Package: verbatim 2003/08/22 v1.5q LaTeX2e package for verbatim enhancements
 Package: enumerate 1999/03/05 v3.00 enumerate extensions (DPC)
 \@enLab=\toks41
 )
-("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sigproc.aux")
+("D:\study\big graph partition\experiment\paper\sigproc.aux")
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
 LaTeX Font Info:    ... okay on input line 10.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 10.
@@ -327,58 +326,69 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 \c@lemma=\count123
  [5] [6] [7]
 
-LaTeX Warning: Float too large for page by 24.59674pt on input line 473.
+LaTeX Warning: Float too large for page by 24.59674pt on input line 474.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-Overfull \hbox (8.61499pt too wide) in paragraph at lines 484--489
+Overfull \hbox (8.61499pt too wide) in paragraph at lines 485--490
 []\T1/aer/m/n/9 For a un-sam-pled ver-tex $\OML/cmm/m/it/9 u[]$\T1/aer/m/n/9 , 
 where $\OML/cmm/m/it/9 u[] \OMS/cmsy/m/n/9 2 []\OML/cmm/m/it/9 ; e[] \OMS/cmsy/
 m/n/9 2$
  []
 
 
-Overfull \hbox (7.14867pt too wide) detected at line 512
+Overfull \hbox (7.14867pt too wide) detected at line 513
 \OML/cmm/m/it/9 w[] \OT1/cmr/m/n/9 = [] []
  []
 
 
-Overfull \hbox (15.69513pt too wide) in paragraph at lines 535--539
+Overfull \hbox (15.69513pt too wide) in paragraph at lines 536--540
 \T1/aer/m/n/9 the num-ber of un-sam-pled ver-tex, that is, $\OML/cmm/m/it/9 O\O
 T1/cmr/m/n/9 ([][] [])$\T1/aer/m/n/9 . 
  []
 
-[8] ("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sigproc.bbl")
-[9] [10
+[8]
+Overfull \hbox (4.5158pt too wide) in paragraph at lines 543--545
+[]\T1/aer/m/n/9 In this sec-tion we present our ex-per-i-men-tal find-ings. Spe
+cif-
+ []
+
+
+Overfull \hbox (6.67467pt too wide) in paragraph at lines 547--553
+\T1/aer/m/n/9 formed on a s-in-gle ma-chine, with In-tel i7-3770k cpu at 3.5GHz
+,
+ []
+
+("D:\study\big graph partition\experiment\paper\sigproc.bbl") [9] [10
 
 ]
-("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sigproc.aux") ) 
+("D:\study\big graph partition\experiment\paper\sigproc.aux") ) 
 Here is how much of TeX's memory you used:
- 3281 strings out of 495354
- 38770 string characters out of 3183858
- 121049 words of memory out of 3000000
- 6383 multiletter control sequences out of 15000+200000
+ 3283 strings out of 495354
+ 38670 string characters out of 3183859
+ 121069 words of memory out of 3000000
+ 6385 multiletter control sequences out of 15000+200000
  51329 words of font info for 70 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
- 41i,11n,35p,1809b,734s stack positions out of 5000i,500n,10000p,200000b,50000s
-{C:
-/CTEX/MiKTeX/fonts/enc/dvips/fontname/8r.enc}<C:/CTEX/MiKTeX/fonts/type1/public
-/amsfonts/cm/cmbx9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.p
-fb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmex7.pfb><C:/CTEX/MiKTe
-X/fonts/type1/public/amsfonts/cmextra/cmex9.pfb><C:/CTEX/MiKTeX/fonts/type1/pub
-lic/amsfonts/cm/cmmi5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.
-pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/CTEX/MiKTeX/fo
-nts/type1/public/amsfonts/cm/cmr5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfon
-ts/cm/cmr6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/CTEX
-/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy5.pfb><C:/CTEX/MiKTeX/fonts/type1/pu
-blic/amsfonts/cm/cmsy6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9
-.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/CTEX/MiKTeX/f
-onts/type1/urw/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/uhv
-r8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/
-type1/urw/times/utmr8a.pfb>
-Output written on sigproc.pdf (10 pages, 299904 bytes).
+ 41i,11n,35p,1796b,734s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/CTEX/MiKTeX/
+fonts/enc/dvips/fontname/8r.enc}<C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/
+cmbx9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/CTEX/M
+iKTeX/fonts/type1/public/amsfonts/cmextra/cmex7.pfb><C:/CTEX/MiKTeX/fonts/type1
+/public/amsfonts/cmextra/cmex9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/
+cm/cmmi5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/CTEX/
+MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/CTEX/MiKTeX/fonts/type1/pub
+lic/amsfonts/cm/cmr5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pf
+b><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/CTEX/MiKTeX/fonts
+/type1/public/amsfonts/cm/cmsy5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts
+/cm/cmsy6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:/CTEX
+/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/CTEX/MiKTeX/fonts/type1/ur
+w/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/C
+TEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/tim
+es/utmr8a.pfb>
+Output written on sigproc.pdf (10 pages, 300396 bytes).
 PDF statistics:
  108 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

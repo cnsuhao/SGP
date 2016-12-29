@@ -293,27 +293,28 @@ Obviously, the total expectation of error gain for $G$  is determined by boundar
 
 Naturally, the sampling design is preferred to set the sampling probability with $E(\tilde{\delta_G})$ bounded by a given threshold.
 For the inequality \eqref{theorem-total-partioning-error-eq}, however, it is quite difficult to estimate the uniform $s$ for all degrees.
-So, the sampling probability for each vertex is set to hold $E(\tilde\delta)\leq \alpha $ with the uniform threshold $\alpha$ here. That is, 
+So, the sampling probability for each vertex is set to hold $E(\tilde\delta)\leq \alpha $ with the uniform threshold $\alpha$ here. That is,
 with the degree $d$, if the sampling probability $s$ satisfies
 \begin{equation}\label{theorm-sampling-prob-eq}
 1-\alpha \cdot s \leq \exp{(-\frac{s \cdot d}{2})}
 \end{equation}
 according to Theorem \ref{theorem-partition-error-a-vertex}, $E(\tilde\delta) \leq \alpha$ will be hold,
-%If the probability of edge sampling can be computed under the given degree of vertex in advance, 
+%If the probability of edge sampling can be computed under the given degree of vertex in advance,
 and then $E_{\tilde{\delta_G}}$ is bounded by $\sum_{d} {n_d} {(1-(1-\frac{1}{k})^d) \alpha}$.
 Moreover, $n_d$ can be estimated by $n \cdot P(d)$ with the probability distribution of degree $P(d)$ provided, such as the power-law-like distributions observed in many real graphs, and $\alpha$ can be set as $\frac{\beta}{n\sum_{d} {P(d)} {(1-(1-\frac{1}{k})^d)}} $ with the upper-bound $\beta$ of $E_{\tilde{\delta_G}}$.
 In such case, the size of sample edges is $n \sum_{d}{\frac {P(d) \cdot d}{s_d}} $, where $s_d$ is the sampling ratio for the degree $d$.
+%\textcolor{red}{i think it is difficult to compute the sample ratio of each vertex for BFS, because we don't know how to select $\alpha$, even though $\beta$ can be set. in fact, $\beta$ is infeasible to set in advance since we don't know what the cut value is. So DBS...  }
 
-\textcolor{red}{i think it is difficult to compute the sample ratio of each vertex for BFS, because we don't know how to select $\alpha$, even though $\beta$ can be set. in fact, $\beta$ is infeasible to set in advance since we don't know what the cut value is. So DBS...  }
-
-For the order of BFS, vertex's degree can be calculated by caching locally a part of edges when scanning the edge sequence, and then the probability of edge sampling for the vertex can be determined. However, for the order of random or DFS, a vertex's degree cann't be determined until all its edges have been confirmed to reach by the end of edge sequence, that is, extra scanning the edge sequence is required to count the degree for all the vertices. Counting the degree of vertex in advance always is infeasible for edge stream.
-
-we propose an unequal sampling algorithm without extra scanning, called \textit{Degree Bias Sampling (DBS)}.
-$E(\tilde\delta_v)$ in Theorem \ref{theorem-partition-error-a-vertex} can be transformed as
+For the order of BFS, the degree of vertex can be calculated by caching locally a part of edge sequence, and the edge sampling probability of vertex can be determined with Equation \eqref{theorm-sampling-prob-eq}. 
+However, for the order of random or DFS, the degree of vertex cann't be determined until all of its adjacent edges have been confirmed to reach at the end of edge sequence. In such case extra scan of the edge sequence is required to count the degree for all the vertices, whereas it is time-consuming for big graph and infeasible for edge stream.
+Moreover, selecting $\beta$ in advance is quite difficult since the cut value is unknown. 
+To this problem, we relax the constrain of $E(\tilde\delta)\leq \alpha $ and resort to the target that making $E(\tilde\delta)$ as small as possible. So
+an unequal sampling algorithm, called \textit{Degree Bias Sampling (DBS)}, is proposed here.
+Note that $E(\tilde\delta)$ in Theorem \ref{theorem-partition-error-a-vertex} can be transformed as
 \begin{eqnarray}\label{lemma-partitioning-error-func-of-expection-of-d}
-{E(\tilde\delta_v)} \leq \frac{d_v}{Ed_v^s} (1-\exp(-\frac{Ed_v^s}{2}))
+{E(\tilde\delta)} \leq \frac{d}{E(d^s)} (1-\exp(-\frac{E(d^s)}{2}))
 \end{eqnarray}
-Similar to Lemma \ref{lemma-partitioning-error-func-property} and Lemma \ref{lemma-expection-error-significant}, $\hat{E}(\tilde\delta_v)$ is decreasing function of the expectation of degree $d_v^s$. The change of $\hat{E}(\tilde\delta_v)$ is more significant to $Ed_v^s$ than $d_v$. It implies that if the $\hat{E}(\tilde\delta_v)$ is kept at the same level, the high sampling probability is expected for the vertex of low degree, otherwise the low sampling probability is preferred for the vertex of high degree. \textit{DBS} replaces the edge in the reservoir according to the current degree of its end vertices with the bias to low degree.
+Similar to Lemma \ref{lemma-partitioning-error-func-property} and Lemma \ref{lemma-expection-error-significant}, $\hat{E}(\tilde\delta)$ is decreasing function of the expectation of degree $d^s$. The change of $\hat{E}(\tilde\delta)$ is more significant to $E(d^s)$ than $d$. It implies that if the $\hat{E}(\tilde\delta)$ is kept at the same level, the high sampling probability is expected for the vertex of low degree, otherwise the low sampling probability is preferred for the vertex of high degree. Based on this idea, \textit{DBS} replaces the edge in the reservoir according to the current degree of its end vertices with the bias to low degree. Obviously, \textit{DBS} also need the degree, but it does depend not on the absolute and final degree, but the relative and current degree.
 
 The algorithm of \textit{DBS} is shown in Algorithm \ref{alg:degree-bias-sampling}. The element of $V_s$ has two items: \textit{vex} and \textit{d}, representing the information of vertex and its degree respectively. $V_s[v]$ is the element of the vertex $v$. The element in $E_s$ has four items: the item \textit{edge} that includes the vertices $u$ and $v$ of edge, the item \textit{weight} that is the sampling weight determined by the inverse of the minimum degree of $u$ and $v$ and the item with high relative weight has high probability of sampling,  the item \textit{rand} that is a random real in $[0,1]$, and the item \textit{key} that is the key for weighted sampling and calculated by ${rand}^{1/weight}$.   The edge is selected into the reservoir according to the relative $weight$ by the algorithm of weighted random sampling in \textit{DBS}, similar to \textit{A-Res} proposed by Pavlos S. Efraimidis etc \cite{Pavlos:weightedsampling}. The differences between \textit{DBS} and \textit{A-Res} are that:
 
@@ -539,8 +540,23 @@ The time complexity of the re-allocation in storage node is related to the numbe
 
 
 \section{Experimental Evaluation}
-//We conducted extensive experimental evaluation to discover the performance and trends of stream partitioning heuristics on a variety of graphs.
+In this section we present our experimental findings. Specifically, Section \ref{ch_experiment_setup} describes the experimental setup. 
+Sections \ref{ch_experiment_result} presents our findings for synthetic and real-world graphs respectively.
+\subsection{Experimental Setup}\label{ch_experiment_setup}
 
+The real-world graphs used in our experiments are shown in Table 2. 
+Multiple edges, self loops, signs and weights were removed.
+All graphs are publicly available on the Web(http://snap.stanford.edu/snap/). 
+All algorithms have been implemented in C++, and all experiments were performed on a single machine, 
+with Intel i7-3770k cpu at 3.5GHz, and 32GB of main memory. In our synthetic experiments, we use two random graph
+models
+
+
+We evaluate our algorithms by measuring two quantities from the resulting partitions. 
+In particular, for a fixed partition P we use the measures of the fraction of edges cut ¦Ë
+and the normalized maximum load ¦Ñ, defined as
+
+\subsection{Experimental Results}\label{ch_experiment_result}
 experiments of edge-cuts and time of SGL(bfs, dfs, random) on disk and kl, min-max etc.
 
 experiments of edge-cuts and time of SGL(bfs, dfs, random) on graph stream and streaming load\cite{Stanton:streampartition}.
@@ -553,16 +569,6 @@ experiments of sampling ratio to edge-cuts and time
 
 experiments of migration times
 
-
-\subsection{Dataset Description}
-
-\subsection{Partition Evaluation}
-
-$cut_ratio = (approx_{cut}-min_{cut})/min_cut$
-
-$size_distribution$
-
-\subsection{Dynamic Partition Evaluation}
 
 \section{Conclusions}
 //We have demonstrated that simple, one-pass streaming graph partitioning heuristics can dramatically improve the edge-cut in distributed graphs.
