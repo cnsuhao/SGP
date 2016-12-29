@@ -177,10 +177,10 @@ We observed that for gain-based partitioning algorithms, the partition of vertex
 For example, suppose that the vertex $v$ of the partition $P_1$ has $n_1$ internal-connections to the partition $P_1$ and $n_2$ external-connections to the partition $P_2$, if $n_1\geq n_2$, i.e the gain $n_1 - n_2 \geq 0$ then $v$ will be stayed in $P_1$, otherwise moved into $P_2$. If the sign of vertex gain for a representative subgraph is consistent with the one for the original graph, we say the partition of vertex for representative subgraph will keep consistence with that for the original graph.
 
 Here, we introduce the notion of \textit{expectation of error gain} to measure the goodness of approximate partitioner instead of the edge-cuts.
-Since recursive bisection partitioning is adopted, without the lost of generality, we assume $k = 2$ and it is easy to extend $k$ to any integer of $2^h$. 
-Given the graph $G$, let $P=\{P_A,P_B\}$ be a set of partitions for $G$, where $P_A \bigcup P_B = V$, and $d$ be the degree of the vertex $v \in V$, $d \geq 0$. 
-Let $s$ be the probability of edge sampling, and $G^s = (V^s, E^s)$ be a subgraph of $G$ selected by an edge-sampling algorithm, where $V^s \subseteq V, E^s \subseteq E$. 
-$P^s=\{P_A^s,P_B^s\}$ is the corresponding partitions for $P$, where $P_A^s \subseteq P_A, P_B^s \subseteq P_B$. 
+Since recursive bisection partitioning is adopted, without the lost of generality, we assume $k = 2$ and it is easy to extend $k$ to any integer of $2^h$.
+Given the graph $G$, let $P=\{P_A,P_B\}$ be a set of partitions for $G$, where $P_A \bigcup P_B = V$, and $d$ be the degree of the vertex $v \in V$, $d \geq 0$.
+Let $s$ be the probability of edge sampling, and $G^s = (V^s, E^s)$ be a subgraph of $G$ selected by an edge-sampling algorithm, where $V^s \subseteq V, E^s \subseteq E$.
+$P^s=\{P_A^s,P_B^s\}$ is the corresponding partitions for $P$, where $P_A^s \subseteq P_A, P_B^s \subseteq P_B$.
 $d^s$ is the degree of $v \in V^s$. We have the expectation of $d^s$, $E(d^s) = s\cdot d$.
 
 \newdef{definition}{Definition}
@@ -194,11 +194,11 @@ $d^s$ is the degree of $v \in V^s$. We have the expectation of $d^s$, $E(d^s) = 
 \end{definition}
 
 \begin{definition}\label{def-inconsistgain}
-For the graph $G$ and the graph sample $G^s$, and the corresponding partitions $P$ and $P^s$, given the vertex $v$ and its degree $d$, 
-if $\delta^s \cdot \delta >0$, where $\delta^s \neq 0, \delta \neq 0$, or $\delta=0 \land \delta^s =0$, 
-we say $\delta^s$ is \textit{consistent} with $\delta$, denoted as  $\delta^s \equiv \delta $, 
-otherwise  $\delta^s$ is \textit{inconsistent} with $\delta$, denoted as $\delta^s \not\equiv \delta $. 
-If $\delta^s \not\equiv \delta $, the error gain of $v$ is $ |\delta| $ and denoted as $\tilde\delta$.
+For the graph $G$ and the graph sample $G^s$, and the corresponding partitions $P$ and $P^s$, given the vertex $v$ and its degree $d$,
+if $\delta^s \cdot \delta >0$, where $\delta^s \neq 0, \delta \neq 0$, or $\delta=0 \land \delta^s =0$,
+we say $\delta^s$ is \textit{consistent} with $\delta$, denoted as  $\delta^s \equiv \delta $,
+otherwise  $\delta^s$ is \textit{inconsistent} with $\delta$, denoted as $\delta^s \not\equiv \delta $.
+With $\delta^s \not\equiv \delta $, we introduce the variable $\tilde\delta$ as the error gain of $v$, and $\tilde\delta = |\delta| $.
 \end{definition}
 
 \newtheorem{theorem}{Theorem}
@@ -224,17 +224,17 @@ Obviously, the expectation of $\delta^s$ is $s\cdot \delta$. According to the \t
 P(\delta^s \not\equiv \delta | \delta)  \leq  \exp(-\frac{2\epsilon^2}{4d^s}) \\
  = \exp(-\frac{s\cdot \delta^2}{2d})
 \end{equation}
-With \eqref{theorem1-eq-2} and \eqref{theorem1-eq-3}, we have
+With Eq.\eqref{theorem1-eq-2} and Eq. \eqref{theorem1-eq-3}, we have
 \begin{equation}\label{theorem1-eq-4}
 P( \delta^s \not\equiv \delta, \delta) = \frac{1}{2d} \cdot \exp(-\frac{s\cdot \delta^2}{2d})
 \end{equation}
-With \eqref{theorem1-eq-4}, we have
+With Eq. \eqref{theorem1-eq-4}, we have
 \begin{eqnarray}\label{theorem1-eq-5}
 E(\tilde\delta) &\leq& \sum_{\delta=-d}^{d} {|\delta| \cdot P( \delta^s \not\equiv \delta, \delta) } \notag \\
 &=& 2\sum_{\delta=0}^{d} {\delta \cdot P( \delta^s \not\equiv \delta, \delta) } \notag \\
 &=& \sum_{\delta=0}^{d} { \frac{\delta}{d} \cdot \exp(-\frac{s\cdot \delta^2}{2d})}
 \end{eqnarray}
-Let $x=\frac{\delta}{d}$ and with the Eq. \eqref{theorem1-eq-5}, then
+Let $x=\frac{\delta}{d}$ and with Eq. \eqref{theorem1-eq-5}, then
 \begin{eqnarray}
 E(\tilde\delta) &\leq& \sum_{\delta=0}^{d} {d\cdot x\cdot \exp(-\frac{s d x^2}{2})\cdot \frac{1}{d}} \notag\\
 &=& \int_0^{1} {d \cdot x \cdot exp(-\frac{s d x^2}{2})} d(x)\notag \\
@@ -244,67 +244,65 @@ E(\tilde\delta) &\leq& \sum_{\delta=0}^{d} {d\cdot x\cdot \exp(-\frac{s d x^2}{2
 \end{eqnarray}
 \end{proof}
 
-%theorem - total partitioning error
-\begin{theorem}\label{theorm-total-partioning-error}
- Let $n_d$ be the number of the vertex of the degree $d$, $d_{max}$ be the maximum degree, and $E_{\tilde{\delta_G}}$ be the total expectation of error gain for $G$, then we have
-\begin{equation}\label{theorem-total-partioning-error-eq}
-E_{\tilde{\delta_G}} \leq \sum_{1\leq d\leq d_{max}} {\frac{n_d}{s} (1-(1-\frac{1}{k})^d) (1-\exp(-\frac{s\cdot d}{2}))}
-\end{equation}
-\end{theorem}
-\begin{proof}
-Obviously, the total expectation of error gain for $G$  is determined by boundary vertex that has at least one neighbor on other partitions. Under $k$ partitions, an edge's  vertices have the probability $1-\frac{1}{k}$ to be on different partitions, and then we have the probability that a vertex of degree $d$ has at least one link to another partition is $1-(1-\frac{1}{k})^d$ \textcolor{red}{(or $1-\frac{1}{k^d}$)} . Due to the linearity of expectation and with Theorem \ref{theorem-partition-error-a-vertex}, we have Equation \ref{theorem-total-partioning-error-eq}
-\end{proof}
-
-
 \newtheorem{lemma}{Lemma}
 \begin{lemma}\label{lemma-partitioning-error-func-property}
-The upper-bound of $E(\tilde\delta_v)$, $\hat{E}(\tilde\delta_v)$,  is decreasing function of sampling probability $s$, and increasing function of the vertex degree $d$.
+The upper-bound of $E(\tilde\delta)$, denoted as $\hat{E}(\tilde\delta)$, is the decreasing function of sampling probability $s$, and the increasing function of the degree $d$.
 \end{lemma}
 \begin{proof}
-The derivation of $\hat{E}(\tilde\delta_v)$ with respect to $s$ is
+The partial derivative of $\hat{E}(\tilde\delta)$ with respect to $s$ is
 \begin{eqnarray}
-\frac{\partial \hat{E}(\tilde\delta_v)}{\partial s} = \frac{1}{s^2}((\frac{sd_v}{2} + 1)\exp(-\frac{sd_v}{2})-1) \notag
+\frac{\partial \hat{E}(\tilde\delta)}{\partial s} = \frac{1}{s^2}((\frac{sd}{2} + 1)\exp(-\frac{sd}{2})-1) \notag
 \end{eqnarray}
-According to the inequality $e^{-x} < \frac{1}{1+x}$, where $x>-1$, we have $\frac{\partial \hat{E}(\tilde\delta_v) }{\partial s} < 0$.
-
-The derivation of $\hat{E}(\tilde\delta_v)$ with respect to $d_v$ is
+According to the inequality $e^{-x} < \frac{1}{1+x}$, where $x>-1$, we have $\frac{\partial \hat{E}(\tilde\delta) }{\partial s} < 0$.
+The partial derivative of $\hat{E}(\tilde\delta)$ with respect to $d$ is
 \begin{eqnarray}
-\frac{\partial \hat{E}(\tilde\delta_v) }{\partial d_v} = \frac{1}{2}\exp(-\frac{sd_v}{2}) > 0 \notag
+\frac{\partial \hat{E}(\tilde\delta) }{\partial d} = \frac{1}{2}\exp(-\frac{sd}{2}) > 0 \notag
 \end{eqnarray}
 \end{proof}
 
 
 \begin{lemma}\label{lemma-expection-error-significant}
-The change of $\hat{E}(\tilde\delta_v)$ is more significant to sampling probability $s$,than vertex degree $d_v$.
+The change of $\hat{E}(\tilde\delta)$ is more significant to the sampling probability $s$ than to the degree $d$.
 \end{lemma}
 \begin{proof}
 According to Lemma \ref{lemma-partitioning-error-func-property}, we have
 \begin{eqnarray}
-&&|\frac{\partial \hat{E}(\tilde\delta_v) }{\partial s}| - |\frac{\partial \hat{E}(\tilde\delta_v)}{\partial d_v}| \notag \\
-&&=\frac{1}{s^2}(1-(\frac{sd_v}{2} + 1)\exp(-\frac{sd_v}{2})) - \frac{1}{2}\exp(-\frac{sd_v}{2}) \notag \\
-&&=\frac{1}{s^2 \exp(sd_v/2)}(\exp(sd_v/2)-(1+sd_v/2)-\frac{s^2}{2})  \notag \end{eqnarray}
-Since $s^2 \geq 0$ and $\exp(sd_v/2) > 0$, the maximum of $s$ is 1, and the minimum of $d_v$ is 1, we have
+&&|\frac{\partial \hat{E}(\tilde\delta) }{\partial s}| - |\frac{\partial \hat{E}(\tilde\delta)}{\partial d}| \notag \\
+&&=\frac{1}{s^2}(1-(\frac{sd}{2} + 1)\exp(-\frac{sd}{2})) - \frac{1}{2}\exp(-\frac{sd}{2}) \notag \\
+&&=\frac{1}{s^2 \exp(sd/2)}(\exp(sd/2)-(1+sd/2)-\frac{s^2}{2})  \notag \end{eqnarray}
+Since $s^2 \geq 0$ and $\exp(sd/2) > 0$, the maximum of $s$ is 1, and the minimum of $d$ is 1, we have
 \begin{eqnarray}
-|\frac{\partial \hat{E}(\tilde\delta_v)}{\partial s}| - |\frac{\partial \hat{E}(\tilde\delta_v) }{\partial d_v}| > 0 \notag
+|\frac{\partial \hat{E}(\tilde\delta)}{\partial s}| - |\frac{\partial \hat{E}(\tilde\delta) }{\partial d}| > 0 \notag
 \end{eqnarray}
+\end{proof}
+
+%theorem - total partitioning error
+\begin{theorem}\label{theorm-total-partioning-error}
+$E(\tilde{\delta_G})$ is defined as the total expectation of error gain for $G$, that is $E(\tilde{\delta_G}) = \sum_{v \in \mathcal{B}} {E(\tilde{\delta_v})}$, where $E(\tilde{\delta_v})$ is the expectation of the error gain of $v$. The following inequality is satisfied
+\begin{equation}\label{theorem-total-partioning-error-eq}
+E(\tilde{\delta_G}) \leq \sum_{1\leq d\leq d_{max}} {\frac{n_d}{s} (1-(1-\frac{1}{k})^d) (1-\exp(-\frac{s\cdot d}{2}))}
+\end{equation}
+where $n_d$ is the number of the vertex of degree $d$, and $d_{max}$ is the maximum degree
+\end{theorem}
+\begin{proof}
+Obviously, the total expectation of error gain for $G$  is determined by boundary vertex that has at least one neighbor on other partitions. Under $k$ partitions, an edge's  vertices have the probability $1-\frac{1}{k}$ to be on different partitions, and then we have the probability that a vertex of degree $d$ has at least one link to another partition is $1-(1-\frac{1}{k})^d$. Due to the linearity of expectation and with Theorem \ref{theorem-partition-error-a-vertex}, Eq. (\ref{theorem-total-partioning-error-eq}) is derived.
+%\textcolor{red}{(or $1-\frac{1}{k^d}$)}
 \end{proof}
 
 \subsection{Sampling Representative Subgraph }
 
-The sampling design is preferred to keep the expectation of error gain bounded by a given threshold.
-According to Theorem \ref{theorem-partition-error-a-vertex}, we can get the following theorem.
-\begin{theorem}\label{theorm-sampling-prob}
-For the vertex $v$, let $\alpha$ be the threshold of $E(\tilde\delta_v)$, if the sampling probability $s$ satisfies
+Naturally, the sampling design is preferred to set the sampling probability with $E(\tilde{\delta_G})$ bounded by a given threshold.
+For the inequality \eqref{theorem-total-partioning-error-eq}, however, it is quite difficult to estimate the uniform $s$ for all degrees.
+So, the sampling probability for each vertex is set to hold $E(\tilde\delta)\leq \alpha $ with the uniform threshold $\alpha$ here. That is, 
+with the degree $d$, if the sampling probability $s$ satisfies
 \begin{equation}\label{theorm-sampling-prob-eq}
 1-\alpha \cdot s \leq \exp{(-\frac{s \cdot d}{2})}
 \end{equation}
-$E(\tilde\delta_v) \leq \alpha$ will be hold.
-\end{theorem}
-
-According to Theorem \ref{theorm-sampling-prob}, the probability of edge sampling can be computed under the given degree of vertex in advance, so $E_{\tilde{\delta_G}}$ will be bounded by
-$\sum_{d} {n_d} {(1-(1-\frac{1}{k})^d) \alpha}$
-Moreover, $n_d$ can be estimated by $n \cdot P_d$ when the probability distribution of degree $P_d$ is provided, such as the power-law-like  distributions observed in many real graphs, and $\alpha$ can be set as $\frac{\beta}{n\sum_{d} {P_d} {(1-(1-\frac{1}{k})^d)}} $ with the $E_{\tilde{\delta_G}}$ upper-bound $\beta$.
-In such case the size of sample edges is $n \sum_{d}{\frac {P_d \cdot d}{s_d}} $, where $s_d$ is the sampling ratio for the vertex of degree $d$.
+according to Theorem \ref{theorem-partition-error-a-vertex}, $E(\tilde\delta) \leq \alpha$ will be hold,
+%If the probability of edge sampling can be computed under the given degree of vertex in advance, 
+and then $E_{\tilde{\delta_G}}$ is bounded by $\sum_{d} {n_d} {(1-(1-\frac{1}{k})^d) \alpha}$.
+Moreover, $n_d$ can be estimated by $n \cdot P(d)$ with the probability distribution of degree $P(d)$ provided, such as the power-law-like distributions observed in many real graphs, and $\alpha$ can be set as $\frac{\beta}{n\sum_{d} {P(d)} {(1-(1-\frac{1}{k})^d)}} $ with the upper-bound $\beta$ of $E_{\tilde{\delta_G}}$.
+In such case, the size of sample edges is $n \sum_{d}{\frac {P(d) \cdot d}{s_d}} $, where $s_d$ is the sampling ratio for the degree $d$.
 
 \textcolor{red}{i think it is difficult to compute the sample ratio of each vertex for BFS, because we don't know how to select $\alpha$, even though $\beta$ can be set. in fact, $\beta$ is infeasible to set in advance since we don't know what the cut value is. So DBS...  }
 
