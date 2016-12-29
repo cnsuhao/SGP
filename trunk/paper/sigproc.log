@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.14)  29 DEC 2016 20:00
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.14)  29 DEC 2016 20:49
 entering extended mode
 **D:/study/big*graph*partition/experiment/paper/sigproc.tex
 ("D:/study/big graph partition/experiment/paper/sigproc.tex"
@@ -242,55 +242,58 @@ Package: verbatim 2003/08/22 v1.5q LaTeX2e package for verbatim enhancements
 Package: enumerate 1999/03/05 v3.00 enumerate extensions (DPC)
 \@enLab=\toks41
 )
+(C:\CTEX\MiKTeX\tex\latex\multirow\multirow.sty
+\bigstrutjot=\dimen123
+)
 ("D:\study\big graph partition\experiment\paper\sigproc.aux")
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 11.
+LaTeX Font Info:    ... okay on input line 11.
 
 (C:\CTEX\MiKTeX\tex\context\base\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count115
-\scratchdimen=\dimen123
+\scratchdimen=\dimen124
 \scratchbox=\box32
 \nofMPsegments=\count116
 \nofMParguments=\count117
 \everyMPshowfont=\toks42
 \MPscratchCnt=\count118
-\MPscratchDim=\dimen124
+\MPscratchDim=\dimen125
 \MPnumerator=\count119
 \makeMPintoPDFobject=\count120
 \everyMPtoPDFconversion=\toks43
 )
-LaTeX Font Info:    Try loading font information for U+msa on input line 24.
+LaTeX Font Info:    Try loading font information for U+msa on input line 25.
  (C:\CTEX\MiKTeX\tex\latex\amsfonts\umsa.fd
 File: umsa.fd 2009/06/22 v3.00 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 24.
+LaTeX Font Info:    Try loading font information for U+msb on input line 25.
 
 (C:\CTEX\MiKTeX\tex\latex\amsfonts\umsb.fd
 File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for U+lasy on input line 24.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 25.
 
 (C:\CTEX\MiKTeX\tex\latex\base\ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
-Overfull \hbox (1.26794pt too wide) in paragraph at lines 33--34
+Overfull \hbox (1.26794pt too wide) in paragraph at lines 34--35
 \T1/aer/m/n/9 H.4 [\T1/aer/bx/n/9 Information Sys-tem-s Ap-pli-ca-tion-s\T1/aer
 /m/n/9 ]: Mis-cel-la-neous;
  []
 
 
-Overfull \hbox (1.36621pt too wide) in paragraph at lines 44--48
+Overfull \hbox (1.36621pt too wide) in paragraph at lines 45--49
 []\T1/aer/m/n/9 In com-par-i-son with the tra-di-tion-al par-ti-tion-ing tech-n
 iques,
  []
@@ -302,7 +305,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 ]
-Overfull \hbox (16.22266pt too wide) in paragraph at lines 55--56
+Overfull \hbox (16.22266pt too wide) in paragraph at lines 56--57
 \T1/aer/m/n/9 the o-rig-i-nal graph, and hold-s the struc-ture in-for-ma-tion(i
 ndicated
  []
@@ -311,7 +314,7 @@ ndicated
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [2]
-Overfull \hbox (9.5433pt too wide) in paragraph at lines 70--71
+Overfull \hbox (9.5433pt too wide) in paragraph at lines 71--72
 \T1/aer/m/n/9 ti-tion-ing al-go-rithm-s [9, 13, 5] are pro-posed to coarsen(con
 tract)
  []
@@ -326,50 +329,50 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 \c@lemma=\count123
  [5] [6] [7]
 
-LaTeX Warning: Float too large for page by 24.59674pt on input line 474.
+LaTeX Warning: Float too large for page by 24.59674pt on input line 475.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-Overfull \hbox (8.61499pt too wide) in paragraph at lines 485--490
+Overfull \hbox (8.61499pt too wide) in paragraph at lines 486--491
 []\T1/aer/m/n/9 For a un-sam-pled ver-tex $\OML/cmm/m/it/9 u[]$\T1/aer/m/n/9 , 
 where $\OML/cmm/m/it/9 u[] \OMS/cmsy/m/n/9 2 []\OML/cmm/m/it/9 ; e[] \OMS/cmsy/
 m/n/9 2$
  []
 
 
-Overfull \hbox (7.14867pt too wide) detected at line 513
+Overfull \hbox (7.14867pt too wide) detected at line 514
 \OML/cmm/m/it/9 w[] \OT1/cmr/m/n/9 = [] []
  []
 
 
-Overfull \hbox (15.69513pt too wide) in paragraph at lines 536--540
+Overfull \hbox (15.69513pt too wide) in paragraph at lines 537--541
 \T1/aer/m/n/9 the num-ber of un-sam-pled ver-tex, that is, $\OML/cmm/m/it/9 O\O
 T1/cmr/m/n/9 ([][] [])$\T1/aer/m/n/9 . 
  []
 
 [8]
-Overfull \hbox (4.5158pt too wide) in paragraph at lines 543--545
+Overfull \hbox (4.5158pt too wide) in paragraph at lines 544--546
 []\T1/aer/m/n/9 In this sec-tion we present our ex-per-i-men-tal find-ings. Spe
 cif-
  []
 
 
-Overfull \hbox (6.67467pt too wide) in paragraph at lines 547--553
+Overfull \hbox (6.67467pt too wide) in paragraph at lines 548--568
 \T1/aer/m/n/9 formed on a s-in-gle ma-chine, with In-tel i7-3770k cpu at 3.5GHz
 ,
  []
 
 ("D:\study\big graph partition\experiment\paper\sigproc.bbl") [9] [10
 
-]
+] [11]
 ("D:\study\big graph partition\experiment\paper\sigproc.aux") ) 
 Here is how much of TeX's memory you used:
- 3283 strings out of 495354
- 38670 string characters out of 3183859
- 121069 words of memory out of 3000000
- 6385 multiletter control sequences out of 15000+200000
+ 3297 strings out of 495354
+ 38924 string characters out of 3183859
+ 121268 words of memory out of 3000000
+ 6395 multiletter control sequences out of 15000+200000
  51329 words of font info for 70 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
  41i,11n,35p,1796b,734s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -388,9 +391,9 @@ b><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/CTEX/MiKTeX/fonts
 w/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/C
 TEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/tim
 es/utmr8a.pfb>
-Output written on sigproc.pdf (10 pages, 300396 bytes).
+Output written on sigproc.pdf (11 pages, 301755 bytes).
 PDF statistics:
- 108 PDF objects out of 1000 (max. 8388607)
+ 111 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
