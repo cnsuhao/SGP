@@ -6,6 +6,7 @@
 \usepackage{xcolor}
 \usepackage{verbatim}
 \usepackage{enumerate}
+\usepackage{multirow}
 
 \begin{document}
 
@@ -305,9 +306,9 @@ Moreover, $n_d$ can be estimated by $n \cdot P(d)$ with the probability distribu
 In such case, the size of sample edges is $n \sum_{d}{\frac {P(d) \cdot d}{s_d}} $, where $s_d$ is the sampling ratio for the degree $d$.
 %\textcolor{red}{i think it is difficult to compute the sample ratio of each vertex for BFS, because we don't know how to select $\alpha$, even though $\beta$ can be set. in fact, $\beta$ is infeasible to set in advance since we don't know what the cut value is. So DBS...  }
 
-For the order of BFS, the degree of vertex can be calculated by caching locally a part of edge sequence, and the edge sampling probability of vertex can be determined with Equation \eqref{theorm-sampling-prob-eq}. 
+For the order of BFS, the degree of vertex can be calculated by caching locally a part of edge sequence, and the edge sampling probability of vertex can be determined with Equation \eqref{theorm-sampling-prob-eq}.
 However, for the order of random or DFS, the degree of vertex cann't be determined until all of its adjacent edges have been confirmed to reach at the end of edge sequence. In such case extra scan of the edge sequence is required to count the degree for all the vertices, whereas it is time-consuming for big graph and infeasible for edge stream.
-Moreover, selecting $\beta$ in advance is quite difficult since the cut value is unknown. 
+Moreover, selecting $\beta$ in advance is quite difficult since the cut value is unknown.
 To this problem, we relax the constrain of $E(\tilde\delta)\leq \alpha $ and resort to the target that making $E(\tilde\delta)$ as small as possible. So
 an unequal sampling algorithm, called \textit{Degree Bias Sampling (DBS)}, is proposed here.
 Note that $E(\tilde\delta)$ in Theorem \ref{theorem-partition-error-a-vertex} can be transformed as
@@ -540,19 +541,33 @@ The time complexity of the re-allocation in storage node is related to the numbe
 
 
 \section{Experimental Evaluation}
-In this section we present our experimental findings. Specifically, Section \ref{ch_experiment_setup} describes the experimental setup. 
+In this section we present our experimental findings. Specifically, Section \ref{ch_experiment_setup} describes the experimental setup.
 Sections \ref{ch_experiment_result} presents our findings for synthetic and real-world graphs respectively.
 \subsection{Experimental Setup}\label{ch_experiment_setup}
 
-The real-world graphs used in our experiments are shown in Table 2. 
+The real-world graphs used in our experiments are shown in Table 2.
 Multiple edges, self loops, signs and weights were removed.
-All graphs are publicly available on the Web(http://snap.stanford.edu/snap/). 
-All algorithms have been implemented in C++, and all experiments were performed on a single machine, 
+All graphs are publicly available on the Web(http://snap.stanford.edu/snap/).
+All algorithms have been implemented in C++, and all experiments were performed on a single machine,
 with Intel i7-3770k cpu at 3.5GHz, and 32GB of main memory. In our synthetic experiments, we use two random graph
 models
+\begin{table*}[!hpp]
+\centering
+\caption{example of table}
+\begin{tabular}{ccccccc} 
+\hline
+\multirow{2}{*}{dataset} & \multirow{2}{*}{vertices} & \multirow{2}{*}{edges} &  \multicolumn{3}{c}{degree} & \multirow{2}{*}{comment} \\
+\cline{4-6}
+& & & max & min & deviation \\
+\hline
+label 1-1 & label 1-2 & label 1-3 & label 1 -4 & label 1-5 & label 1-6 & label 1-7\\
+label 1-1 & label 1-2 & label 1-3 & label 1 -4 & label 1-5 & label 1-6 & label 1-7\\
+\hline
+\end{tabular}
+\end{table*}
 
 
-We evaluate our algorithms by measuring two quantities from the resulting partitions. 
+We evaluate our algorithms by measuring two quantities from the resulting partitions.
 In particular, for a fixed partition P we use the measures of the fraction of edges cut ¦Ë
 and the normalized maximum load ¦Ñ, defined as
 
