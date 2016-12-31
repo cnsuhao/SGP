@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.14)  31 DEC 2016 15:51
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.14)  31 DEC 2016 20:44
 entering extended mode
 **D:/study/big*graph*partition/experiment/paper/sigproc.tex
 ("D:/study/big graph partition/experiment/paper/sigproc.tex"
@@ -396,7 +396,7 @@ Overfull \hbox (10.03694pt too wide) in paragraph at lines 638--659
 Here is how much of TeX's memory you used:
  3298 strings out of 495354
  38944 string characters out of 3183859
- 143272 words of memory out of 3000000
+ 144272 words of memory out of 3000000
  6396 multiletter control sequences out of 15000+200000
  51329 words of font info for 70 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
@@ -416,7 +416,7 @@ fonts/cm/cmsy6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:
 e1/urw/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb>
 <C:/CTEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/ur
 w/times/utmr8a.pfb>
-Output written on sigproc.pdf (12 pages, 311635 bytes).
+Output written on sigproc.pdf (12 pages, 311817 bytes).
 PDF statistics:
  114 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
