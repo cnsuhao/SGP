@@ -549,8 +549,9 @@ The real-world graphs used in our experiments are shown in Table 2.
 Multiple edges, self loops, signs and weights were removed.
 All graphs are publicly available on the Web(http://snap.stanford.edu/snap/).
 All algorithms have been implemented in C++, and all experiments were performed on a single machine,
-with Intel i7-3770k cpu at 3.5GHz, and 32GB of main memory. In our synthetic experiments, we use two random graph
-models
+with Intel i7-3770k cpu at 3.5GHz, and 32GB of main memory.
+\textcolor{red}{In our synthetic experiments, we use two random graph models}
+
 \begin{table*}[!hpp]
 \centering
 \caption{example of table}
@@ -579,8 +580,29 @@ com-youtube-all-cmty    & 1069507   & 1895064 & Youtube\\
 
 
 We evaluate our algorithms by measuring two quantities from the resulting partitions.
-In particular, for a fixed partition P we use the measures of the fraction of edges cut ¦Ë
-and the normalized maximum load ¦Ñ, defined as
+In particular, for a partition we use the measures of the fraction of edges cut $\varsigma$
+and the normalized maximum load $\tau$ \cite{Charalampos:fennel}, defined as
+$\varsigma = \frac{\# edges\ cut}{m}$, and $\tau = \frac{\# vertices\ of\ maximum\ partition}{n}$.
+
+As our competitors we use state-of-the-art heuristics.
+Specifically, in our evaluation we consider the following heuristics from \cite{Stanton:streampartition} and \cite{Charalampos:fennel}
+\begin{itemize}
+  \item Balanced(B): place $v$ to the partition $P_i$ with minimal size.
+  \item Hash partitioning (Hash): place $v$ to a partition chosen uniformly at random.
+  \item Deterministic Greedy (DG): place $v$ to $P_i$ that maximizes $|N(v)\bigcap P_i|$.
+  \item Linear Weighted Deterministic Greedy (LDG): place $v$ to $P_i$ that maximizes $|N(v)\bigcap P_i|\times (1-\frac{|P_i|}{\frac{n}{k}})$.
+  \item Exponentially Weighted Deterministic Greedy (EDG): place $v$ to $P_i$ that maximizes $|N(v)\bigcap P_i|\times (1-exp(|P_i|-\frac{n}{k})$.
+  \item Triangles (Tri): place $v$ to $P_i$ that maximizes $t_{P_i(v)}$.
+  \item Linear Weighted Triangles (LTri): place $v$ to $P_i$ that maximizes $t_{P_i(v)}\times (1-\frac{|P_i|}{\frac{n}{k}})$.
+  \item Exponentially Weighted Triangles (ETri): place $v$ to $P_i$ that maximizes $t_{P_i(v)}\times (1-exp(|P_i|-\frac{n}{k})$.
+  \item Non-Neighbors (NN): place $v$ to $P_i$ that minimizes $|P_i\\N(v)|$
+  \item FENNEL(FNL): place $v$ to $P_i$ such that $\delta g(v, P_i)\geq \delta g(v, P_j)$.
+\end{itemize}
+$v$ is the newly arrived vertex. $N(v)$ denotes the set of neighbors of vertex $v$. The setting of the parameters of FENNEL we use throughout our experiments is $\gamma=1.5$, $ \alpha=\sqrt{k}\frac{m}{n^{1.5}}$, and $\nu = 1.1$. as mentioned in \cite{Charalampos:fennel}.
+
+about setup of memory and disk
+
+
 
 \subsection{Experimental Results}\label{ch_experiment_result}
 experiments of edge-cuts and time of SGL(bfs, dfs, random) on disk and kl, min-max etc.

@@ -75,4 +75,9 @@ Y.~Till, editor.
 \newblock {\em Sampling Algorithms}.
 \newblock Springer, 2006 edition, 2006.
 
+\bibitem{Charalampos:fennel}
+C.~E. Tsourakakis, C.~Gkantsidis, B.~Radunovic, and M.~Vojnovic.
+\newblock Fennel: Streaming graph partitioning for massive scale graphs.
+\newblock Technical Report MSR-TR-2012-113, Microsoft Research, November 2012.
+
 \end{thebibliography}
