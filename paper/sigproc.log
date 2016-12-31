@@ -1,11 +1,12 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.14)  31 DEC 2016 07:27
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2015.11.20)  31 DEC 2016 12:09
 entering extended mode
-**D:/study/big*graph*partition/experiment/paper/sigproc.tex
-("D:/study/big graph partition/experiment/paper/sigproc.tex"
+**D:/个人工作/研究/big*graph*partition/SGP/trunk/paper/sigproc.tex
+("D:/个人工作/研究/big graph partition/SGP/trunk/paper/sigproc.tex"
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for loaded.
-("D:\study\big graph partition\experiment\paper\sig-alternate-2013.cls"
-(C:\CTEX\MiKTeX\tex\latex\graphics\epsfig.sty
+
+("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sig-alternate-2013
+.cls" (C:\CTEX\MiKTeX\tex\latex\graphics\epsfig.sty
 Package: epsfig 1999/02/16 v1.7a (e)psfig emulation (SPQR)
 
 (C:\CTEX\MiKTeX\tex\latex\graphics\graphicx.sty
@@ -245,7 +246,7 @@ Package: enumerate 1999/03/05 v3.00 enumerate extensions (DPC)
 (C:\CTEX\MiKTeX\tex\latex\multirow\multirow.sty
 \bigstrutjot=\dimen123
 )
-("D:\study\big graph partition\experiment\paper\sigproc.aux")
+("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sigproc.aux")
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 11.
 LaTeX Font Info:    ... okay on input line 11.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 11.
@@ -379,34 +380,42 @@ Overfull \hbox (3.46126pt too wide) in paragraph at lines 594--595
 y/m/n/9 j\OML/cmm/m/it/9 P[]\OMS/cmsy/m/n/9 j  $
  []
 
-("D:\study\big graph partition\experiment\paper\sigproc.bbl" [9]) [10] [11]
-("D:\study\big graph partition\experiment\paper\sigproc.aux") ) 
+
+Overfull \hbox (3.6112pt too wide) in paragraph at lines 612--630
+ [][] 
+ []
+
+("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sigproc.bbl")
+[9] [10] [11
+
+] [12]
+("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sigproc.aux") ) 
 Here is how much of TeX's memory you used:
  3298 strings out of 495354
- 38944 string characters out of 3183859
- 121272 words of memory out of 3000000
+ 39087 string characters out of 3183858
+ 148272 words of memory out of 3000000
  6396 multiletter control sequences out of 15000+200000
  51329 words of font info for 70 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
- 41i,11n,35p,1796b,734s stack positions out of 5000i,500n,10000p,200000b,50000s
-{C:/CTEX/MiKTeX/
-fonts/enc/dvips/fontname/8r.enc}<C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/
-cmbx9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/CTEX/M
-iKTeX/fonts/type1/public/amsfonts/cmextra/cmex7.pfb><C:/CTEX/MiKTeX/fonts/type1
-/public/amsfonts/cmextra/cmex9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/
-cm/cmmi5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/CTEX/
-MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/CTEX/MiKTeX/fonts/type1/pub
-lic/amsfonts/cm/cmr5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pf
-b><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/CTEX/MiKTeX/fonts
-/type1/public/amsfonts/cm/cmsy5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts
-/cm/cmsy6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:/CTEX
-/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/CTEX/MiKTeX/fonts/type1/ur
-w/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/C
-TEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/tim
-es/utmr8a.pfb>
-Output written on sigproc.pdf (11 pages, 307624 bytes).
+ 41i,11n,35p,1809b,734s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:
+/CTEX/MiKTeX/fonts/enc/dvips/fontname/8r.enc}<C:/CTEX/MiKTeX/fonts/type1/public
+/amsfonts/cm/cmbx9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.p
+fb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmex7.pfb><C:/CTEX/MiKTe
+X/fonts/type1/public/amsfonts/cmextra/cmex9.pfb><C:/CTEX/MiKTeX/fonts/type1/pub
+lic/amsfonts/cm/cmmi5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.
+pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/CTEX/MiKTeX/fo
+nts/type1/public/amsfonts/cm/cmr5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfon
+ts/cm/cmr6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/CTEX
+/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy5.pfb><C:/CTEX/MiKTeX/fonts/type1/pu
+blic/amsfonts/cm/cmsy6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9
+.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/CTEX/MiKTeX/f
+onts/type1/urw/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/uhv
+r8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/
+type1/urw/times/utmr8a.pfb>
+Output written on sigproc.pdf (12 pages, 312225 bytes).
 PDF statistics:
- 111 PDF objects out of 1000 (max. 8388607)
+ 114 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
