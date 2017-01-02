@@ -16,7 +16,7 @@
 using namespace std;
 
 string usage = 
-	"sgp -CMD [DFS|BFS|RAND|KL|SGPKL|SGPStreamKL|StreamPartition|GraphNorm|Test] ...\n"
+	"sgp -CMD [DFS|BFS|RAND|KL|SGPKL|SGPStreamKL|StreamPartition|GraphNorm|GenSynData|Test] ...\n"
 	"DFS:\n"
 	"convert edges order by dfs.\n"
 	"params: -i <inputfile> -o <outputfile> -log <log file>\n"
@@ -44,6 +44,9 @@ string usage =
 	"SplitBigFile:\n"
 	"split the big file into max_reader files.\n"
 	"params: -i <inputfile> -o <outputdir> -log <log file>  -readercount <reader thread count>\n"
+	"GenSynData:\n"
+	"Generate the synthetic dataset of BA scale-free model\n"
+	"params: -o<outputfile> -log<logfile> -n <the number of vertex> -m <the number of edge>\n"
 	"Test:\n"
 	"do a test!!!!"
 	"params: -i <input file> -log <log file>";
@@ -822,6 +825,44 @@ void doSplitBigFile(string& inputfile, string& outputdir, string& logfile, int r
 	cout<<"do Spliting Big File Over"<<endl;
 }
 
+void doGenSynData(string outputfile, string logfile, int n, int m)
+{
+	if(m>n*(n-1))
+	{
+		cout<<"Err param: too many m "<<endl;
+		return;
+	}
+
+	int n0 = (int)(n-sqrt(n*n-4.0f*m))/2.0f;
+	int sum_d = 0;
+	Graph g;
+	//init
+	int i = 0;
+	for(i=0; i<n0; i++)
+	{
+		g.InsertVertex(i);
+	}
+	g.InsertVertex(i);//n0
+	for(int j=0; j<n0; j++)
+	{
+		EDGE e = {j, i};
+		g.InsertEdge(e);
+		sum_d += 2;
+	}
+	
+	//generate
+	int* v_cands = new int[n0];
+	for(; i<n; i++)
+	{
+		for(int j=0; j<n0; j++)
+		{
+			int r = rand(1, sum_d);
+			g.GetAdjTableRef()->_vex_table
+		}
+	}
+
+}
+
 void doTest(string inputfile, string logfile)
 {
 	ifstream ifs("D:\\workspace\\data\\test\\20060293.edges");
@@ -1166,6 +1207,26 @@ bool ParseCommand(map<string, string> &command_params)
 		{
 			int reader_count = stoi(reader_count_str);
 			doSplitBigFile(inputfile, outputdir, logfile, reader_count);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	if(cmd == "gensyndata")
+	{
+		//inputfile, outputfile
+		string outputfile, logfile, m_str, n_str;
+		if(GetParam(command_params, string("-o"), outputfile) &&
+			GetParam(command_params, string("-log"), logfile)&&
+			GetParam(command_params, string("-n"), n_str)&&
+			GetParam(command_params, string("-m"), m_str))
+		{
+			int n = stoi(n_str);
+			int m = stoi(m_str);
+			doGenSynData(outputfile, logfile, n, m);
 			return true;
 		}
 		else
