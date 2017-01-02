@@ -560,7 +560,7 @@ with Intel i7-3770k cpu at 3.5GHz, and 32GB of main memory.
 %\multirow{2}{*}{dataset} & \multirow{2}{*}{vertices} & \multirow{2}{*}{edges} &  \multicolumn{3}{c}{degree} & \multirow{2}{*}{comment} \\
 %\cline{4-6}
 %& & & max & min & deviation \\
-DataSet                 & Vertices  & Edges   & Mean    & Var   & Description\\
+DataSet                 & Vertices  & Edges   &Mean of degree    &Var of degree   & Description\\
 \hline
 com-dblp.all.cmty       & 17578     & 12073   &1.52     &4      & DBLP\\
 as-733                  & 7587      & 23240   &1.43     &1.437  & 733 daily instances\\
@@ -582,7 +582,7 @@ com-youtube-all-cmty    & 1069507   & 1895064 &12.1     &1391   & Youtube\\
 We evaluate our algorithms by measuring two quantities from the resulting partitions.
 In particular, for a partition we use the measures of the fraction of edges cut $\varsigma$
 and the normalized maximum load $\tau$ \cite{Charalampos:fennel}, defined as
-$\varsigma = \frac{\# edges\ cut}{m}$, and $\tau = \frac{\# vertices\ of\ maximum\ partition}{n}$.
+$\varsigma = \frac{\# edges\ cut}{m}$, and $\tau = \frac{\# vertices\ of\ maximum\ partition}{\frac{n}{k}}$.
 
 As our competitors we use state-of-the-art heuristics.
 Specifically, in our evaluation we consider the following heuristics from \cite{Stanton:streampartition} and \cite{Charalampos:fennel}
