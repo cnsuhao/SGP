@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>-cmd graphnorm -i D:\workspace\data\as-733\*.*  -o D:\workspace\data\as-733.graph -log D:\workspace\out\as-733.log -recode 0 -sep 9 -maxcomments 10 -readercount 700 -maxdegree 1000</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-cmd gensyndata  -o D:\sglout\test.graph -log D:\sglout\test.log -n 1000  -m 10000 -n0 100 -m0 10</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>
