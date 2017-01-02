@@ -46,7 +46,7 @@ string usage =
 	"params: -i <inputfile> -o <outputdir> -log <log file>  -readercount <reader thread count>\n"
 	"GenSynData:\n"
 	"Generate the synthetic dataset of BA scale-free model\n"
-	"params: -o<outputfile> -log<logfile> -n <the number of vertex> -m <the number of edge>\n"
+	"params: -o<outputfile> -log<logfile> -n <the number of vertex> -m <the number of edge> -n0 <init number of vex> -m0 <link nodes>\n"
 	"Test:\n"
 	"do a test!!!!"
 	"params: -i <input file> -log <log file>";
@@ -825,42 +825,108 @@ void doSplitBigFile(string& inputfile, string& outputdir, string& logfile, int r
 	cout<<"do Spliting Big File Over"<<endl;
 }
 
-void doGenSynData(string outputfile, string logfile, int n, int m)
+void doGenSynData(string outputfile, string logfile, int n, int m, int n0, int m0)
 {
+	TimeTicket::reset();
+	Log::CreateLog(logfile);
+	stringstream str;
+	str<<" Generate Syn Data ... \n"<<"n: "<<n<<"\n m: "<<m<<"\n n0: "<<n0<<"\n m0: "<<m0<<endl;
+	Log::log(str.str());
+
 	if(m>n*(n-1))
 	{
 		cout<<"Err param: too many m "<<endl;
 		return;
 	}
+	if(m0>n0)
+	{
+		cout<<"Err param: too many m0 "<<endl;
+		return;
 
-	int n0 = (int)(n-sqrt(n*n-4.0f*m))/2.0f;
-	int sum_d = 0;
+	}
+
+	int total_d = 0;
+	int* d_sum = new int[n];
+	int* v_cands = new int[m0];
 	Graph g;
-	//init
+	//init - build a line
 	int i = 0;
-	for(i=0; i<n0; i++)
+	g.InsertVertex(i);
+	d_sum[0]=1;
+	for(i=1; i<n0; i++)
 	{
 		g.InsertVertex(i);
-	}
-	g.InsertVertex(i);//n0
-	for(int j=0; j<n0; j++)
-	{
-		EDGE e = {j, i};
+		EDGE e = {i-1, i};
 		g.InsertEdge(e);
-		sum_d += 2;
+		total_d += 2;
+		d_sum[i] = d_sum[i-1]+2;
 	}
+	d_sum[n0-1] --;//the last degree is 1
 	
-	//generate
-	int* v_cands = new int[n0];
+	//generate begin
 	for(; i<n; i++)
 	{
-		for(int j=0; j<n0; j++)
+		g.InsertVertex(i);
+
+		d_sum[i] = d_sum[i-1];
+
+		int j=0;
+		while(j<m0)
 		{
-			int r = rand(1, sum_d);
-			g.GetAdjTableRef()->_vex_table
+			int r = rand(1, total_d);
+			int v = -1;
+
+			//binary search the connected vertex
+			int low = 0, high=i;
+			int mid = (low+high)/2;
+			while(low<=high)
+			{
+				if(r<d_sum[mid]){
+					high = mid-1;
+				}
+				else if(r>d_sum[mid]){
+					low = mid+1;
+				}
+				else{//r == d_sum[mid]
+					v = mid;
+					break;
+				}
+				mid = (low+high)/2;
+			}
+			if(high<low){
+				v = high+1;
+			}
+			//search end
+
+			if(!g.isConnect(v, i)){
+				EDGE e = {v, i};
+				g.InsertEdge(e);
+
+				d_sum[i]++;
+				for(int j1 = v; j1<=i; j1++){//update sum array from v to the end i
+					d_sum[j1]++;
+				}
+				//add j
+				j++;
+				total_d +=2;
+			}
 		}
 	}
+	//generate end
 
+	Log::log("\n Generate elaplse time: ");
+	Log::log(TimeTicket::check());
+	Log::log(" sec\n");
+
+	Log::log(" writing graph into"+outputfile+" by BFS ... \n");
+	g.WriteGraphToFileByBFS(outputfile);
+	Log::log(" writing graph finished! elapse time: ");
+	Log::log(TimeTicket::total_elapse());
+	Log::log(" sec\n");
+	g.doGraphStatistic();
+
+	delete[] d_sum;
+	delete[] v_cands;
 }
 
 void doTest(string inputfile, string logfile)
@@ -1218,15 +1284,20 @@ bool ParseCommand(map<string, string> &command_params)
 	if(cmd == "gensyndata")
 	{
 		//inputfile, outputfile
-		string outputfile, logfile, m_str, n_str;
+		string outputfile, logfile, m_str, n_str, m0_str, n0_str;
 		if(GetParam(command_params, string("-o"), outputfile) &&
 			GetParam(command_params, string("-log"), logfile)&&
 			GetParam(command_params, string("-n"), n_str)&&
-			GetParam(command_params, string("-m"), m_str))
+			GetParam(command_params, string("-m"), m_str)&&
+			GetParam(command_params, string("-n0"), n0_str)&&
+			GetParam(command_params, string("-m0"), m0_str))
 		{
 			int n = stoi(n_str);
 			int m = stoi(m_str);
-			doGenSynData(outputfile, logfile, n, m);
+			int n0 = stoi(n0_str);
+			int m0 = stoi(m0_str);
+
+			doGenSynData(outputfile, logfile, n, m, n0, m0);
 			return true;
 		}
 		else
