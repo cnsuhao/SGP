@@ -19,13 +19,13 @@ string usage =
 	"sgp -CMD [DFS|BFS|RAND|KL|SGPKL|SGPStreamKL|StreamPartition|GraphNorm|GenSynData|Test] ...\n"
 	"DFS:\n"
 	"convert edges order by dfs.\n"
-	"params: -i <inputfile> -o <outputfile> -log <log file>\n"
+	"params: -i <input dir\\*.*> -o <outputfile> -log <log file>\n"
 	"BFS:\n"
 	"convert edges order by bfs.\n"
-	"params: -i <inputfile> -o <outputfile> -log <log file>\n"
+	"params: -i <input dir\\*.*> -o <outputfile> -log <log file>\n"
 	"RAND:\n"
 	"convert edges order by random.\n"
-	"params: -i <inputfile> -o <outputfile> -log <log file>\n"
+	"params: -i <input dir\\*.*> -o <outputfile> -log <log file>\n"
 	"KL:\n"
 	"partitioning a graph by kl algorithm in memory.\n"
 	"params: -i <inputfile> -o <outputdir> -k <clusters num> -log <log file>\n"
@@ -846,6 +846,7 @@ void doGenSynData(string outputfile, string logfile, int n, int m, int n0, int m
 	}
 
 	int total_d = 0;
+	int e_num = 0;
 	int* d_sum = new int[n];
 	int* v_cands = new int[m0];
 	Graph g;
@@ -862,9 +863,10 @@ void doGenSynData(string outputfile, string logfile, int n, int m, int n0, int m
 		d_sum[i] = d_sum[i-1]+2;
 	}
 	d_sum[n0-1] --;//the last degree is 1
-	
+	e_num += n0-1;
+
 	//generate begin
-	for(; i<n; i++)
+	for(; i<n&&e_num<=m; i++)
 	{
 		g.InsertVertex(i);
 
@@ -909,6 +911,7 @@ void doGenSynData(string outputfile, string logfile, int n, int m, int n0, int m
 				//add j
 				j++;
 				total_d +=2;
+				e_num++;
 			}
 		}
 	}
