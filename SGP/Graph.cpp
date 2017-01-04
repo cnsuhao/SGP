@@ -14,7 +14,7 @@ EdgeID MakeEdgeID(VERTEX u, VERTEX v)
 EDGE GetEdgeofID(EdgeID eid)
 {
 	VERTEX _min_vex = (VERTEX)((eid&0xFFFFFFFF00000000)>> 32);
-	VERTEX _max_vex = (VERTEX)(eid & 0x00000000FFFFFFFF);
+	VERTEX _max_vex = (VERTEX)(eid &0x00000000FFFFFFFF);
 	EDGE e = {_min_vex,  _max_vex};
 	return e;
 }
