@@ -934,6 +934,7 @@ void doGenSynData(string outputfile, string logfile, int n, int m, int n0, int m
 
 void doTest(string inputfile, string logfile)
 {
+	/*
 	ifstream ifs("D:\\workspace\\data\\test\\20060293.edges");
 	string buf;
 	int c=0;
@@ -944,6 +945,7 @@ void doTest(string inputfile, string logfile)
 	}
 	cout<<"total lines: "<<c<<endl;
 	ifs.close();
+	*/
 /*
 	ofstream ofs(inputfile, ios::out|ios::binary|ios::trunc);
 	char c = 'a';
@@ -1015,6 +1017,78 @@ void doTest(string inputfile, string logfile)
 	cout<<"found 10000"<<endl;
 	}
 	*/
+
+	/**check self-loop edge**/
+	/*
+	Log::CreateLog(logfile);
+	Log::logln("TEST : Check Self-loop Edges");
+	stringstream log_str;
+	log_str<<"Loading Graph..."<<endl;
+	Log::log(log_str.str());
+
+	Graph graph;
+	graph.BuildGraphFromFile(inputfile);
+	int vex_nums = graph.GetVertexNumber();
+	log_str.str("");
+	log_str<<"Loading Graph...End \n Total Vertex :"<<vex_nums<<endl;
+	Log::log(log_str.str());
+
+	log_str.str("");
+	log_str<<"Check Self-loop edges..."<<endl;
+	Log::log(log_str.str());
+
+	for(int pos=0; pos<vex_nums; pos++)
+	{
+		EdgeInfoArray* edges = graph.GetAdjEdgeListofPos(pos);
+		if(edges == NULL)
+		{
+			log_str.str("");
+			log_str<<"Err: edges at pos : "<<pos<<endl;
+			Log::log(log_str.str());
+			return;
+		}
+		for(EdgeInfoArray::iterator iter = edges->begin(); iter!=edges->end(); iter++)
+		{
+			Log::log(".");
+			if(pos == iter->_adj_vex_pos)
+			{
+				log_str.str("");
+				log_str<<"\n Err: Self-loop edges : <"<<pos<<":"<<iter->_adj_vex_pos<<">"<<endl;
+				Log::log(log_str.str());
+
+			}
+		}
+	}
+
+	log_str.str("");
+	log_str<<"Check Self-loop edges...Finish"<<endl;
+	Log::log(log_str.str());
+	*/
+	/**check self-loop edge**/
+	std::ifstream is(inputfile, ios::in|ios::binary);
+	Log::CreateLog(logfile);
+	Log::logln("TEST : Check Self-loop Edges");
+	stringstream log_str;
+	log_str<<"Loading Graph..."<<endl;
+	int i=0;
+	while(!is.eof())
+	{
+		VERTEX u,v;
+		is.read((char*)&u, sizeof(VERTEX));
+		is.read((char*)&v, sizeof(VERTEX));
+		if(u == v)
+		{
+			log_str.str("");
+			log_str<<"\n Err: Self-loop edges : <"<<u<<":"<<v<<">"<<endl;
+			Log::log(log_str.str());
+			i++;
+
+		}
+	}
+
+	log_str.str("");
+	log_str<<"Check Self-loop edges...Finish \n Total Self-loop Edges: "<<i<<endl;
+	Log::log(log_str.str());
 }
 
 bool GetParam(map<string, string>& command_params, string& cmd, string& param)

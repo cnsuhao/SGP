@@ -20,8 +20,20 @@
 -cmd graphnorm -i D:\workspace\data\web-Stanford\*.*  -o D:\workspace\data\web-Stanford.graph -log D:\workspace\out\web-Stanford.log -recode 0 -sep 9 -maxcomments 10 -readercount 1024 -maxdegree 1000
 -cmd graphnorm -i D:\workspace\data\test\*.*  -o D:\workspace\data\test.graph -log D:\workspace\out\test.log -recode 0 -sep 32 -maxcomments 10 -readercount 2 -maxdegree 1000
 -cmd graphnorm -i D:\workspace\data\as-733\*.*  -o D:\workspace\data\as-733.graph -log D:\workspace\out\as-733.log -recode 0 -sep 9 -maxcomments 10 -readercount 700 -maxdegree 1000
-
 -cmd splitbigfile -i D:\workspace\data\test\20060293.edges  -o D:\workspace\data\293 -log D:\workspace\out\293.log -readercount 2 
 -cmd splitbigfile -i D:\workspace\data\web-Stanford\web-Stanford.txt  -o D:\workspace\data\web-Stanford\web-Stanford -log D:\workspace\out\web-Stanford.log -readercount 1024 
+================================
+-cmd SGPStreamKL -i D:\workspace\data\facebook_dfs.graph -o D:\workspace\out\facebook -k 4 -m dfs -log D:\workspace\out\facebook\log.log -aw 50 -ew 8500 -sm dbs -maxd 1000  -ec 25500 
 
+-cmd Test -i D:\workspace\out\syn_v2k_e80k_bfs.graph -log D:\workspace\out\facebook\test.log 
+================================
+-cmd GenSynData -o D:\workspace\out\syn_v2k_e80k_bfs.graph -log D:\workspace\out\syn_v2k_e80k_bfs.log -n 2000 -m 80000 -n0 100 -m0 40
+-cmd GenSynData -o D:\workspace\out\syn_v3k_e80k_bfs.graph -log D:\workspace\out\syn_v3k_e80k_bfs.log -n 3000 -m 80000 -n0 100 -m0 26
+-cmd GenSynData -o D:\workspace\out\syn_v4k_e80k_bfs.graph -log D:\workspace\out\syn_v4k_e80k_bfs.log -n 4000 -m 80000 -n0 100 -m0 20
+-cmd GenSynData -o D:\workspace\out\syn_v5k_e80k_bfs.graph -log D:\workspace\out\syn_v5k_e80k_bfs.log -n 5000 -m 80000 -n0 100 -m0 16
+-cmd GenSynData -o D:\workspace\out\syn_v5k_e100k_bfs.graph -log D:\workspace\out\syn_v5k_e100k_bfs.log -n 5000 -m 100000 -n0 100 -m0 20
+-cmd GenSynData -o D:\workspace\out\syn_v5k_e120k_bfs.graph -log D:\workspace\out\syn_v5k_e120k_bfs.log -n 5000 -m 120000 -n0 100 -m0 24
+-cmd GenSynData -o D:\workspace\out\syn_v5k_e140k_bfs.graph -log D:\workspace\out\syn_v5k_e140k_bfs.log -n 5000 -m 140000 -n0 100 -m0 28
+-cmd GenSynData -o D:\workspace\out\syn_v5k_e160k_bfs.graph -log D:\workspace\out\syn_v5k_e160k_bfs.log -n 5000 -m 160000 -n0 100 -m0 32
 
+-cmd DFS -i D:\workspace\out\in\*.* -o D:\workspace\out\syn_v2k_e80k_dfs.graph -log D:\workspace\out\syn_v2k_e80k_dfs.log

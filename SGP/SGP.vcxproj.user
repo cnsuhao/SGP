@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>-cmd SGPStreamKL -i D:\workspace\data\facebook_dfs.graph -o D:\workspace\out\facebook -k 4 -m dfs -log D:\workspace\out\facebook\log.log -aw 50 -ew 8500 -sm dbs -maxd 1000  -ec 25500 </LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-cmd DFS -i D:\workspace\out\in\*.* -o D:\workspace\out\syn_v2k_e80k_dfs.graph -log D:\workspace\out\syn_v2k_e80k_dfs.log</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>
