@@ -351,7 +351,7 @@ void Graph::BuildGraphFromFile(string& file)
 
 void Graph::WriteGraphToFileByBFS(string& file)
 {
-	ofstream os(file);
+	ofstream os(file, ios::out|ios::trunc|ios::binary);
 	queue<int> bfs_queue;
 	unordered_set<EdgeID> edges_visited;
 
@@ -411,7 +411,7 @@ void Graph::WriteGraphToFileByBFS(string& file)
 
 void Graph::WriteGraphToFileByDFS(string& file)
 {
-	ofstream os(file);
+	ofstream os(file, ios::out|ios::trunc|ios::binary);
 	stack<int> dfs_stack;
 	unordered_set<EdgeID> edges_visited;
 
@@ -484,7 +484,7 @@ void Graph::WriteGraphToFileByRand(string& in, string& out)
 	int total_edges = 0;
 	int exclusive_edges=0;
 
-	ofstream ofs(out);
+	ofstream ofs(out, ios::out|ios::trunc|ios::binary);
 
 	string path = in.substr(0, in.find_last_of('\\'));
 	_finddata_t file;
