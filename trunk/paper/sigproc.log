@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2015.11.20)  5 JAN 2017 11:06
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2015.11.20)  9 JAN 2017 09:39
 entering extended mode
 **D:/个人工作/研究/big*graph*partition/SGP/trunk/paper/sigproc.tex
 ("D:/个人工作/研究/big graph partition/SGP/trunk/paper/sigproc.tex"
@@ -315,9 +315,9 @@ ndicated
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [2]
-Overfull \hbox (9.5433pt too wide) in paragraph at lines 71--72
-\T1/aer/m/n/9 ti-tion-ing al-go-rithm-s [9, 13, 5] are pro-posed to coarsen(con
-tract)
+Overfull \hbox (14.16023pt too wide) in paragraph at lines 71--72
+\T1/aer/m/n/9 ti-tion-ing al-go-rithm-s [10, 14, 6] are pro-posed to coarsen(co
+ntract)
  []
 
 [3]
@@ -360,19 +360,13 @@ cif-
  []
 
 
-Overfull \hbox (6.67467pt too wide) in paragraph at lines 548--554
-\T1/aer/m/n/9 formed on a s-in-gle ma-chine, with In-tel i7-3770k cpu at 3.5GHz
-,
- []
-
-
-Overfull \hbox (8.74551pt too wide) in paragraph at lines 587--589
+Overfull \hbox (8.74551pt too wide) in paragraph at lines 593--595
 []\T1/aer/m/n/9 As our com-peti-tors we use state-of-the-art heuris-tic-s. Spec
 if-
  []
 
 
-Overfull \hbox (3.46126pt too wide) in paragraph at lines 594--595
+Overfull \hbox (3.46126pt too wide) in paragraph at lines 600--601
 \T1/aer/m/n/9 place $\OML/cmm/m/it/9 v$ \T1/aer/m/n/9 to $\OML/cmm/m/it/9 P[]$ 
 \T1/aer/m/n/9 that max-i-mizes $\OMS/cmsy/m/n/9 j\OML/cmm/m/it/9 N\OT1/cmr/m/n/
 9 (\OML/cmm/m/it/9 v\OT1/cmr/m/n/9 ) [] \OML/cmm/m/it/9 P[]\OMS/cmsy/m/n/9 j  
@@ -381,26 +375,24 @@ y/m/n/9 j\OML/cmm/m/it/9 P[]\OMS/cmsy/m/n/9 j  $
  []
 
 
-Overfull \hbox (23.92369pt too wide) in paragraph at lines 612--633
+Overfull \hbox (23.92369pt too wide) in paragraph at lines 623--644
  [][] 
  []
 
 
-Overfull \hbox (10.03694pt too wide) in paragraph at lines 638--659
+Overfull \hbox (10.03694pt too wide) in paragraph at lines 649--670
  [][] 
  []
 
-("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sigproc.bbl")
-[9] [10] [11
-
-] [12]
+("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sigproc.bbl"
+[9] [10]) [11] [12]
 ("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sigproc.aux") ) 
 Here is how much of TeX's memory you used:
- 3298 strings out of 495354
- 39087 string characters out of 3183858
- 143272 words of memory out of 3000000
- 6396 multiletter control sequences out of 15000+200000
- 51329 words of font info for 70 fonts, out of 3000000 for 9000
+ 3303 strings out of 495354
+ 39129 string characters out of 3183858
+ 146276 words of memory out of 3000000
+ 6398 multiletter control sequences out of 15000+200000
+ 53482 words of font info for 73 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
  41i,11n,35p,1809b,734s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:
@@ -418,7 +410,7 @@ blic/amsfonts/cm/cmsy6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9
 onts/type1/urw/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/uhv
 r8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/
 type1/urw/times/utmr8a.pfb>
-Output written on sigproc.pdf (12 pages, 311858 bytes).
+Output written on sigproc.pdf (12 pages, 312862 bytes).
 PDF statistics:
  114 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
