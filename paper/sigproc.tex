@@ -545,12 +545,14 @@ In this section we present our experimental findings. Specifically, Section \ref
 Sections \ref{ch_experiment_result} presents our findings for synthetic and real-world graphs respectively.
 \subsection{Experimental Setup}\label{ch_experiment_setup}
 
-The real-world graphs used in our experiments are shown in Table 2.
+The real-world graphs and synthetic graphs used in our experiments are shown in Table 2.
 Multiple edges, self loops, signs and weights were removed.
-All graphs are publicly available on the Web(http://snap.stanford.edu/snap/).
-All algorithms have been implemented in C++, and all experiments were performed on a single machine,
-with Intel i7-3770k cpu at 3.5GHz, and 32GB of main memory.
-\textcolor{red}{In our synthetic experiments, we use two random graph models}
+All real-world graphs are publicly available on the Web\footnote{http://snap.stanford.edu/snap/}.
+In our synthetic experiments, The Barabasi-Albert model\cite{BA:randomgraph} is used to generate the synthetic graph of power-law degree distribution.
+Numerical simulations and analytic results indicate that this network evolves into a scale-invariant state with the probability that a node has $d$ edges following a power law with an exponent 3.
+All algorithms have been implemented in C++, and all experiments were performed on a single machine with Intel i7-3770k cpu at 3.5GHz, and 32GB of main memory.
+To simulate the limitation of main memory, we implement the virtual memory system to swap the item of adjacent table. 
+The multi-thread program is implemented to simulate the distributed loading with \textit{SGLs}. The \textit{SGLd} and \textit{SGLs} adopted the KL algorithm to partition the sample graph in all experiments.
 
 \begin{table*}[!hpp]
 \centering
@@ -560,7 +562,7 @@ with Intel i7-3770k cpu at 3.5GHz, and 32GB of main memory.
 %\multirow{2}{*}{dataset} & \multirow{2}{*}{vertices} & \multirow{2}{*}{edges} &  \multicolumn{3}{c}{degree} & \multirow{2}{*}{comment} \\
 %\cline{4-6}
 %& & & max & min & deviation \\
-DataSet                 & Vertices  & Edges   &Mean of degree    &Var of degree   & Description\\
+DataSet                 & Vertices  & Edges   &Mean    &Var     & Description\\
 \hline
 com-dblp.all.cmty       & 17578     & 12073   &1.52     &4      & DBLP\\
 as-733                  & 7587      & 23240   &1.43     &1.437  & 733 daily instances\\
@@ -575,14 +577,18 @@ soc-sign-slashdot090216 & 81866     & 490047  &12.03    &1372   & Slashdot Zoo\\
 soc-sign-slashdot090221 & 82137     & 492351  &12.07    &1380   & Slashdot Zoo\\
 com-youtube-all-cmty    & 1069507   & 1895064 &12.1     &1391   & Youtube\\
 \hline
+syn-v2k-e80k            & 2000      & 0       &0     &0   & Synthetic\\
+syn-v3k-e80k            & 3000      & 0       &0     &0   & Synthetic\\
+syn-v4k-e80k            & 4000      & 0       &0     &0   & Synthetic\\
+syn-v5k-e80k            & 5000      & 0       &0     &0   & Synthetic\\
+syn-v6k-e80k            & 6000      & 0       &0     &0   & Synthetic\\
+syn-v5k-e100k           & 5000      & 0       &0     &0   & Synthetic\\
+syn-v5k-e120k           & 5000      & 0       &0     &0   & Synthetic\\
+syn-v5k-e140k           & 5000      & 0       &0     &0   & Synthetic\\
+syn-v5k-e160k           & 5000      & 0       &0     &0   & Synthetic\\
+\hline
 \end{tabular}
 \end{table*}
-
-
-We evaluate our algorithms by measuring two quantities from the resulting partitions.
-In particular, for a partition we use the measures of the fraction of edges cut $\varsigma$
-and the normalized maximum load $\tau$ \cite{Charalampos:fennel}, defined as
-$\varsigma = \frac{\# edges\ cut}{m}$, and $\tau = \frac{\# vertices\ of\ maximum\ partition}{\frac{n}{k}}$.
 
 As our competitors we use state-of-the-art heuristics.
 Specifically, in our evaluation we consider the following heuristics from \cite{Stanton:streampartition} and \cite{Charalampos:fennel}
@@ -598,13 +604,18 @@ Specifically, in our evaluation we consider the following heuristics from \cite{
   \item Non-Neighbors (NN): place $v$ to $P_i$ that minimizes $|P_i\\N(v)|$
   \item FENNEL(FNL): place $v$ to $P_i$ such that $\delta g(v, P_i)\geq \delta g(v, P_j)$.
 \end{itemize}
-$v$ is the newly arrived vertex. $N(v)$ denotes the set of neighbors of vertex $v$. For FENNEL, The setting of the parameters we use throughout our experiments is $\gamma=1.5$, $ \alpha=\sqrt{k}\frac{m}{n^{1.5}}$, and $\nu = 1.1$ as mentioned in \cite{Charalampos:fennel}.
+$v$ is the newly arrived vertex. $N(v)$ denotes the set of neighbors of vertex $v$. For FENNEL, the setting of the parameters we use throughout our experiments is $\gamma=1.5$, $ \alpha=\sqrt{k}\frac{m}{n^{1.5}}$, and $\nu = 1.1$ as mentioned in \cite{Charalampos:fennel}.
 
-about setup of memory and disk
+We evaluate our algorithms by measuring two quantities from the resulting partitions.
+In particular, for a partition we use the measures of the fraction of edges cut $\varsigma$
+and the normalized maximum load $\tau$ \cite{Charalampos:fennel}, defined as
+$\varsigma = \frac{\# edges\ cut}{m}$, and $\tau = \frac{\# vertices\ of\ maximum\ partition}{\frac{n}{k}}$.
 
 
 
 \subsection{Experimental Results}\label{ch_experiment_result}
+
+
 
 \begin{table*}[!hpp]
 \centering

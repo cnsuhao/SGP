@@ -5,6 +5,11 @@ C.~C. Aggarwal, editor.
 \newblock {\em Social Network Data Analytics}.
 \newblock Springer, 2011.
 
+\bibitem{BA:randomgraph}
+A.-L. Barabasi and R.~Albert.
+\newblock Emergence of scaling in random networks.
+\newblock {\em Science}, 286:509--512, 1999.
+
 \bibitem{Battiti:minmaxgreedy}
 R.~Battiti and A.~A. Bertossi.
 \newblock Greedy, prohibition, and reactive heuristics for graph partitioning.
