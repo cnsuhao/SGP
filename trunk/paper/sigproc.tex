@@ -551,7 +551,7 @@ All real-world graphs are publicly available on the Web\footnote{http://snap.sta
 In our synthetic experiments, The Barabasi-Albert model\cite{BA:randomgraph} is used to generate the synthetic graph of power-law degree distribution.
 Numerical simulations and analytic results indicate that this network evolves into a scale-invariant state with the probability that a node has $d$ edges following a power law with an exponent 3.
 All algorithms have been implemented in C++, and all experiments were performed on a single machine with Intel i7-3770k cpu at 3.5GHz, and 32GB of main memory.
-To simulate the limitation of main memory, we implement the virtual memory system to swap the item of adjacent table. 
+To simulate the limitation of main memory, we implement the virtual memory system to swap the item of adjacent table.
 The multi-thread program is implemented to simulate the distributed loading with \textit{SGLs}. The \textit{SGLd} and \textit{SGLs} adopted the KL algorithm to partition the sample graph in all experiments.
 
 \begin{table*}[!hpp]
@@ -565,6 +565,7 @@ The multi-thread program is implemented to simulate the distributed loading with
 DataSet                 & Vertices  & Edges   &Mean    &Var     & Description\\
 \hline
 com-dblp.all.cmty       & 17578     & 12073   &1.52     &4      & DBLP\\
+com-youtube-all-cmty    & 17776     & 13505   &12.1     &1391   & Youtube\\
 as-733                  & 7587      & 23240   &1.43     &1.437  & 733 daily instances\\
 higgs-reply-network     & 38918     & 29612   &6.13     &686    & Twitter\\
 facebook                & 4035      & 85003   &43.01    &2362   & Facebook \\
@@ -575,17 +576,15 @@ ca-astroph              & 18772     & 198035  &2.35     &200    & Arxiv Astro Ph
 soc-sign-slashdot081106 & 77347     & 461004  &10.08    &1206   & Slashdot Zoo \\
 soc-sign-slashdot090216 & 81866     & 490047  &12.03    &1372   & Slashdot Zoo\\
 soc-sign-slashdot090221 & 82137     & 492351  &12.07    &1380   & Slashdot Zoo\\
-com-youtube-all-cmty    & 1069507   & 1895064 &12.1     &1391   & Youtube\\
 \hline
-syn-v2k-e80k            & 2000      & 0       &0     &0   & Synthetic\\
-syn-v3k-e80k            & 3000      & 0       &0     &0   & Synthetic\\
-syn-v4k-e80k            & 4000      & 0       &0     &0   & Synthetic\\
-syn-v5k-e80k            & 5000      & 0       &0     &0   & Synthetic\\
-syn-v6k-e80k            & 6000      & 0       &0     &0   & Synthetic\\
-syn-v5k-e100k           & 5000      & 0       &0     &0   & Synthetic\\
-syn-v5k-e120k           & 5000      & 0       &0     &0   & Synthetic\\
-syn-v5k-e140k           & 5000      & 0       &0     &0   & Synthetic\\
-syn-v5k-e160k           & 5000      & 0       &0     &0   & Synthetic\\
+syn-v2k-e80k            & 2000      & 76099   &76.1  &2802   & Synthetic\\
+syn-v3k-e80k            & 3000      & 75499   &50.33 &1544   & Synthetic\\
+syn-v4k-e80k            & 4000      & 78099   &39.04 &1057   & Synthetic\\
+syn-v5k-e80k            & 5000      & 78499   &31.4  &755    & Synthetic\\
+syn-v5k-e100k           & 5000      & 98099   &39.23 &1145   & Synthetic\\
+syn-v5k-e120k           & 5000      & 117699  &47.08 &1612   & Synthetic\\
+syn-v5k-e140k           & 5000      & 137299  &54.92 &2143   & Synthetic\\
+syn-v5k-e160k           & 5000      & 156899  &62.76 &2742   & Synthetic\\
 \hline
 \end{tabular}
 \end{table*}
@@ -624,20 +623,20 @@ $\varsigma = \frac{\# edges\ cut}{m}$, and $\tau = \frac{\# vertices\ of\ maximu
 \hline
 Dataset                     &Hash       &B          &DG         &LDG        &EDG        &Tri        &LTri       &ETri      &NN         &FNL        &SGLd   &SGLs\\
 \hline
-com-youtube-all-cmty		&4.512    	&3.923	    &506		&552		&533		&512		&534		&518		&520		&518		&397		&\\
-com-dblp.all.cmty			&4.418	    &4.598	    &518		&502		&453		&439		&439		&440		&435		&435		&409		&\\
-as-733						&8.82		&8.739	    &125		&125		&125		&139		&137		&138		&125		&123		&112		&\\
-facebook					&27			&27			&209		&207		&204		&582		&603		&600		&222		&227		&74		    &\\
-higgs-reply-network			&30			&31			&2324		&2290		&2550		&2252		&2438		&2370		&2272		&2361		&1140		&0\\
-ca-hepph					&62			&63			&544		&542		&542		&1543		&1310		&1290		&501		&491		&251		&0\\
-ca-astroph					&70			&70			&1143		&1168		&1209		&1558		&1472		&1528		&1140		&1145		&558		&0\\
-higgs-mention-network		&233		&232		&16507	    &16715	    &16716	    &16704	    &16811	    &16343	    &16541	    &16581	    &4520		&0\\
-email-enron					&421		&417		&3179		&3104		&3110		&3934		&3884		&3988		&3031		&3067		&832		&\\
-soc-sign-slashdot081106		&1420		&1426		&9023		&10348	    &10395	    &13252	    &13377	    &13255	    &10841	    &10520	    &2465		&\\
-soc-sign-slashdot090216		&1522		&1616		&12053	    &12364	    &13016	    &13471	    &13811	    &13719	    &12319	    &12636	    &2420		&\\
-soc-sign-slashdot090221		&1347		&1308		&11069	    &11187	    &11093	    &12379	    &12573	    &11977	    &10923	    &10912	    &2484		&\\
+com-youtube-all-cmty		&4.512    	&3.923	    &506		&552		&533		&512		&534		&518		&520		&518		&397		&525\\
+com-dblp.all.cmty			&4.418	    &4.598	    &518		&502		&453		&439		&439		&440		&435		&435		&409		&441\\
+as-733						&8.82		&8.739	    &125		&125		&125		&139		&137		&138		&125		&123		&112		&238\\
+facebook					&27			&27			&209		&207		&204		&582		&603		&600		&222		&227		&74		    &915\\
+higgs-reply-network			&30			&31			&2324		&2290		&2550		&2252		&2438		&2370		&2272		&2361		&1140		&1230\\
+ca-hepph					&62			&63			&544		&542		&542		&1543		&1310		&1290		&501		&491		&251		&1682\\
+ca-astroph					&70			&70			&1143		&1168		&1209		&1558		&1472		&1528		&1140		&1145		&558		&6610\\
+higgs-mention-network		&233		&232		&16507	    &16715	    &16716	    &16704	    &16811	    &16343	    &16541	    &16581	    &4520		&7991\\
+email-enron					&421		&417		&3179		&3104		&3110		&3934		&3884		&3988		&3031		&3067		&832		&3878\\
+soc-sign-slashdot081106		&1420		&1426		&9023		&10348	    &10395	    &13252	    &13377	    &13255	    &10841	    &10520	    &2465		&25477\\
+soc-sign-slashdot090216		&1522		&1616		&12053	    &12364	    &13016	    &13471	    &13811	    &13719	    &12319	    &12636	    &2420		&28325\\
+soc-sign-slashdot090221		&1347		&1308		&11069	    &11187	    &11093	    &12379	    &12573	    &11977	    &10923	    &10912	    &2484		&27845\\
 \hline
-avg.                        &429.1	    &433.9   	&4766.7	    &4925.3	    &4995.5	    &5563.8	    &5615.8    	&5513.8    	&4905.8    	&4918	    &1305.2  	&0\\
+avg.                        &429.1	    &433.9   	&4766.7	    &4925.3	    &4995.5	    &5563.8	    &5615.8    	&5513.8    	&4905.8    	&4918	    &1305.2  	&8763.1\\
 
 \hline
 \end{tabular}
@@ -650,70 +649,146 @@ avg.                        &429.1	    &433.9   	&4766.7	    &4925.3	    &4995.5
 \hline
 Dataset                 &Hash       &B          &DG         &LDG        &EDG        &Tri        &LTri       &ETri      &NN         &FNL        &SGLd   &SGLs\\
 \hline
-com-youtube-all-cmty	&1.9		&1.7		&185		&180		&184		&185		&184		&187		&180		&183		&226		&\\
-com-dblp.all.cmty		&2.096		&1.783		&165		&166		&164		&171		&173		&170		&163		&163		&443		&\\
-as-733		            &2.994		&2.686		&47		    &47		    &47		    &53  		&52		    &51		    &46		    &47	       	&103		&\\
-facebook		        &8.148		&8.207		&103		&106		&102		&257		&243		&243		&103		&102		&77	    	&\\
-higgs-reply-network		&9.01		&8.463		&878		&877		&925		&933		&933		&903		&881		&897		&956		&\\
-ca-hepph		        &17		    &17  		&141		&141		&140		&502		&482		&472		&140		&141		&269		&\\
-ca-astroph		        &75		    &74	       	&318		&327		&326		&478		&453		&473		&333		&390		&852		&\\
-higgs-mention-network	&78		    &78		    &7232		&7257		&7244		&7280		&7421		&7488		&7267		&7447		&5307		&\\
-email-enron		        &112	    &115		&1183		&1180		&1173		&1408		&1406		&1402		&1127		&1135		&1018		&\\
-soc-sign-slashdot081106	&393		&390		&3920		&4166		&4180		&5142		&5085		&5107		&4116		&4122		&2676		&\\
-soc-sign-slashdot090216	&443		&449		&4930		&4318		&4315		&4760		&4684		&4680		&4428		&4584		&2678		&\\
-soc-sign-slashdot090221	&404		&406		&4491		&4662		&4572		&4796		&4773		&4746		&4592		&4537		&2999		&\\
+com-youtube-all-cmty	&1.9		&1.7		&185		&180		&184		&185		&184		&187		&180		&183		&226		&526\\
+com-dblp.all.cmty		&2.096		&1.783		&165		&166		&164		&171		&173		&170		&163		&163		&443		&368\\
+as-733		            &2.994		&2.686		&47		    &47		    &47		    &53  		&52		    &51		    &46		    &47	       	&103		&223\\
+facebook		        &8.148		&8.207		&103		&106		&102		&257		&243		&243		&103		&102		&77	    	&1380\\
+higgs-reply-network		&9.01		&8.463		&878		&877		&925		&933		&933		&903		&881		&897		&956		&1358\\
+ca-hepph		        &17		    &17  		&141		&141		&140		&502		&482		&472		&140		&141		&269		&2442\\
+ca-astroph		        &75		    &74	       	&318		&327		&326		&478		&453		&473		&333		&390		&852		&9914\\
+higgs-mention-network	&78		    &78		    &7232		&7257		&7244		&7280		&7421		&7488		&7267		&7447		&5307		&11546\\
+email-enron		        &112	    &115		&1183		&1180		&1173		&1408		&1406		&1402		&1127		&1135		&1018		&8539\\
+soc-sign-slashdot081106	&393		&390		&3920		&4166		&4180		&5142		&5085		&5107		&4116		&4122		&2676		&36988\\
+soc-sign-slashdot090216	&443		&449		&4930		&4318		&4315		&4760		&4684		&4680		&4428		&4584		&2678		&40814\\
+soc-sign-slashdot090221	&404		&406		&4491		&4662		&4572		&4796		&4773		&4746		&4592		&4537		&2999		&41899\\
 \hline
-avg.                    &128.8  	&129.3	    &1966.1     &1952.3	    &1947.7	    &2163.8	    &2157.4	    &2160.2	    &1948	    &1979	    &1467	    &0\\
+avg.                    &128.8  	&129.3	    &1966.1     &1952.3	    &1947.7	    &2163.8	    &2157.4	    &2160.2	    &1948	    &1979	    &1467	    &12999.8\\
 
 \hline
 \end{tabular}
 \end{table*}
 
-%\begin{table*}[!hpp]
-%\centering
-%\caption{Runtime with $\rho = m\times 80\%,\ k=4$(unit:sec)}
-%\begin{tabular}{ccccccccccccc}
-%\hline
-%Dataset                     &Hash       &B          &DG         &LDG        &EDG        &Tri        &LTri       &EDTri      &NN         &FNL        &SGLd   &SGLs\\
-%\hline
-%com-youtube-all-cmty		&1.975		&1.698		&103		&104		&104		&109		&108		&106		&100		&112		&214		&\\
-%com-dblp.all.cmty			&2.166		&1.854		&99 		&99		    &98		    &100		&99   		&99   		&95   		&94		    &226		&\\
-%as-733						&2.993		&2.667		&19	    	&20		    &19		    &26  		&25		    &24		    &19		    &20		    &94		    &\\
-%facebook					&8.187		&8.542		&55		    &58		    &55		    &215		&201		&198		&53		    &53	     	&110		&\\
-%higgs-reply-network			&8.323		&8.341		&480		&478		&476		&486		&488		&482		&476		&475		&915		&\\
-%ca-hepph		            &17	      	&17    		&56		    &57		    &57		    &393		&405		&401		&58		    &61		    &325  		&\\
-%ca-astroph		            &70		    &71		    &121		&122		&122		&259		&242		&245		&124		&123		&1418		&\\
-%higgs-mention-network		&77		    &77		    &3240		&3240		&3221		&3248		&3249		&3251		&3281		&3212		&8193		&\\
-%email-enron		            &112		&112		&62		    &55		    &55		    &311		&307		&307		&56		    &56	     	&1755		&\\
-%soc-sign-slashdot081106		&384		&370		&819		&812		&823		&1730		&1683		&1744		&835		&818		&4870		&\\
-%soc-sign-slashdot090216		&407		&409		&985		&985		&986		&1425		&1422		&1425		&981		&983		&5347		&\\
-%soc-sign-slashdot090221		&410		&411		&974		&972		&988		&1415		&1413		&1427		&958		&974		&5453		&\\
-%\hline
-%\end{tabular}
-%\end{table*}
+\begin{table*}[!hpp]
+\centering
+\caption{Runtime with $\rho = m\times 80\%,\ k=4$(unit:sec)}
+\begin{tabular}{ccccccccccccc}
+\hline
+Dataset                     &Hash       &B          &DG         &LDG        &EDG        &Tri        &LTri       &EDTri      &NN         &FNL        &SGLd   &SGLs\\
+\hline
+com-youtube-all-cmty		&1.975		&1.698		&103		&104		&104		&109		&108		&106		&100		&112		&214		&357\\
+com-dblp.all.cmty			&2.166		&1.854		&99 		&99		    &98		    &100		&99   		&99   		&95   		&94		    &226		&270\\
+as-733						&2.993		&2.667		&19	    	&20		    &19		    &26  		&25		    &24		    &19		    &20		    &94		    &126\\
+facebook					&8.187		&8.542		&55		    &58		    &55		    &215		&201		&198		&53		    &53	     	&110		&1000\\
+higgs-reply-network			&8.323		&8.341		&480		&478		&476		&486		&488		&482		&476		&475		&915		&1465\\
+ca-hepph		            &17	      	&17    		&56		    &57		    &57		    &393		&405		&401		&58		    &61		    &325  		&1988\\
+ca-astroph		            &70		    &71		    &121		&122		&122		&259		&242		&245		&124		&123		&1418		&8311\\
+higgs-mention-network		&77		    &77		    &3240		&3240		&3221		&3248		&3249		&3251		&3281		&3212		&8193		&14624\\
+email-enron		            &112		&112		&62		    &55		    &55		    &311		&307		&307		&56		    &56	     	&1755		&7550\\
+soc-sign-slashdot081106		&384		&370		&819		&812		&823		&1730		&1683		&1744		&835		&818		&4870		&32785\\
+soc-sign-slashdot090216		&407		&409		&985		&985		&986		&1425		&1422		&1425		&981		&983		&5347		&37836\\
+soc-sign-slashdot090221		&410		&411		&974		&972		&988		&1415		&1413		&1427		&958		&974		&5453		&38257\\
+\hline
+avg.                        &125.1	    &124.2   	&584.4	    &583.5  	&583.7     	&809.8	    &803.5	    &809.1	    &586.3	    &581.8	    &2410	    &12047.4\\
+\hline
+\end{tabular}
+\end{table*}
 
 \begin{table*}[!hpp]
 \centering
 \caption{$\varsigma$ with $k=4$}
-\begin{tabular}{ccccccccccccc}
+\begin{tabular}{ccccccccccc}
 \hline
-Dataset                 &Hash       &B          &DG         &LDG        &EDG        &Tri        &LTri       &ETri      &NN         &FNL        &SGLd   &SGLs\\
+Dataset                 &Hash       &B          &DG         &LDG        &EDG        &Tri        &LTri       &ETri      &NN         &FNL\\
 \hline
-com-youtube-all-cmty	&0.006		&0.007		&0.001		&0.002		&0.002		&0.005		&0.005		&0.005		&0.002		&0.001		&0.001		&0.001\\
-com-dblp.all.cmty		&0.749		&0.886		&0.048		&0.213		&0.219		&0.663		&0.666		&0.666		&0.186		&0.054		&0.117		&0.081\\
-as-733		            &0.665		&0.66		&0.029		&0.375		&0.385		&0.224		&0.386		&0.389		&0.408		&0.377		&0.203		&0\\
-facebook		        &0.751		&0.754		&0.023		&0.131		&0.266		&0.051		&0.148		&0.185		&0.305		&0.071		&0.047		&0.068\\
-higgs-reply-network		&0.742		&0.85		&0.048		&0.209		&0.231		&0.651		&0.654		&0.654		&0.211		&0.057		&0.043		&0\\
-ca-hepph		        &0.75		&0.763		&0.003		&0.168		&0.169		&0.107		&0.188		&0.201		&0.399		&0.125		&0.108		&0\\
-ca-astroph		        &0.969		&0.975		&0.003		&0.353		&0.373		&0.065		&0.344		&0.345		&0.415		&0.218		&0.154		&0\\
-higgs-mention-network	&0.717		&0.751		&0.098		&0.241		&0.287		&0.638		&0.636		&0.636		&0.275		&0.112		&0.101		&0\\
-email-enron		        &0.75		&0.768		&0.001		&0.268		&0.269		&0.084		&0.258		&0.26		&0.469		&0.177		&0.16		&0.223\\
-soc-sign-slashdot081106	&0.751		&0.754		&0.008		&0.359		&0.348		&0.26		&0.347		&0.33		&0.551		&0.248		&0.210		&0.265\\
-soc-sign-slashdot090216	&0.751		&0.754		&0.007		&0.406		&0.342		&0.667		&0.665		&0.665		&0.555		&0.271		&0.207		&0\\
-soc-sign-slashdot090221	&0.752		&0.754		&0.006		&0.406		&0.344		&0.667		&0.664		&0.664		&0.557		&0.271		&0.206		&0\\
+com-youtube-all-cmty	&0.006		&0.007		&0.001		&0.002		&0.002		&0.005		&0.005		&0.005		&0.002		&0.001		\\
+com-dblp.all.cmty		&0.749		&0.886		&0.048		&0.213		&0.219		&0.663		&0.666		&0.666		&0.186		&0.054		\\
+as-733		            &0.665		&0.66		&0.029		&0.375		&0.385		&0.224		&0.386		&0.389		&0.408		&0.377		\\
+facebook		        &0.751		&0.754		&0.023		&0.131		&0.266		&0.051		&0.148		&0.185		&0.305		&0.071		\\
+higgs-reply-network		&0.742		&0.85		&0.048		&0.209		&0.231		&0.651		&0.654		&0.654		&0.211		&0.057		\\
+ca-hepph		        &0.75		&0.763		&0.003		&0.168		&0.169		&0.107		&0.188		&0.201		&0.399		&0.125		\\
+ca-astroph		        &0.969		&0.975		&0.003		&0.353		&0.373		&0.065		&0.344		&0.345		&0.415		&0.218		\\
+higgs-mention-network	&0.717		&0.751		&0.098		&0.241		&0.287		&0.638		&0.636		&0.636		&0.275		&0.112		\\
+email-enron		        &0.75		&0.768		&0.001		&0.268		&0.269		&0.084		&0.258		&0.26		&0.469		&0.177		\\
+soc-sign-slashdot081106	&0.751		&0.754		&0.008		&0.359		&0.348		&0.26		&0.347		&0.33		&0.551		&0.248		\\
+soc-sign-slashdot090216	&0.751		&0.754		&0.007		&0.406		&0.342		&0.667		&0.665		&0.665		&0.555		&0.271		\\
+soc-sign-slashdot090221	&0.752		&0.754		&0.006		&0.406		&0.344		&0.667		&0.664		&0.664		&0.557		&0.271		\\
 \hline
-avg.                    &0.696      &0.723      &0.023	    &0.261   	&0.270	    &0.340	    &0.413	    &0.417	    &0.361	    &0.165	    &0.130	    &0.053\\
+avg.                    &0.696      &0.723      &0.023	    &0.261   	&0.270	    &0.340	    &0.413	    &0.417	    &0.361	    &0.165	    \\
+\hline
+\end{tabular}
+\end{table*}
 
+\begin{table*}[!hpp]
+\centering
+\caption{SGLd and SGLs - $\varsigma$ with $k=4$, $\rho = 0.3, 0.5, 0.8$}
+\begin{tabular}{ccccccc}
+\hline
+Dataset                     &SGLd-0.3       &SGLd-0.5       &SGLd-0.8       &SGLs-0.3       &SGLs-0.5       &SGLs-0.8\\
+\hline
+com-youtube-all-cmty	&0.003&0.001&0.001&0.003&0.002&0.001\\
+com-dblp.all.cmty       &0.344&0.218&0.117&0.3&0.175&0.081\\
+as-733                  &0.31&0.283&0.203&0.389&0.347&0.298\\
+facebook                &0.047&0.054&0.047&0.149&0.108&0.068\\
+higgs-reply-network     &0.28&0.192&0.043&0.273&0.181&0.084\\
+ca-hepph                &0.142&0.123&0.108&0.207&0.164&0.128\\
+ca-astroph              &0.303&0.264&0.154&0.36&0.29&0.24\\
+higgs-mention-network   &0.231&0.187&0.101&0.301&0.213&0.136\\
+email-enron             &0.249&0.22&0.16&0.415&0.305&0.223\\
+soc-sign-slashdot081106 &0.379&0.341&0.21&0.478&0.391&0.265\\
+soc-sign-slashdot090216 &0.382&0.344&0.207&0.476&0.391&0.265\\
+soc-sign-slashdot090221 &0.386&0.343&0.206&0.478&0.39&0.265\\
+\hline
+avg                     &0.254&0.214&0.129&0.319&0.246&0.171\\
+\hline
+\end{tabular}
+\end{table*}
+
+\begin{table*}[!hpp]
+\centering
+\caption{$\tau$ with $k=4$}
+\begin{tabular}{ccccccccccc}
+\hline
+Dataset                 &Hash       &B          &DG         &LDG        &EDG        &Tri        &LTri       &ETri      &NN         &FNL\\
+\hline
+com-youtube-all-cmty    &1.027&1.001&1.827&1.376&1.491&1.344&1.346&1.344&1.333&1.001\\
+com-dblp.all.cmty       &1.022&1.001&1.445&1.34&1.373&1.345&1.345&1.345&1.315&1.001\\
+as-733                  &1.025&1&3.96&1.652&1.679&2.533&1.837&1.848&2.635&1.101\\
+facebook                &1.025&1.001&2.997&1.346&1.361&2.832&1.385&1.392&2.792&1.081\\
+higgs-reply-network     &1.012&1.001&1.562&1.34&1.412&1.344&1.344&1.344&1.444&1.001\\
+ca-hepph                &1.029&1.001&3.746&1.428&1.445&2.435&1.619&1.62&2.395&1.007\\
+ca-astroph              &1.028&1.001&3.827&1.371&1.407&3.112&1.506&1.544&3.141&1.101\\
+higgs-mention-network   &1.006&1.001&1.992&1.338&1.492&1.343&1.343&1.343&1.313&1.001\\
+email-enron             &1.014&1.001&3.771&1.617&1.614&2.711&1.807&1.809&2.754&1.101\\
+soc-sign-slashdot081106 &1.007&1.001&3.982&1.616&1.639&1.973&1.785&1.781&1.985&1.101\\
+soc-sign-slashdot090216 &1.008&1.001&3.986&1.12&1.634&1.347&1.356&1.355&1.357&1.1\\
+soc-sign-slashdot090221 &1.008&1&3.986&1.127&1.63&1.347&1.351&1.35&1.357&1.101\\
+\hline
+avg.                    &1.018&1.001&3.091&1.39&1.515&1.973&1.502&1.507&1.986&1.059\\       
+\hline
+\end{tabular}
+\end{table*}
+
+\begin{table*}[!hpp]
+\centering
+\caption{SGLd and SGLs - $\tau$ with $k=4$, $\rho = 0.3, 0.5, 0.8$}
+\begin{tabular}{ccccccc}
+\hline
+Dataset                     &SGLd-0.3       &SGLd-0.5       &SGLd-0.8       &SGLs-0.3       &SGLs-0.5       &SGLs-0.8\\
+\hline
+com-youtube-all-cmty        &1&1.001&1&1.136&1.092&1.033\\
+com-dblp.all.cmty           &1.001&1.001&1.001&1.155&1.094&1.023\\
+as-733                      &1&1&1.001&1.181&1.141&1.092\\
+facebook                    &1&1.001&1.001&1.215&1.172&1.15\\
+higgs-reply-network         &1.001&1&1&1.206&1.124&1.024\\
+ca-hepph                    &1.001&1.001&1.001&1.216&1.289&1.177\\
+ca-astroph                  &1&1&1.001&1.145&1.127&1.109\\
+higgs-mention-network       &1&1&1&1.166&1.078&1.018\\
+email-enron                 &1&1.001&1&1.312&1.211&1.015\\
+soc-sign-slashdot081106     &1&1.001&1.001&1.412&1.221&1.065\\
+soc-sign-slashdot090216     &1.001&1.001&1&1.389&1.204&1.06\\
+soc-sign-slashdot090221     &1&1.001&1.001&1.389&1.203&1.06\\
+\hline
+avg.                        &1.001&1.001&1.001&1.244&1.163&1.069\\
 \hline
 \end{tabular}
 \end{table*}
