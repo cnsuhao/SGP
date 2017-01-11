@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.14)  11 JAN 2017 18:26
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.14)  11 JAN 2017 20:51
 entering extended mode
 **D:/study/big*graph*partition/experiment/paper/sigproc.tex
 ("D:/study/big graph partition/experiment/paper/sigproc.tex"
@@ -245,6 +245,26 @@ Package: enumerate 1999/03/05 v3.00 enumerate extensions (DPC)
 (C:\CTEX\MiKTeX\tex\latex\multirow\multirow.sty
 \bigstrutjot=\dimen123
 )
+(C:\CTEX\MiKTeX\tex\latex\subfigure\subfigure.sty
+Package: subfigure 2002/07/30 v2.1.4 subfigure package
+\subfigtopskip=\skip46
+\subfigcapskip=\skip47
+\subfigcaptopadj=\dimen124
+\subfigbottomskip=\skip48
+\subfigcapmargin=\dimen125
+\subfiglabelskip=\skip49
+\c@subfigure=\count115
+\c@lofdepth=\count116
+\c@subtable=\count117
+\c@lotdepth=\count118
+
+****************************************
+* Local config file subfigure.cfg used *
+****************************************
+(C:\CTEX\MiKTeX\tex\latex\subfigure\subfigure.cfg)
+\subfig@top=\skip50
+\subfig@bottom=\skip51
+)
 (C:\CTEX\MiKTeX\tex\latex\oberdiek\epstopdf.sty
 Package: epstopdf 2010/02/09 v2.5 Conversion with epstopdf on the fly (HO)
 
@@ -293,54 +313,54 @@ G,.JBIG2,.JB2,.eps]
 (grfext)             \AppendGraphicsExtensions on input line 452.
 ))
 ("D:\study\big graph partition\experiment\paper\sigproc.aux")
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 13.
+LaTeX Font Info:    ... okay on input line 13.
 
 (C:\CTEX\MiKTeX\tex\context\base\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count115
-\scratchdimen=\dimen124
+\scratchcounter=\count119
+\scratchdimen=\dimen126
 \scratchbox=\box32
-\nofMPsegments=\count116
-\nofMParguments=\count117
+\nofMPsegments=\count120
+\nofMParguments=\count121
 \everyMPshowfont=\toks42
-\MPscratchCnt=\count118
-\MPscratchDim=\dimen125
-\MPnumerator=\count119
-\makeMPintoPDFobject=\count120
+\MPscratchCnt=\count122
+\MPscratchDim=\dimen127
+\MPnumerator=\count123
+\makeMPintoPDFobject=\count124
 \everyMPtoPDFconversion=\toks43
 )
-LaTeX Font Info:    Try loading font information for U+msa on input line 26.
+LaTeX Font Info:    Try loading font information for U+msa on input line 27.
  (C:\CTEX\MiKTeX\tex\latex\amsfonts\umsa.fd
 File: umsa.fd 2009/06/22 v3.00 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 26.
+LaTeX Font Info:    Try loading font information for U+msb on input line 27.
 
 (C:\CTEX\MiKTeX\tex\latex\amsfonts\umsb.fd
 File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for U+lasy on input line 26.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 27.
 
 (C:\CTEX\MiKTeX\tex\latex\base\ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
-Overfull \hbox (1.26794pt too wide) in paragraph at lines 35--36
+Overfull \hbox (1.26794pt too wide) in paragraph at lines 36--37
 \T1/aer/m/n/9 H.4 [\T1/aer/bx/n/9 Information Sys-tem-s Ap-pli-ca-tion-s\T1/aer
 /m/n/9 ]: Mis-cel-la-neous;
  []
 
 
-Overfull \hbox (1.36621pt too wide) in paragraph at lines 46--50
+Overfull \hbox (1.36621pt too wide) in paragraph at lines 47--51
 []\T1/aer/m/n/9 In com-par-i-son with the tra-di-tion-al par-ti-tion-ing tech-n
 iques,
  []
@@ -352,7 +372,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 ]
-Overfull \hbox (16.22266pt too wide) in paragraph at lines 57--58
+Overfull \hbox (16.22266pt too wide) in paragraph at lines 58--59
 \T1/aer/m/n/9 the o-rig-i-nal graph, and hold-s the struc-ture in-for-ma-tion(i
 ndicated
  []
@@ -361,7 +381,7 @@ ndicated
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [2]
-Overfull \hbox (14.16023pt too wide) in paragraph at lines 72--73
+Overfull \hbox (14.16023pt too wide) in paragraph at lines 73--74
 \T1/aer/m/n/9 ti-tion-ing al-go-rithm-s [10, 14, 6] are pro-posed to coarsen(co
 ntract)
  []
@@ -371,48 +391,48 @@ ntract)
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 [4]
-\c@definition=\count121
-\c@theorem=\count122
-\c@lemma=\count123
+\c@definition=\count125
+\c@theorem=\count126
+\c@lemma=\count127
  [5] [6] [7]
 
-LaTeX Warning: Float too large for page by 24.59674pt on input line 476.
+LaTeX Warning: Float too large for page by 24.59674pt on input line 477.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-Overfull \hbox (8.61499pt too wide) in paragraph at lines 487--492
+Overfull \hbox (8.61499pt too wide) in paragraph at lines 488--493
 []\T1/aer/m/n/9 For a un-sam-pled ver-tex $\OML/cmm/m/it/9 u[]$\T1/aer/m/n/9 , 
 where $\OML/cmm/m/it/9 u[] \OMS/cmsy/m/n/9 2 []\OML/cmm/m/it/9 ; e[] \OMS/cmsy/
 m/n/9 2$
  []
 
 
-Overfull \hbox (7.14867pt too wide) detected at line 515
+Overfull \hbox (7.14867pt too wide) detected at line 516
 \OML/cmm/m/it/9 w[] \OT1/cmr/m/n/9 = [] []
  []
 
 
-Overfull \hbox (15.69513pt too wide) in paragraph at lines 538--542
+Overfull \hbox (15.69513pt too wide) in paragraph at lines 539--543
 \T1/aer/m/n/9 the num-ber of un-sam-pled ver-tex, that is, $\OML/cmm/m/it/9 O\O
 T1/cmr/m/n/9 ([][] [])$\T1/aer/m/n/9 . 
  []
 
 [8]
-Overfull \hbox (4.5158pt too wide) in paragraph at lines 545--547
+Overfull \hbox (4.5158pt too wide) in paragraph at lines 546--548
 []\T1/aer/m/n/9 In this sec-tion we present our ex-per-i-men-tal find-ings. Spe
 cif-
  []
 
 
-Overfull \hbox (8.74551pt too wide) in paragraph at lines 594--596
+Overfull \hbox (8.74551pt too wide) in paragraph at lines 595--597
 []\T1/aer/m/n/9 As our com-peti-tors we use state-of-the-art heuris-tic-s. Spec
 if-
  []
 
 
-Overfull \hbox (3.46126pt too wide) in paragraph at lines 601--602
+Overfull \hbox (3.46126pt too wide) in paragraph at lines 602--603
 \T1/aer/m/n/9 place $\OML/cmm/m/it/9 v$ \T1/aer/m/n/9 to $\OML/cmm/m/it/9 P[]$ 
 \T1/aer/m/n/9 that max-i-mizes $\OMS/cmsy/m/n/9 j\OML/cmm/m/it/9 N\OT1/cmr/m/n/
 9 (\OML/cmm/m/it/9 v\OT1/cmr/m/n/9 ) [] \OML/cmm/m/it/9 P[]\OMS/cmsy/m/n/9 j  
@@ -421,115 +441,228 @@ y/m/n/9 j\OML/cmm/m/it/9 P[]\OMS/cmsy/m/n/9 j  $
  []
 
 
-Overfull \hbox (27.76666pt too wide) in paragraph at lines 624--645
+Overfull \hbox (27.76666pt too wide) in paragraph at lines 628--649
  [][] 
  []
 
 
-Overfull \hbox (18.49684pt too wide) in paragraph at lines 650--671
+Overfull \hbox (18.49684pt too wide) in paragraph at lines 654--675
  [][] 
  []
 
-Package epstopdf Info: Source file: <graph/fig1.eps>
-(epstopdf)                    date: 2017-01-11 18:26:39
-(epstopdf)                    size: 22411 bytes
-(epstopdf)             Output file: <graph/fig1-eps-converted-to.pdf>
-(epstopdf)                    date: 2017-01-11 18:26:06
-(epstopdf)                    size: 8478 bytes
-(epstopdf)             Command: <epstopdf --outfile=graph/fig1-eps-converted-to
-.pdf graph/fig1.eps>
-(epstopdf)             \includegraphics on input line 802.
-runsystem(epstopdf --outfile=graph/fig1-eps-converted-to.pdf graph/fig1.eps)...
-executed (allowed).
-
-Package epstopdf Info: Result file: <graph/fig1-eps-converted-to.pdf>
-(epstopdf)                    date: 2017-01-11 18:26:45
-(epstopdf)                    size: 8395 bytes.
-<graph/fig1-eps-converted-to.pdf, id=45, 361.35pt x 252.945pt>
-File: graph/fig1-eps-converted-to.pdf Graphic file (type pdf)
-
-<use graph/fig1-eps-converted-to.pdf>
-Package pdftex.def Info: graph/fig1-eps-converted-to.pdf used on input line 802
-.
-(pdftex.def)             Requested size: 170.71672pt x 113.8126pt.
-Package epstopdf Info: Source file: <graph/fig2.eps>
-(epstopdf)                    date: 2017-01-11 18:26:39
-(epstopdf)                    size: 22399 bytes
-(epstopdf)             Output file: <graph/fig2-eps-converted-to.pdf>
-(epstopdf)                    date: 2017-01-11 18:26:06
-(epstopdf)                    size: 8268 bytes
-(epstopdf)             Command: <epstopdf --outfile=graph/fig2-eps-converted-to
-.pdf graph/fig2.eps>
+Package epstopdf Info: Source file: <graph/time-v4k-e85k-a.eps>
+(epstopdf)                    date: 2017-01-11 20:50:21
+(epstopdf)                    size: 22433 bytes
+(epstopdf)             Output file: <graph/time-v4k-e85k-a-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2017-01-11 20:51:08
+(epstopdf)                    size: 8417 bytes
+(epstopdf)             Command: <epstopdf --outfile=graph/time-v4k-e85k-a-eps-c
+onverted-to.pdf graph/time-v4k-e85k-a.eps>
 (epstopdf)             \includegraphics on input line 808.
-runsystem(epstopdf --outfile=graph/fig2-eps-converted-to.pdf graph/fig2.eps)...
-executed (allowed).
+Package epstopdf Info: Output file is already uptodate.
+<graph/time-v4k-e85k-a-eps-converted-to.pdf, id=45, 361.35pt x 252.945pt>
+File: graph/time-v4k-e85k-a-eps-converted-to.pdf Graphic file (type pdf)
 
-Package epstopdf Info: Result file: <graph/fig2-eps-converted-to.pdf>
-(epstopdf)                    date: 2017-01-11 18:26:45
-(epstopdf)                    size: 8179 bytes.
+<use graph/time-v4k-e85k-a-eps-converted-to.pdf>
+Package pdftex.def Info: graph/time-v4k-e85k-a-eps-converted-to.pdf used on inp
+ut line 808.
+(pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
+Package epstopdf Info: Source file: <graph/time-v4k-e85k-b.eps>
+(epstopdf)                    date: 2017-01-11 20:50:21
+(epstopdf)                    size: 22421 bytes
+(epstopdf)             Output file: <graph/time-v4k-e85k-b-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2017-01-11 20:51:09
+(epstopdf)                    size: 8201 bytes
+(epstopdf)             Command: <epstopdf --outfile=graph/time-v4k-e85k-b-eps-c
+onverted-to.pdf graph/time-v4k-e85k-b.eps>
+(epstopdf)             \includegraphics on input line 812.
+Package epstopdf Info: Output file is already uptodate.
 
-<graph/fig2-eps-converted-to.pdf, id=46, 361.35pt x 252.945pt>
-File: graph/fig2-eps-converted-to.pdf Graphic file (type pdf)
+<graph/time-v4k-e85k-b-eps-converted-to.pdf, id=46, 361.35pt x 252.945pt>
+File: graph/time-v4k-e85k-b-eps-converted-to.pdf Graphic file (type pdf)
 
-<use graph/fig2-eps-converted-to.pdf>
-Package pdftex.def Info: graph/fig2-eps-converted-to.pdf used on input line 808
-.
-(pdftex.def)             Requested size: 170.71672pt x 113.8126pt.
-Package epstopdf Info: Source file: <graph/fig3.eps>
-(epstopdf)                    date: 2017-01-11 18:26:39
-(epstopdf)                    size: 22404 bytes
-(epstopdf)             Output file: <graph/fig3-eps-converted-to.pdf>
-(epstopdf)                    date: 2017-01-11 18:26:07
-(epstopdf)                    size: 8279 bytes
-(epstopdf)             Command: <epstopdf --outfile=graph/fig3-eps-converted-to
-.pdf graph/fig3.eps>
-(epstopdf)             \includegraphics on input line 814.
-runsystem(epstopdf --outfile=graph/fig3-eps-converted-to.pdf graph/fig3.eps)...
-executed (allowed).
+<use graph/time-v4k-e85k-b-eps-converted-to.pdf>
+Package pdftex.def Info: graph/time-v4k-e85k-b-eps-converted-to.pdf used on inp
+ut line 812.
+(pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
+Package epstopdf Info: Source file: <graph/time-v4k-e85k-c.eps>
+(epstopdf)                    date: 2017-01-11 20:50:21
+(epstopdf)                    size: 22426 bytes
+(epstopdf)             Output file: <graph/time-v4k-e85k-c-eps-converted-to.pdf
+>
+(epstopdf)                    date: 2017-01-11 20:51:10
+(epstopdf)                    size: 8221 bytes
+(epstopdf)             Command: <epstopdf --outfile=graph/time-v4k-e85k-c-eps-c
+onverted-to.pdf graph/time-v4k-e85k-c.eps>
+(epstopdf)             \includegraphics on input line 816.
+Package epstopdf Info: Output file is already uptodate.
 
-Package epstopdf Info: Result file: <graph/fig3-eps-converted-to.pdf>
-(epstopdf)                    date: 2017-01-11 18:26:45
-(epstopdf)                    size: 8199 bytes.
+<graph/time-v4k-e85k-c-eps-converted-to.pdf, id=47, 361.35pt x 252.945pt>
+File: graph/time-v4k-e85k-c-eps-converted-to.pdf Graphic file (type pdf)
 
-<graph/fig3-eps-converted-to.pdf, id=47, 361.35pt x 252.945pt>
-File: graph/fig3-eps-converted-to.pdf Graphic file (type pdf)
+<use graph/time-v4k-e85k-c-eps-converted-to.pdf>
+Package pdftex.def Info: graph/time-v4k-e85k-c-eps-converted-to.pdf used on inp
+ut line 816.
+(pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
+Package epstopdf Info: Source file: <graph/cut-v4k-e85k-a.eps>
+(epstopdf)                    date: 2017-01-11 20:50:21
+(epstopdf)                    size: 22752 bytes
+(epstopdf)             Output file: <graph/cut-v4k-e85k-a-eps-converted-to.pdf>
 
-<use graph/fig3-eps-converted-to.pdf>
-Package pdftex.def Info: graph/fig3-eps-converted-to.pdf used on input line 814
-.
-(pdftex.def)             Requested size: 170.71672pt x 113.8126pt.
+(epstopdf)                    date: 2017-01-11 20:51:11
+(epstopdf)                    size: 8284 bytes
+(epstopdf)             Command: <epstopdf --outfile=graph/cut-v4k-e85k-a-eps-co
+nverted-to.pdf graph/cut-v4k-e85k-a.eps>
+(epstopdf)             \includegraphics on input line 825.
+Package epstopdf Info: Output file is already uptodate.
 
-("D:\study\big graph partition\experiment\paper\sigproc.bbl" [9 <D:/study/big g
-raph partition/experiment/paper/graph/fig1-eps-converted-to.pdf> <D:/study/big 
-graph partition/experiment/paper/graph/fig2-eps-converted-to.pdf> <D:/study/big
- graph partition/experiment/paper/graph/fig3-eps-converted-to.pdf>] [10]
-[11] [12]) [13] ("D:\study\big graph partition\experiment\paper\sigproc.aux") )
- 
+<graph/cut-v4k-e85k-a-eps-converted-to.pdf, id=48, 361.35pt x 252.945pt>
+File: graph/cut-v4k-e85k-a-eps-converted-to.pdf Graphic file (type pdf)
+
+<use graph/cut-v4k-e85k-a-eps-converted-to.pdf>
+Package pdftex.def Info: graph/cut-v4k-e85k-a-eps-converted-to.pdf used on inpu
+t line 825.
+(pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
+Package epstopdf Info: Source file: <graph/cut-v4k-e85k-b.eps>
+(epstopdf)                    date: 2017-01-11 20:50:21
+(epstopdf)                    size: 22747 bytes
+(epstopdf)             Output file: <graph/cut-v4k-e85k-b-eps-converted-to.pdf>
+
+(epstopdf)                    date: 2017-01-11 20:51:12
+(epstopdf)                    size: 7965 bytes
+(epstopdf)             Command: <epstopdf --outfile=graph/cut-v4k-e85k-b-eps-co
+nverted-to.pdf graph/cut-v4k-e85k-b.eps>
+(epstopdf)             \includegraphics on input line 829.
+Package epstopdf Info: Output file is already uptodate.
+
+<graph/cut-v4k-e85k-b-eps-converted-to.pdf, id=49, 361.35pt x 252.945pt>
+File: graph/cut-v4k-e85k-b-eps-converted-to.pdf Graphic file (type pdf)
+
+<use graph/cut-v4k-e85k-b-eps-converted-to.pdf>
+Package pdftex.def Info: graph/cut-v4k-e85k-b-eps-converted-to.pdf used on inpu
+t line 829.
+(pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
+Package epstopdf Info: Source file: <graph/cut-v4k-e85k-c.eps>
+(epstopdf)                    date: 2017-01-11 20:50:21
+(epstopdf)                    size: 22751 bytes
+(epstopdf)             Output file: <graph/cut-v4k-e85k-c-eps-converted-to.pdf>
+
+(epstopdf)                    date: 2017-01-11 20:51:13
+(epstopdf)                    size: 7970 bytes
+(epstopdf)             Command: <epstopdf --outfile=graph/cut-v4k-e85k-c-eps-co
+nverted-to.pdf graph/cut-v4k-e85k-c.eps>
+(epstopdf)             \includegraphics on input line 833.
+Package epstopdf Info: Output file is already uptodate.
+
+<graph/cut-v4k-e85k-c-eps-converted-to.pdf, id=50, 361.35pt x 252.945pt>
+File: graph/cut-v4k-e85k-c-eps-converted-to.pdf Graphic file (type pdf)
+
+<use graph/cut-v4k-e85k-c-eps-converted-to.pdf>
+Package pdftex.def Info: graph/cut-v4k-e85k-c-eps-converted-to.pdf used on inpu
+t line 833.
+(pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
+Package epstopdf Info: Source file: <graph/maxload-v4k-e85k-a.eps>
+(epstopdf)                    date: 2017-01-11 20:50:21
+(epstopdf)                    size: 22583 bytes
+(epstopdf)             Output file: <graph/maxload-v4k-e85k-a-eps-converted-to.
+pdf>
+(epstopdf)                    date: 2017-01-11 20:51:14
+(epstopdf)                    size: 8172 bytes
+(epstopdf)             Command: <epstopdf --outfile=graph/maxload-v4k-e85k-a-ep
+s-converted-to.pdf graph/maxload-v4k-e85k-a.eps>
+(epstopdf)             \includegraphics on input line 842.
+Package epstopdf Info: Output file is already uptodate.
+
+<graph/maxload-v4k-e85k-a-eps-converted-to.pdf, id=51, 361.35pt x 252.945pt>
+File: graph/maxload-v4k-e85k-a-eps-converted-to.pdf Graphic file (type pdf)
+
+<use graph/maxload-v4k-e85k-a-eps-converted-to.pdf>
+Package pdftex.def Info: graph/maxload-v4k-e85k-a-eps-converted-to.pdf used on 
+input line 842.
+(pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
+Package epstopdf Info: Source file: <graph/maxload-v4k-e85k-b.eps>
+(epstopdf)                    date: 2017-01-11 20:50:21
+(epstopdf)                    size: 22589 bytes
+(epstopdf)             Output file: <graph/maxload-v4k-e85k-b-eps-converted-to.
+pdf>
+(epstopdf)                    date: 2017-01-11 20:51:15
+(epstopdf)                    size: 7841 bytes
+(epstopdf)             Command: <epstopdf --outfile=graph/maxload-v4k-e85k-b-ep
+s-converted-to.pdf graph/maxload-v4k-e85k-b.eps>
+(epstopdf)             \includegraphics on input line 846.
+Package epstopdf Info: Output file is already uptodate.
+
+<graph/maxload-v4k-e85k-b-eps-converted-to.pdf, id=52, 361.35pt x 252.945pt>
+File: graph/maxload-v4k-e85k-b-eps-converted-to.pdf Graphic file (type pdf)
+
+<use graph/maxload-v4k-e85k-b-eps-converted-to.pdf>
+Package pdftex.def Info: graph/maxload-v4k-e85k-b-eps-converted-to.pdf used on 
+input line 846.
+(pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
+Package epstopdf Info: Source file: <graph/maxload-v4k-e85k-c.eps>
+(epstopdf)                    date: 2017-01-11 20:50:21
+(epstopdf)                    size: 22588 bytes
+(epstopdf)             Output file: <graph/maxload-v4k-e85k-c-eps-converted-to.
+pdf>
+(epstopdf)                    date: 2017-01-11 20:51:16
+(epstopdf)                    size: 7835 bytes
+(epstopdf)             Command: <epstopdf --outfile=graph/maxload-v4k-e85k-c-ep
+s-converted-to.pdf graph/maxload-v4k-e85k-c.eps>
+(epstopdf)             \includegraphics on input line 850.
+Package epstopdf Info: Output file is already uptodate.
+
+<graph/maxload-v4k-e85k-c-eps-converted-to.pdf, id=53, 361.35pt x 252.945pt>
+File: graph/maxload-v4k-e85k-c-eps-converted-to.pdf Graphic file (type pdf)
+
+<use graph/maxload-v4k-e85k-c-eps-converted-to.pdf>
+Package pdftex.def Info: graph/maxload-v4k-e85k-c-eps-converted-to.pdf used on 
+input line 850.
+(pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
+
+("D:\study\big graph partition\experiment\paper\sigproc.bbl" [9] [10] [11]
+[12 <D:/study/big graph partition/experiment/paper/graph/time-v4k-e85k-a-eps-co
+nverted-to.pdf> <D:/study/big graph partition/experiment/paper/graph/time-v4k-e
+85k-b-eps-converted-to.pdf> <D:/study/big graph partition/experiment/paper/grap
+h/time-v4k-e85k-c-eps-converted-to.pdf> <D:/study/big graph partition/experimen
+t/paper/graph/cut-v4k-e85k-a-eps-converted-to.pdf> <D:/study/big graph partitio
+n/experiment/paper/graph/cut-v4k-e85k-b-eps-converted-to.pdf> <D:/study/big gra
+ph partition/experiment/paper/graph/cut-v4k-e85k-c-eps-converted-to.pdf>])
+Overfull \vbox (162.0421pt too high) has occurred while \output is active []
+
+
+[13 <D:/study/big graph partition/experiment/paper/graph/maxload-v4k-e85k-a-eps
+-converted-to.pdf> <D:/study/big graph partition/experiment/paper/graph/maxload
+-v4k-e85k-b-eps-converted-to.pdf> <D:/study/big graph partition/experiment/pape
+r/graph/maxload-v4k-e85k-c-eps-converted-to.pdf>]
+("D:\study\big graph partition\experiment\paper\sigproc.aux") ) 
 Here is how much of TeX's memory you used:
- 3660 strings out of 495354
- 45348 string characters out of 3183859
- 175757 words of memory out of 3000000
- 6718 multiletter control sequences out of 15000+200000
+ 3869 strings out of 495354
+ 49372 string characters out of 3183859
+ 185589 words of memory out of 3000000
+ 6915 multiletter control sequences out of 15000+200000
  53482 words of font info for 73 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
  42i,11n,35p,1796b,736s stack positions out of 5000i,500n,10000p,200000b,50000s
-{C:/CTEX/MiKTeX/fonts/enc/dvips/fontname/8r.enc}<C:/CTEX/MiKTeX/fonts/type1/pub
-lic/amsfonts/cm/cmbx9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc1
-0.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmex7.pfb><C:/CTEX/Mi
-KTeX/fonts/type1/public/amsfonts/cmextra/cmex9.pfb><C:/CTEX/MiKTeX/fonts/type1/
-public/amsfonts/cm/cmmi5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmm
-i6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/CTEX/MiKTeX
-/fonts/type1/public/amsfonts/cm/cmr5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/ams
-fonts/cm/cmr6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/C
-TEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy5.pfb><C:/CTEX/MiKTeX/fonts/type1
-/public/amsfonts/cm/cmsy6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cm
-sy9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/CTEX/MiKTe
-X/fonts/type1/urw/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/
-uhvr8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fon
-ts/type1/urw/times/utmr8a.pfb>
-Output written on sigproc.pdf (13 pages, 338034 bytes).
+{C:/CTEX/MiKTeX/
+fonts/enc/dvips/fontname/8r.enc}<C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/
+cmbx9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.pfb><C:/CTEX/M
+iKTeX/fonts/type1/public/amsfonts/cmextra/cmex7.pfb><C:/CTEX/MiKTeX/fonts/type1
+/public/amsfonts/cmextra/cmex9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/
+cm/cmmi5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/CTEX/
+MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/CTEX/MiKTeX/fonts/type1/pub
+lic/amsfonts/cm/cmr5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pf
+b><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/CTEX/MiKTeX/fonts
+/type1/public/amsfonts/cm/cmsy5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts
+/cm/cmsy6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9.pfb><C:/CTEX
+/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/CTEX/MiKTeX/fonts/type1/ur
+w/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/C
+TEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/tim
+es/utmr8a.pfb>
+Output written on sigproc.pdf (13 pages, 376320 bytes).
 PDF statistics:
- 151 PDF objects out of 1000 (max. 8388607)
+ 217 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 16 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 46 words of extra memory for PDF output out of 10000 (max. 10000000)
 

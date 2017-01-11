@@ -8,6 +8,7 @@
 \usepackage{enumerate}
 \usepackage{multirow}
 \usepackage{graphicx}
+\usepackage{subfigure}
 \usepackage{epstopdf}
 \begin{document}
 
@@ -610,7 +611,10 @@ $v$ is the newly arrived vertex. $N(v)$ denotes the set of neighbors of vertex $
 We evaluate our algorithms by measuring two quantities from the resulting partitions.
 In particular, for a partition we use the measures of the fraction of edges cut $\varsigma$
 and the normalized maximum load $\tau$ \cite{Charalampos:fennel}, defined as
-$\varsigma = \frac{\# edges\ cut}{m}$, and $\tau = \frac{\# vertices\ of\ maximum\ partition}{\frac{n}{k}}$.
+
+$\varsigma = \frac{\# edges\ cut}{m}$, and
+
+$\tau = \frac{\# vertices\ of\ maximum\ partition}{\frac{n}{k}}$.
 
 
 
@@ -795,25 +799,57 @@ avg.                        &1.001&1.001&1.001&1.244&1.163&1.069\\
 \end{tabular}
 \end{table*}
 
-%\input {graph/plot}
 \graphicspath{{graph/}}
-\begin{figure}
-  \centering
-  \includegraphics[width=6cm,height=4cm]{fig1.eps}
-  \caption{Runtime with Random Order, $k=4$}\label{fig:time-v4k-e85k-random}
-\end{figure}
+\begin{figure*}[htbp]
+    \centering
+    \subfigure[RANDOM]{
+        \includegraphics[width=2.2in]{time-v4k-e85k-a.eps}
+         \label{fig:time-v4k-e85k:a}
+    }
+    \subfigure[DFS]{
+        \includegraphics[width=2.2in]{time-v4k-e85k-b.eps}
+        \label{fig:time-v4k-e85k:b}
+    }
+    \subfigure[BFS]{
+       \includegraphics[width=2.2in]{time-v4k-e85k-c.eps}
+       \label{fig:time-v4k-e85k:c}
+    }
+    \caption{Runtime VS. Vertex Order on syn-v4k-e85k Dataset, $k=4$}\label{fig:time-v4k-e85k}
+\end{figure*}
 
-\begin{figure}
-  \centering
-  \includegraphics[width=6cm,height=4cm]{fig2.eps}
-  \caption{Runtime with DFS Order, $k=4$}\label{fig:time-v4k-e85k-dfs}
-\end{figure}
+\begin{figure*}[htbp]
+    \centering
+    \subfigure[RANDOM]{
+        \includegraphics[width=2.2in]{cut-v4k-e85k-a.eps}
+         \label{fig:cut-v4k-e85k:a}
+    }
+    \subfigure[DFS]{
+        \includegraphics[width=2.2in]{cut-v4k-e85k-b.eps}
+        \label{fig:cut-v4k-e85k:b}
+    }
+    \subfigure[BFS]{
+       \includegraphics[width=2.2in]{cut-v4k-e85k-c.eps}
+       \label{fig:cut-v4k-e85k:c}
+    }
+    \caption{ $\varsigma$ VS. Vertex Order on syn-v4k-e85k Dataset, $k=4$}\label{fig:cut-v4k-e85k}
+\end{figure*}
 
-\begin{figure}
-  \centering
-  \includegraphics[width=6cm,height=4cm]{fig3.eps}
-  \caption{Runtime with BFS Order, $k=4$}\label{fig:time-v4k-e85k-bfs}
-\end{figure}
+\begin{figure*}[htbp]
+    \centering
+    \subfigure[RANDOM]{
+        \includegraphics[width=2.2in]{maxload-v4k-e85k-a.eps}
+         \label{fig:maxload-v4k-e85k:a}
+    }
+    \subfigure[DFS]{
+        \includegraphics[width=2.2in]{maxload-v4k-e85k-b.eps}
+        \label{fig:maxload-v4k-e85k:b}
+    }
+    \subfigure[BFS]{
+       \includegraphics[width=2.2in]{maxload-v4k-e85k-c.eps}
+       \label{fig:maxload-v4k-e85k:c}
+    }
+    \caption{ $\tau$ VS. Vertex Order on syn-v4k-e85k Dataset, $k=4$}\label{fig:maxload-v4k-e85k}
+\end{figure*}
 
 \section{Conclusions}
 //We have demonstrated that simple, one-pass streaming graph partitioning heuristics can dramatically improve the edge-cut in distributed graphs.
