@@ -1,11 +1,12 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.14)  10 JAN 2017 20:00
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2015.11.20)  11 JAN 2017 11:25
 entering extended mode
-**D:/study/big*graph*partition/experiment/paper/sigproc.tex
-("D:/study/big graph partition/experiment/paper/sigproc.tex"
+**D:/个人工作/研究/big*graph*partition/SGP/trunk/paper/sigproc.tex
+("D:/个人工作/研究/big graph partition/SGP/trunk/paper/sigproc.tex"
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for loaded.
-("D:\study\big graph partition\experiment\paper\sig-alternate-2013.cls"
-(C:\CTEX\MiKTeX\tex\latex\graphics\epsfig.sty
+
+("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sig-alternate-2013
+.cls" (C:\CTEX\MiKTeX\tex\latex\graphics\epsfig.sty
 Package: epsfig 1999/02/16 v1.7a (e)psfig emulation (SPQR)
 
 (C:\CTEX\MiKTeX\tex\latex\graphics\graphicx.sty
@@ -245,19 +246,19 @@ Package: enumerate 1999/03/05 v3.00 enumerate extensions (DPC)
 (C:\CTEX\MiKTeX\tex\latex\multirow\multirow.sty
 \bigstrutjot=\dimen123
 )
-("D:\study\big graph partition\experiment\paper\sigproc.aux")
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 11.
-LaTeX Font Info:    ... okay on input line 11.
+("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sigproc.aux")
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
 
 (C:\CTEX\MiKTeX\tex\context\base\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -273,27 +274,27 @@ LaTeX Font Info:    ... okay on input line 11.
 \makeMPintoPDFobject=\count120
 \everyMPtoPDFconversion=\toks43
 )
-LaTeX Font Info:    Try loading font information for U+msa on input line 25.
+LaTeX Font Info:    Try loading font information for U+msa on input line 26.
  (C:\CTEX\MiKTeX\tex\latex\amsfonts\umsa.fd
 File: umsa.fd 2009/06/22 v3.00 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 25.
+LaTeX Font Info:    Try loading font information for U+msb on input line 26.
 
 (C:\CTEX\MiKTeX\tex\latex\amsfonts\umsb.fd
 File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for U+lasy on input line 25.
+LaTeX Font Info:    Try loading font information for U+lasy on input line 26.
 
 (C:\CTEX\MiKTeX\tex\latex\base\ulasy.fd
 File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
 )
-Overfull \hbox (1.26794pt too wide) in paragraph at lines 34--35
+Overfull \hbox (1.26794pt too wide) in paragraph at lines 35--36
 \T1/aer/m/n/9 H.4 [\T1/aer/bx/n/9 Information Sys-tem-s Ap-pli-ca-tion-s\T1/aer
 /m/n/9 ]: Mis-cel-la-neous;
  []
 
 
-Overfull \hbox (1.36621pt too wide) in paragraph at lines 45--49
+Overfull \hbox (1.36621pt too wide) in paragraph at lines 46--50
 []\T1/aer/m/n/9 In com-par-i-son with the tra-di-tion-al par-ti-tion-ing tech-n
 iques,
  []
@@ -305,7 +306,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 ]
-Overfull \hbox (16.22266pt too wide) in paragraph at lines 56--57
+Overfull \hbox (16.22266pt too wide) in paragraph at lines 57--58
 \T1/aer/m/n/9 the o-rig-i-nal graph, and hold-s the struc-ture in-for-ma-tion(i
 ndicated
  []
@@ -314,7 +315,7 @@ ndicated
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [2]
-Overfull \hbox (14.16023pt too wide) in paragraph at lines 71--72
+Overfull \hbox (14.16023pt too wide) in paragraph at lines 72--73
 \T1/aer/m/n/9 ti-tion-ing al-go-rithm-s [10, 14, 6] are pro-posed to coarsen(co
 ntract)
  []
@@ -329,43 +330,43 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 \c@lemma=\count123
  [5] [6] [7]
 
-LaTeX Warning: Float too large for page by 24.59674pt on input line 475.
+LaTeX Warning: Float too large for page by 24.59674pt on input line 476.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-Overfull \hbox (8.61499pt too wide) in paragraph at lines 486--491
+Overfull \hbox (8.61499pt too wide) in paragraph at lines 487--492
 []\T1/aer/m/n/9 For a un-sam-pled ver-tex $\OML/cmm/m/it/9 u[]$\T1/aer/m/n/9 , 
 where $\OML/cmm/m/it/9 u[] \OMS/cmsy/m/n/9 2 []\OML/cmm/m/it/9 ; e[] \OMS/cmsy/
 m/n/9 2$
  []
 
 
-Overfull \hbox (7.14867pt too wide) detected at line 514
+Overfull \hbox (7.14867pt too wide) detected at line 515
 \OML/cmm/m/it/9 w[] \OT1/cmr/m/n/9 = [] []
  []
 
 
-Overfull \hbox (15.69513pt too wide) in paragraph at lines 537--541
+Overfull \hbox (15.69513pt too wide) in paragraph at lines 538--542
 \T1/aer/m/n/9 the num-ber of un-sam-pled ver-tex, that is, $\OML/cmm/m/it/9 O\O
 T1/cmr/m/n/9 ([][] [])$\T1/aer/m/n/9 . 
  []
 
 [8]
-Overfull \hbox (4.5158pt too wide) in paragraph at lines 544--546
+Overfull \hbox (4.5158pt too wide) in paragraph at lines 545--547
 []\T1/aer/m/n/9 In this sec-tion we present our ex-per-i-men-tal find-ings. Spe
 cif-
  []
 
 
-Overfull \hbox (8.74551pt too wide) in paragraph at lines 592--594
+Overfull \hbox (8.74551pt too wide) in paragraph at lines 594--596
 []\T1/aer/m/n/9 As our com-peti-tors we use state-of-the-art heuris-tic-s. Spec
 if-
  []
 
 
-Overfull \hbox (3.46126pt too wide) in paragraph at lines 599--600
+Overfull \hbox (3.46126pt too wide) in paragraph at lines 601--602
 \T1/aer/m/n/9 place $\OML/cmm/m/it/9 v$ \T1/aer/m/n/9 to $\OML/cmm/m/it/9 P[]$ 
 \T1/aer/m/n/9 that max-i-mizes $\OMS/cmsy/m/n/9 j\OML/cmm/m/it/9 N\OT1/cmr/m/n/
 9 (\OML/cmm/m/it/9 v\OT1/cmr/m/n/9 ) [] \OML/cmm/m/it/9 P[]\OMS/cmsy/m/n/9 j  
@@ -374,41 +375,54 @@ y/m/n/9 j\OML/cmm/m/it/9 P[]\OMS/cmsy/m/n/9 j  $
  []
 
 
-Overfull \hbox (27.76666pt too wide) in paragraph at lines 622--643
+Overfull \hbox (27.76666pt too wide) in paragraph at lines 624--645
  [][] 
  []
 
 
-Overfull \hbox (18.49684pt too wide) in paragraph at lines 648--669
+Overfull \hbox (18.49684pt too wide) in paragraph at lines 650--671
  [][] 
  []
 
-("D:\study\big graph partition\experiment\paper\sigproc.bbl" [9] [10] [11]
-[12]) [13] ("D:\study\big graph partition\experiment\paper\sigproc.aux") ) 
+("D:\个人工作\研究\big graph partition\SGP\trunk\paper\graph/plot1.tex"
+\plotpoint=\box33
+)
+Overfull \hbox (21.95105pt too wide) in paragraph at lines 109--799
+[][]
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 109--799
+
+ []
+
+("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sigproc.bbl"
+[9] [10] [11] [12]) [13]
+("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sigproc.aux") ) 
 Here is how much of TeX's memory you used:
- 3303 strings out of 495354
- 38986 string characters out of 3183859
- 170332 words of memory out of 3000000
- 6398 multiletter control sequences out of 15000+200000
+ 3309 strings out of 495354
+ 39362 string characters out of 3183858
+ 178885 words of memory out of 3000000
+ 6399 multiletter control sequences out of 15000+200000
  53482 words of font info for 73 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
- 41i,11n,35p,1796b,734s stack positions out of 5000i,500n,10000p,200000b,50000s
-{C:/C
-TEX/MiKTeX/fonts/enc/dvips/fontname/8r.enc}<C:/CTEX/MiKTeX/fonts/type1/public/a
-msfonts/cm/cmbx9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.pfb
-><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmex7.pfb><C:/CTEX/MiKTeX/
-fonts/type1/public/amsfonts/cmextra/cmex9.pfb><C:/CTEX/MiKTeX/fonts/type1/publi
-c/amsfonts/cm/cmmi5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pf
-b><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/CTEX/MiKTeX/font
-s/type1/public/amsfonts/cm/cmr5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts
-/cm/cmr6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/CTEX/M
-iKTeX/fonts/type1/public/amsfonts/cm/cmsy5.pfb><C:/CTEX/MiKTeX/fonts/type1/publ
-ic/amsfonts/cm/cmsy6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9.p
-fb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/CTEX/MiKTeX/fon
-ts/type1/urw/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/uhvr8
-a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/ty
-pe1/urw/times/utmr8a.pfb>
-Output written on sigproc.pdf (13 pages, 318216 bytes).
+ 41i,11n,35p,1809b,734s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:
+/CTEX/MiKTeX/fonts/enc/dvips/fontname/8r.enc}<C:/CTEX/MiKTeX/fonts/type1/public
+/amsfonts/cm/cmbx9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.p
+fb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmex7.pfb><C:/CTEX/MiKTe
+X/fonts/type1/public/amsfonts/cmextra/cmex9.pfb><C:/CTEX/MiKTeX/fonts/type1/pub
+lic/amsfonts/cm/cmmi5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.
+pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/CTEX/MiKTeX/fo
+nts/type1/public/amsfonts/cm/cmr5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfon
+ts/cm/cmr6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/CTEX
+/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy5.pfb><C:/CTEX/MiKTeX/fonts/type1/pu
+blic/amsfonts/cm/cmsy6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9
+.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/CTEX/MiKTeX/f
+onts/type1/urw/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/uhv
+r8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/
+type1/urw/times/utmr8a.pfb>
+Output written on sigproc.pdf (13 pages, 320182 bytes).
 PDF statistics:
  118 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
