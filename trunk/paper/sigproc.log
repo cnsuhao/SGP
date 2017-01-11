@@ -1,12 +1,11 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2015.11.20)  11 JAN 2017 11:25
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.14)  11 JAN 2017 16:15
 entering extended mode
-**D:/个人工作/研究/big*graph*partition/SGP/trunk/paper/sigproc.tex
-("D:/个人工作/研究/big graph partition/SGP/trunk/paper/sigproc.tex"
+**D:/study/big*graph*partition/experiment/paper/sigproc.tex
+("D:/study/big graph partition/experiment/paper/sigproc.tex"
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for loaded.
-
-("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sig-alternate-2013
-.cls" (C:\CTEX\MiKTeX\tex\latex\graphics\epsfig.sty
+("D:\study\big graph partition\experiment\paper\sig-alternate-2013.cls"
+(C:\CTEX\MiKTeX\tex\latex\graphics\epsfig.sty
 Package: epsfig 1999/02/16 v1.7a (e)psfig emulation (SPQR)
 
 (C:\CTEX\MiKTeX\tex\latex\graphics\graphicx.sty
@@ -246,7 +245,54 @@ Package: enumerate 1999/03/05 v3.00 enumerate extensions (DPC)
 (C:\CTEX\MiKTeX\tex\latex\multirow\multirow.sty
 \bigstrutjot=\dimen123
 )
-("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sigproc.aux")
+(C:\CTEX\MiKTeX\tex\latex\oberdiek\epstopdf.sty
+Package: epstopdf 2010/02/09 v2.5 Conversion with epstopdf on the fly (HO)
+
+(C:\CTEX\MiKTeX\tex\latex\oberdiek\epstopdf-base.sty
+Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
+
+(C:\CTEX\MiKTeX\tex\latex\oberdiek\grfext.sty
+Package: grfext 2010/08/19 v1.1 Managing graphics extensions (HO)
+
+(C:\CTEX\MiKTeX\tex\generic\oberdiek\kvdefinekeys.sty
+Package: kvdefinekeys 2011/04/07 v1.3 Defining keys (HO)
+))
+(C:\CTEX\MiKTeX\tex\latex\oberdiek\kvoptions.sty
+Package: kvoptions 2010/12/23 v3.10 Keyval support for LaTeX options (HO)
+
+(C:\CTEX\MiKTeX\tex\generic\oberdiek\kvsetkeys.sty
+Package: kvsetkeys 2011/04/07 v1.13 Key value parser (HO)
+
+(C:\CTEX\MiKTeX\tex\generic\oberdiek\etexcmds.sty
+Package: etexcmds 2011/02/16 v1.5 Prefix for e-TeX command names (HO)
+
+(C:\CTEX\MiKTeX\tex\generic\oberdiek\ifluatex.sty
+Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+)))
+(C:\CTEX\MiKTeX\tex\generic\oberdiek\pdftexcmds.sty
+Package: pdftexcmds 2011/04/22 v0.16 Utilities of pdfTeX for LuaTeX (HO)
+
+(C:\CTEX\MiKTeX\tex\generic\oberdiek\ifpdf.sty
+Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
+Package ifpdf Info: pdfTeX in PDF mode is detected.
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+Package grfext Info: Graphics extension search list:
+(grfext)             [.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 452.
+))
+("D:\study\big graph partition\experiment\paper\sigproc.aux")
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
 LaTeX Font Info:    ... okay on input line 12.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
@@ -384,47 +430,53 @@ Overfull \hbox (18.49684pt too wide) in paragraph at lines 650--671
  [][] 
  []
 
-("D:\个人工作\研究\big graph partition\SGP\trunk\paper\graph/plot1.tex"
-\plotpoint=\box33
-)
-Overfull \hbox (21.95105pt too wide) in paragraph at lines 109--799
-[][]
- []
+Package epstopdf Info: Source file: <graph/fig1.eps>
+(epstopdf)                    date: 2017-01-11 16:15:10
+(epstopdf)                    size: 22637 bytes
+(epstopdf)             Output file: <graph/fig1-eps-converted-to.pdf>
+(epstopdf)                    date: 2017-01-11 16:15:15
+(epstopdf)                    size: 8332 bytes
+(epstopdf)             Command: <epstopdf --outfile=graph/fig1-eps-converted-to
+.pdf graph/fig1.eps>
+(epstopdf)             \includegraphics on input line 802.
+Package epstopdf Info: Output file is already uptodate.
+<graph/fig1-eps-converted-to.pdf, id=45, 361.35pt x 252.945pt>
+File: graph/fig1-eps-converted-to.pdf Graphic file (type pdf)
 
+<use graph/fig1-eps-converted-to.pdf>
+Package pdftex.def Info: graph/fig1-eps-converted-to.pdf used on input line 802
+.
+(pdftex.def)             Requested size: 170.71672pt x 96.74149pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 109--799
-
- []
-
-("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sigproc.bbl"
-[9] [10] [11] [12]) [13]
-("D:\个人工作\研究\big graph partition\SGP\trunk\paper\sigproc.aux") ) 
+("D:\study\big graph partition\experiment\paper\sigproc.bbl" [9 <D:/study/big g
+raph partition/experiment/paper/graph/fig1-eps-converted-to.pdf>] [10] [11]
+[12]) [13] ("D:\study\big graph partition\experiment\paper\sigproc.aux") ) 
 Here is how much of TeX's memory you used:
- 3309 strings out of 495354
- 39362 string characters out of 3183858
- 178885 words of memory out of 3000000
- 6399 multiletter control sequences out of 15000+200000
+ 3648 strings out of 495354
+ 44993 string characters out of 3183859
+ 177038 words of memory out of 3000000
+ 6708 multiletter control sequences out of 15000+200000
  53482 words of font info for 73 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
- 41i,11n,35p,1809b,734s stack positions out of 5000i,500n,10000p,200000b,50000s
-{C:
-/CTEX/MiKTeX/fonts/enc/dvips/fontname/8r.enc}<C:/CTEX/MiKTeX/fonts/type1/public
-/amsfonts/cm/cmbx9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.p
-fb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmex7.pfb><C:/CTEX/MiKTe
-X/fonts/type1/public/amsfonts/cmextra/cmex9.pfb><C:/CTEX/MiKTeX/fonts/type1/pub
-lic/amsfonts/cm/cmmi5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.
-pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/CTEX/MiKTeX/fo
-nts/type1/public/amsfonts/cm/cmr5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfon
-ts/cm/cmr6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/CTEX
-/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy5.pfb><C:/CTEX/MiKTeX/fonts/type1/pu
-blic/amsfonts/cm/cmsy6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9
-.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/CTEX/MiKTeX/f
-onts/type1/urw/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/uhv
-r8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/
-type1/urw/times/utmr8a.pfb>
-Output written on sigproc.pdf (13 pages, 320182 bytes).
+ 42i,11n,35p,1796b,736s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/C
+TEX/MiKTeX/fonts/enc/dvips/fontname/8r.enc}<C:/CTEX/MiKTeX/fonts/type1/public/a
+msfonts/cm/cmbx9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.pfb
+><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmex7.pfb><C:/CTEX/MiKTeX/
+fonts/type1/public/amsfonts/cmextra/cmex9.pfb><C:/CTEX/MiKTeX/fonts/type1/publi
+c/amsfonts/cm/cmmi5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pf
+b><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/CTEX/MiKTeX/font
+s/type1/public/amsfonts/cm/cmr5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts
+/cm/cmr6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/CTEX/M
+iKTeX/fonts/type1/public/amsfonts/cm/cmsy5.pfb><C:/CTEX/MiKTeX/fonts/type1/publ
+ic/amsfonts/cm/cmsy6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9.p
+fb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/CTEX/MiKTeX/fon
+ts/type1/urw/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/uhvr8
+a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/ty
+pe1/urw/times/utmr8a.pfb>
+Output written on sigproc.pdf (13 pages, 325076 bytes).
 PDF statistics:
- 118 PDF objects out of 1000 (max. 8388607)
+ 129 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 6 words of extra memory for PDF output out of 10000 (max. 10000000)
 

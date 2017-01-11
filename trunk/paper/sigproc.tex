@@ -8,7 +8,7 @@
 \usepackage{enumerate}
 \usepackage{multirow}
 \usepackage{graphicx}
-
+\usepackage{epstopdf}
 \begin{document}
 
 \title{Efficiently Loading Big Graph in Distributed System
@@ -795,7 +795,14 @@ avg.                        &1.001&1.001&1.001&1.244&1.163&1.069\\
 \end{tabular}
 \end{table*}
 
-\input {graph/plot}
+%\input {graph/plot}
+\graphicspath{{graph/}}
+\begin{figure}
+  \centering
+  \includegraphics[width=6cm,height=3.4cm]{fig1.eps}
+  \caption{Runtime to $\rho$, with $k=4$}\label{fig:time-v4k-e85k}
+\end{figure}
+
 
 \section{Conclusions}
 //We have demonstrated that simple, one-pass streaming graph partitioning heuristics can dramatically improve the edge-cut in distributed graphs.
