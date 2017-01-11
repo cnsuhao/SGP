@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.14)  11 JAN 2017 16:15
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.14)  11 JAN 2017 18:26
 entering extended mode
 **D:/study/big*graph*partition/experiment/paper/sigproc.tex
 ("D:/study/big graph partition/experiment/paper/sigproc.tex"
@@ -431,52 +431,105 @@ Overfull \hbox (18.49684pt too wide) in paragraph at lines 650--671
  []
 
 Package epstopdf Info: Source file: <graph/fig1.eps>
-(epstopdf)                    date: 2017-01-11 16:15:10
-(epstopdf)                    size: 22637 bytes
+(epstopdf)                    date: 2017-01-11 18:26:39
+(epstopdf)                    size: 22411 bytes
 (epstopdf)             Output file: <graph/fig1-eps-converted-to.pdf>
-(epstopdf)                    date: 2017-01-11 16:15:15
-(epstopdf)                    size: 8332 bytes
+(epstopdf)                    date: 2017-01-11 18:26:06
+(epstopdf)                    size: 8478 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/fig1-eps-converted-to
 .pdf graph/fig1.eps>
 (epstopdf)             \includegraphics on input line 802.
-Package epstopdf Info: Output file is already uptodate.
+runsystem(epstopdf --outfile=graph/fig1-eps-converted-to.pdf graph/fig1.eps)...
+executed (allowed).
+
+Package epstopdf Info: Result file: <graph/fig1-eps-converted-to.pdf>
+(epstopdf)                    date: 2017-01-11 18:26:45
+(epstopdf)                    size: 8395 bytes.
 <graph/fig1-eps-converted-to.pdf, id=45, 361.35pt x 252.945pt>
 File: graph/fig1-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/fig1-eps-converted-to.pdf>
 Package pdftex.def Info: graph/fig1-eps-converted-to.pdf used on input line 802
 .
-(pdftex.def)             Requested size: 170.71672pt x 96.74149pt.
+(pdftex.def)             Requested size: 170.71672pt x 113.8126pt.
+Package epstopdf Info: Source file: <graph/fig2.eps>
+(epstopdf)                    date: 2017-01-11 18:26:39
+(epstopdf)                    size: 22399 bytes
+(epstopdf)             Output file: <graph/fig2-eps-converted-to.pdf>
+(epstopdf)                    date: 2017-01-11 18:26:06
+(epstopdf)                    size: 8268 bytes
+(epstopdf)             Command: <epstopdf --outfile=graph/fig2-eps-converted-to
+.pdf graph/fig2.eps>
+(epstopdf)             \includegraphics on input line 808.
+runsystem(epstopdf --outfile=graph/fig2-eps-converted-to.pdf graph/fig2.eps)...
+executed (allowed).
+
+Package epstopdf Info: Result file: <graph/fig2-eps-converted-to.pdf>
+(epstopdf)                    date: 2017-01-11 18:26:45
+(epstopdf)                    size: 8179 bytes.
+
+<graph/fig2-eps-converted-to.pdf, id=46, 361.35pt x 252.945pt>
+File: graph/fig2-eps-converted-to.pdf Graphic file (type pdf)
+
+<use graph/fig2-eps-converted-to.pdf>
+Package pdftex.def Info: graph/fig2-eps-converted-to.pdf used on input line 808
+.
+(pdftex.def)             Requested size: 170.71672pt x 113.8126pt.
+Package epstopdf Info: Source file: <graph/fig3.eps>
+(epstopdf)                    date: 2017-01-11 18:26:39
+(epstopdf)                    size: 22404 bytes
+(epstopdf)             Output file: <graph/fig3-eps-converted-to.pdf>
+(epstopdf)                    date: 2017-01-11 18:26:07
+(epstopdf)                    size: 8279 bytes
+(epstopdf)             Command: <epstopdf --outfile=graph/fig3-eps-converted-to
+.pdf graph/fig3.eps>
+(epstopdf)             \includegraphics on input line 814.
+runsystem(epstopdf --outfile=graph/fig3-eps-converted-to.pdf graph/fig3.eps)...
+executed (allowed).
+
+Package epstopdf Info: Result file: <graph/fig3-eps-converted-to.pdf>
+(epstopdf)                    date: 2017-01-11 18:26:45
+(epstopdf)                    size: 8199 bytes.
+
+<graph/fig3-eps-converted-to.pdf, id=47, 361.35pt x 252.945pt>
+File: graph/fig3-eps-converted-to.pdf Graphic file (type pdf)
+
+<use graph/fig3-eps-converted-to.pdf>
+Package pdftex.def Info: graph/fig3-eps-converted-to.pdf used on input line 814
+.
+(pdftex.def)             Requested size: 170.71672pt x 113.8126pt.
 
 ("D:\study\big graph partition\experiment\paper\sigproc.bbl" [9 <D:/study/big g
-raph partition/experiment/paper/graph/fig1-eps-converted-to.pdf>] [10] [11]
-[12]) [13] ("D:\study\big graph partition\experiment\paper\sigproc.aux") ) 
+raph partition/experiment/paper/graph/fig1-eps-converted-to.pdf> <D:/study/big 
+graph partition/experiment/paper/graph/fig2-eps-converted-to.pdf> <D:/study/big
+ graph partition/experiment/paper/graph/fig3-eps-converted-to.pdf>] [10]
+[11] [12]) [13] ("D:\study\big graph partition\experiment\paper\sigproc.aux") )
+ 
 Here is how much of TeX's memory you used:
- 3648 strings out of 495354
- 44993 string characters out of 3183859
- 177038 words of memory out of 3000000
- 6708 multiletter control sequences out of 15000+200000
+ 3660 strings out of 495354
+ 45348 string characters out of 3183859
+ 175757 words of memory out of 3000000
+ 6718 multiletter control sequences out of 15000+200000
  53482 words of font info for 73 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
  42i,11n,35p,1796b,736s stack positions out of 5000i,500n,10000p,200000b,50000s
-{C:/C
-TEX/MiKTeX/fonts/enc/dvips/fontname/8r.enc}<C:/CTEX/MiKTeX/fonts/type1/public/a
-msfonts/cm/cmbx9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc10.pfb
-><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmex7.pfb><C:/CTEX/MiKTeX/
-fonts/type1/public/amsfonts/cmextra/cmex9.pfb><C:/CTEX/MiKTeX/fonts/type1/publi
-c/amsfonts/cm/cmmi5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pf
-b><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/CTEX/MiKTeX/font
-s/type1/public/amsfonts/cm/cmr5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts
-/cm/cmr6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/CTEX/M
-iKTeX/fonts/type1/public/amsfonts/cm/cmsy5.pfb><C:/CTEX/MiKTeX/fonts/type1/publ
-ic/amsfonts/cm/cmsy6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy9.p
-fb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/CTEX/MiKTeX/fon
-ts/type1/urw/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/uhvr8
-a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/ty
-pe1/urw/times/utmr8a.pfb>
-Output written on sigproc.pdf (13 pages, 325076 bytes).
+{C:/CTEX/MiKTeX/fonts/enc/dvips/fontname/8r.enc}<C:/CTEX/MiKTeX/fonts/type1/pub
+lic/amsfonts/cm/cmbx9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmcsc1
+0.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cmextra/cmex7.pfb><C:/CTEX/Mi
+KTeX/fonts/type1/public/amsfonts/cmextra/cmex9.pfb><C:/CTEX/MiKTeX/fonts/type1/
+public/amsfonts/cm/cmmi5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmm
+i6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi9.pfb><C:/CTEX/MiKTeX
+/fonts/type1/public/amsfonts/cm/cmr5.pfb><C:/CTEX/MiKTeX/fonts/type1/public/ams
+fonts/cm/cmr6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmr9.pfb><C:/C
+TEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy5.pfb><C:/CTEX/MiKTeX/fonts/type1
+/public/amsfonts/cm/cmsy6.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cm
+sy9.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/CTEX/MiKTe
+X/fonts/type1/urw/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/
+uhvr8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fon
+ts/type1/urw/times/utmr8a.pfb>
+Output written on sigproc.pdf (13 pages, 338034 bytes).
 PDF statistics:
- 129 PDF objects out of 1000 (max. 8388607)
+ 151 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 6 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 16 words of extra memory for PDF output out of 10000 (max. 10000000)
 
