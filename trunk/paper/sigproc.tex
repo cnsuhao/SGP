@@ -814,7 +814,7 @@ avg.                        &1.001&1.001&1.001&1.244&1.163&1.069\\
        \includegraphics[width=2.2in]{time-v4k-e85k-c.eps}
        \label{fig:time-v4k-e85k:c}
     }
-    \caption{Runtime VS. Vertex Order on syn-v4k-e85k Dataset, $k=4$}\label{fig:time-v4k-e85k}
+    \caption{Runtime VS. $\rho$ on syn-v4k-e85k Dataset, $k=4$}\label{fig:time-v4k-e85k}
 \end{figure*}
 
 \begin{figure*}[htbp]
@@ -831,7 +831,7 @@ avg.                        &1.001&1.001&1.001&1.244&1.163&1.069\\
        \includegraphics[width=2.2in]{cut-v4k-e85k-c.eps}
        \label{fig:cut-v4k-e85k:c}
     }
-    \caption{ $\varsigma$ VS. Vertex Order on syn-v4k-e85k Dataset, $k=4$}\label{fig:cut-v4k-e85k}
+    \caption{ $\varsigma$ VS. $\rho$ on syn-v4k-e85k Dataset, $k=4$}\label{fig:cut-v4k-e85k}
 \end{figure*}
 
 \begin{figure*}[htbp]
@@ -848,8 +848,146 @@ avg.                        &1.001&1.001&1.001&1.244&1.163&1.069\\
        \includegraphics[width=2.2in]{maxload-v4k-e85k-c.eps}
        \label{fig:maxload-v4k-e85k:c}
     }
-    \caption{ $\tau$ VS. Vertex Order on syn-v4k-e85k Dataset, $k=4$}\label{fig:maxload-v4k-e85k}
+    \caption{ $\tau$ VS. $\rho$ on syn-v4k-e85k Dataset, $k=4$}\label{fig:maxload-v4k-e85k}
 \end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \subfigure[RANDOM]{
+        \includegraphics[width=2.2in]{time-to-k-v4k-e85k-a.eps}
+         \label{fig:time-to-k-v4k-e85k:a}
+    }
+    \subfigure[DFS]{
+        \includegraphics[width=2.2in]{time-to-k-v4k-e85k-b.eps}
+        \label{fig:time-to-k-v4k-e85k:b}
+    }
+    \subfigure[BFS]{
+       \includegraphics[width=2.2in]{time-to-k-v4k-e85k-c.eps}
+       \label{fig:time-to-k-v4k-e85k:c}
+    }
+    \caption{ Time VS. $k$ on syn-v4k-e85k Dataset, $\rho=0.3$}\label{fig:time-to-k-v4k-e85k}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \subfigure[RANDOM]{
+        \includegraphics[width=2.2in]{cut-to-k-v4k-e85k-a.eps}
+         \label{fig:cut-to-k-v4k-e85k:a}
+    }
+    \subfigure[DFS]{
+        \includegraphics[width=2.2in]{cut-to-k-v4k-e85k-b.eps}
+        \label{fig:cut-to-k-v4k-e85k:b}
+    }
+    \subfigure[BFS]{
+       \includegraphics[width=2.2in]{cut-to-k-v4k-e85k-c.eps}
+       \label{fig:cut-to-k-v4k-e85k:c}
+    }
+    \caption{ $\varsigma$ VS. $k$ on syn-v4k-e85k Dataset, $\rho=0.3$}\label{fig:cut-to-k-v4k-e85k}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \subfigure[RANDOM]{
+        \includegraphics[width=2.2in]{maxload-to-k-v4k-e85k-a.eps}
+         \label{fig:maxload-to-k-v4k-e85k:a}
+    }
+    \subfigure[DFS]{
+        \includegraphics[width=2.2in]{maxload-to-k-v4k-e85k-b.eps}
+        \label{fig:maxload-to-k-v4k-e85k:b}
+    }
+    \subfigure[BFS]{
+       \includegraphics[width=2.2in]{maxload-to-k-v4k-e85k-c.eps}
+       \label{fig:maxload-to-k-v4k-e85k:c}
+    }
+    \caption{ $\tau$ VS. $k$ on syn-v4k-e85k Dataset, $\rho=0.3$}\label{fig:maxload-to-k-v4k-e85k}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \subfigure[RANDOM]{
+        \includegraphics[width=2.2in]{cut-to-ac-v4k-e85k-a.eps}
+         \label{fig:cut-to-ac-v4k-e85k:a}
+    }
+    \subfigure[DFS]{
+        \includegraphics[width=2.2in]{cut-to-ac-v4k-e85k-b.eps}
+        \label{fig:cut-to-ac-v4k-e85k:b}
+    }
+    \subfigure[BFS]{
+       \includegraphics[width=2.2in]{cut-to-ac-v4k-e85k-c.eps}
+       \label{fig:cut-to-ac-v4k-e85k:c}
+    }
+    \caption{ $\varsigma$ VS. $AC$ on syn-v4k-e85k Dataset, $\rho=0.3$, $k=4$}\label{fig:cut-to-ac-v4k-e85k}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \subfigure[RANDOM]{
+        \includegraphics[width=2.2in]{maxload-to-ac-v4k-e85k-a.eps}
+         \label{fig:maxload-to-ac-v4k-e85k:a}
+    }
+    \subfigure[DFS]{
+        \includegraphics[width=2.2in]{maxload-to-ac-v4k-e85k-b.eps}
+        \label{fig:maxload-to-ac-v4k-e85k:b}
+    }
+    \subfigure[BFS]{
+       \includegraphics[width=2.2in]{maxload-to-ac-v4k-e85k-c.eps}
+       \label{fig:maxload-to-ac-v4k-e85k:c}
+    }
+    \caption{ $\tau$ VS. $AC$ on syn-v4k-e85k Dataset, $\rho=0.3$, $k=4$}\label{fig:maxload-to-ac-v4k-e85k}
+\end{figure*}
+
+\clearpage % fix bug: too many unprocessed float
+
+\begin{figure*}[htbp]
+    \centering
+    \subfigure[RANDOM]{
+        \includegraphics[width=2.2in]{time-v-change-e80k-a.eps}
+         \label{fig:time-v-change-e80k:a}
+    }
+    \subfigure[DFS]{
+        \includegraphics[width=2.2in]{time-v-change-e80k-b.eps}
+        \label{fig:time-v-change-e80k:b}
+    }
+    \subfigure[BFS]{
+       \includegraphics[width=2.2in]{time-v-change-e80k-c.eps}
+       \label{fig:time-v-change-e80k:c}
+    }
+    \caption{ Time VS. $\# Vex$, $\rho=0.3$, $k=4$, $AC=50$}\label{fig:time-v-change-e80k}
+\end{figure*}
+\begin{figure*}[htbp]
+    \centering
+    \subfigure[RANDOM]{
+        \includegraphics[width=2.2in]{cut-v-change-e80k-a.eps}
+         \label{fig:cut-v-change-e80k:a}
+    }
+    \subfigure[DFS]{
+        \includegraphics[width=2.2in]{cut-v-change-e80k-b.eps}
+        \label{fig:cut-v-change-e80k:b}
+    }
+    \subfigure[BFS]{
+       \includegraphics[width=2.2in]{cut-v-change-e80k-c.eps}
+       \label{fig:cut-v-change-e80k:c}
+    }
+    \caption{ $\varsigma$ VS. $\# Vex$, $\rho=0.3$, $k=4$, $AC=50$}\label{fig:cut-v-change-e80k}
+\end{figure*}
+\begin{figure*}[htbp]
+    \centering
+    \subfigure[RANDOM]{
+        \includegraphics[width=2.2in]{maxload-v-change-e80k-a.eps}
+         \label{fig:maxload-v-change-e80k:a}
+    }
+    \subfigure[DFS]{
+        \includegraphics[width=2.2in]{maxload-v-change-e80k-b.eps}
+        \label{fig:maxload-v-change-e80k:b}
+    }
+    \subfigure[BFS]{
+       \includegraphics[width=2.2in]{maxload-v-change-e80k-c.eps}
+       \label{fig:maxload-v-change-e80k:c}
+    }
+    \caption{ $\tau$ VS. $\# Vex$, $\rho=0.3$, $k=4$, $AC=50$}\label{fig:maxload-v-change-e80k}
+\end{figure*}
+
+\clearpage
 
 \section{Conclusions}
 //We have demonstrated that simple, one-pass streaming graph partitioning heuristics can dramatically improve the edge-cut in distributed graphs.
