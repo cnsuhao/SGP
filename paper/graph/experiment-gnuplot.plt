@@ -71,9 +71,9 @@ plot "cut-v4k-e85k-c.dat" using 1:2 title "FNL" with linespoint, \
 # maxload on syn-v4k-e85k-random with \rho
 set xlabel "{/:Italic {/Symbol \162}}(%)" font "times-roman, 32"
 set ylabel "{/:Italic {/Symbol \164}}(%)" font "times-roman, 32"
-set yrange [1:1.3]
+set yrange [1:1.14]
 set xtics ("0.1" 0.1,"0.2" 0.2,"0.3" 0.3,"0.4" 0.4,"0.5" 0.5)
-set ytics ("1" 1,"1.06" 1.06,"1.12" 1.12,"1.18" 1.18,"1.24" 1.24,"1.3" 1.3)
+set ytics ("1" 1,"1.02" 1.02,"1.04" 1.04,"1.06" 1.06,"1.08" 1.08,"1.1" 1.1,"1.12" 1.12,"1.14" 1.14)
 set output "maxload-v4k-e85k-a.eps"
 plot "maxload-v4k-e85k-a.dat" using 1:2 title "FNL" with linespoint, \
 "maxload-v4k-e85k-a.dat" using 1:3 title "SGLd-eq" with linespoint, \
@@ -150,9 +150,9 @@ plot "cut-to-k-v4k-e85k.dat" using 1:10 title "FNL" with linespoint, \
 # maxload to k on syn-v4k-e85k-random with \rho
 set xlabel "k" font "times-roman, 32"
 set ylabel "{/:Italic {/Symbol \164}}(%)" font "times-roman, 32"
-set yrange [1:1.5]
+set yrange [1:1.2]
 set xtics ("2" 2,"4" 4,"6" 6,"8" 8,"10" 10,"12" 12,"14" 14,"16" 16)
-set ytics ("1.0" 1,"1.1" 1.1,"1.2" 1.2,"1.3" 1.3,"1.4" 1.4,"1.5" 1.5)
+set ytics ("1.0" 1,"1.04" 1.04,"1.08" 1.08,"1.12" 1.12,"1.16" 1.16,"1.2" 1.2)
 set output "maxload-to-k-v4k-e85k-a.eps"
 plot "maxload-to-k-v4k-e85k.dat" using 1:2 title "FNL" with linespoint, \
      "maxload-to-k-v4k-e85k.dat" using 1:3 title "SGLd-eq" with linespoint, \
@@ -199,9 +199,9 @@ plot "cut-to-ac-v4k-e85k.dat" using 1:8 title "SGLd-eq" with linespoint, \
 # maxload to ac on syn-v4k-e85k-random with \rho
 set xlabel "AC" font "times-roman, 32"
 set ylabel "{/:Italic {/Symbol \164}}(%)" font "times-roman, 32"
-set yrange [1.0:1.3]
+set yrange [1.0:1.03]
 set xtics ("10" 10,"20" 20,"30" 30,"40" 40,"50" 50,"60" 60,"70" 70,"80" 80)
-set ytics ("1.0" 1,"1.1" 1.1,"1.2" 1.2,"1.3" 1.3)
+set ytics ("1.0" 1,"1.005" 1.005,"1.01" 1.01,"1.015" 1.015,"1.02" 1.02,"1.025" 1.025,"1.03" 1.03)
 set output "maxload-to-ac-v4k-e85k-a.eps"
 plot "maxload-to-ac-v4k-e85k.dat" using 1:2 title "SGLd-eq" with linespoint, \
      "maxload-to-ac-v4k-e85k.dat" using 1:3 title "SGLd-dbs" with linespoint, \
