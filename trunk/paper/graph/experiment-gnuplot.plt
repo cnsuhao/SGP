@@ -45,9 +45,9 @@ plot "time-v4k-e85k-c.dat" using 1:2 title "FNL" with linespoint, \
 # cut/m on syn-v4k-e85k-random with \rho
 set xlabel "{/:Italic {/Symbol \162}}(%)" font "times-roman, 32"
 set ylabel "{/:Italic {/Symbol \172}}(%)" font "times-roman, 32"
-set yrange [0:0.6]
+set yrange [0:0.3]
 set xtics ("0.1" 0.1,"0.2" 0.2,"0.3" 0.3,"0.4" 0.4,"0.5" 0.5)
-set ytics ("0" 0,"0.1" 0.1,"0.2" 0.2,"0.3" 0.3,"0.4" 0.4,"0.5" 0.5, "0.6" 0.6)
+set ytics ("0" 0,"0.1" 0.1,"0.2" 0.2,"0.3" 0.3)
 set output "cut-v4k-e85k-a.eps"
 plot "cut-v4k-e85k-a.dat" using 1:2 title "FNL" with linespoint, \
 "cut-v4k-e85k-a.dat" using 1:3 title "SGLd-eq" with linespoint, \
@@ -98,9 +98,9 @@ plot "maxload-v4k-e85k-c.dat" using 1:2 title "FNL" with linespoint, \
 # time to k on syn-v4k-e85k-random with \rho
 set xlabel "k" font "times-roman, 32"
 set ylabel "time(unit:sec)" font "times-roman, 32"
-set yrange [200:1100]
+set yrange [100:1100]
 set xtics ("2" 2,"4" 4,"6" 6,"8" 8,"10" 10,"12" 12,"14" 14,"16" 16)
-set ytics ("200" 200,"500" 500,"800" 800,"1100" 1100)
+set ytics ("100" 100,"300" 300,"500" 500,"700" 700,"900" 900,"1100" 1100)
 set output "time-to-k-v4k-e85k-a.eps"
 plot "time-to-k-v4k-e85k.dat" using 1:2 title "FNL" with linespoint, \
      "time-to-k-v4k-e85k.dat" using 1:3 title "SGLd-eq" with linespoint, \
