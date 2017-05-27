@@ -625,7 +625,15 @@ in terms of execution time and edge cut with the smaller restriction of memory a
 We then study how \textit{SGL} performance is affected by changes in the input stream ordering, changes in the size of memory, changes in the number of partitions, and changes in the length of \textit{AC} when executed on synthetic graph.
 
 \subsubsection{Performance Comparison on Real Graph}
-We measured the performance of \textit{SGLd} and \textit{SGLs} against other streaming partitioning algorithms on our set of real-world graphs. These experiments were run by partitioning the input graphs on a set of target partitions of $k=4$ with the memory limitation in the range of $30\%, 50\%$ and $ 80\%$, as shown in Table 2, Table 3 and Table 4. It can be observed that the algorithms of 'Hash' and 'B' perform the best, since they don't compute the global measure such as degree
+We measured the performance of \textit{SGLd} and \textit{SGLs} against other streaming partitioning algorithms on the set of real-world graphs. These experiments were run by partitioning the input graphs on a set of target partitions of $k=4$ with the memory limitation in the range of $30\%, 50\%$ and $80\%$. 
+The running times are reported in Table 2, Table 3 and Table 4. 
+the fractions of edges cut are reported in Table 5 and Table 6.
+The normalized maximum loads are reported in Table 7 and Table 8.
+It can be observed that \textbf{Balanced Partition} and \textbf{Hash Partition} are the fastest on average than existing streaming algorithms, and insensitive to the memory size. This excellent performance is achieved by their succinct partition measure, but the measures also bring the worst the fractions of edges cut. The values of $\varsigma$ almost are three times lager than the ones of \textbf{SGLd} and \textbf{SGLs}.
+The others $\varsigma$ of existing partitioning algorithms are better than \textbf{Balanced Partition} and \textbf{Hash Partition}, especially, the $\varsigma$ of \textbf{FNL} is close to \textbf{SGLd} and \textbf{SGLs}. However, they are more sensitive to the memory size than \textbf{SGLd} and \textbf{SGLs} because of disk I/O. As shown from Table 2 to Table 4, \textbf{FNL} suffers the runtime increment of 240.2\% and 148.5\% from the range of memory size proportion $80\%$ to $50\%$ and $50\%$ to$30\%$ respectively. On contrary, there is no memory swap for \textbf{SGLd} and \textbf{SGLs}, so they are faster with the smaller memory. The time increment of \textbf{SGLd} are 12.4\% and 10.5\% from $30\%$ to $50\%$, and $50\%$ to $80\%$ respectively, \textbf{SGLs} are 7.3\% and 6.1\% respectively.
+
+%时间上：SGLd 是fnl的多少倍，SGLs是fnl多少倍。SGLd与SGLs相比。为什么。cut值。balance值。
+
 \begin{table*}[!hpp]
 \centering
 \caption{Runtime with $\rho = m\times 30\%,\ k=4$(unit:sec)}
