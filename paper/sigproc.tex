@@ -595,16 +595,16 @@ syn-v4k-e85k            & 4000      & 85099   &39.76 &2213   & Synthetic\\
 As our competitors we use state-of-the-art heuristics.
 Specifically, in our evaluation we consider the following heuristics from \cite{Stanton:streampartition} and \cite{Charalampos:fennel}
 \begin{itemize}
-  \item Balanced(B): place $v$ to the partition $P_i$ with minimal size.
-  \item Hash partitioning (Hash): place $v$ to a partition chosen uniformly at random.
-  \item Deterministic Greedy (DG): place $v$ to $P_i$ that maximizes $|N(v)\bigcap P_i|$.
-  \item Linear Weighted Deterministic Greedy (LDG): place $v$ to $P_i$ that maximizes $|N(v)\bigcap P_i|\times (1-\frac{|P_i|}{\frac{n}{k}})$.
-  \item Exponentially Weighted Deterministic Greedy (EDG): place $v$ to $P_i$ that maximizes $|N(v)\bigcap P_i|\times (1-exp(|P_i|-\frac{n}{k}))$.
-  \item Triangles (Tri): place $v$ to $P_i$ that maximizes $t_{P_i(v)}$.
-  \item Linear Weighted Triangles (LTri): place $v$ to $P_i$ that maximizes $t_{P_i(v)}\times (1-\frac{|P_i|}{\frac{n}{k}})$.
-  \item Exponentially Weighted Triangles (ETri): place $v$ to $P_i$ that maximizes $t_{P_i(v)}\times (1-exp(|P_i|-\frac{n}{k}))$.
-  \item Non-Neighbors (NN): place $v$ to $P_i$ that minimizes $|P_i\\N(v)|$
-  \item FENNEL(FNL): place $v$ to $P_i$ such that $\delta g(v, P_i)\geq \delta g(v, P_j)$.
+  \item \textbf{Balanced Parition(B)}: place $v$ to the partition $P_i$ with minimal size.
+  \item \textbf{Hash Partitioning (Hash)}: place $v$ to a partition chosen uniformly at random.
+  \item \textbf{Deterministic Greedy (DG)}: place $v$ to $P_i$ that maximizes $|N(v)\bigcap P_i|$.
+  \item \textbf{Linear Weighted Deterministic Greedy (LDG)}: place $v$ to $P_i$ that maximizes $|N(v)\bigcap P_i|\times (1-\frac{|P_i|}{\frac{n}{k}})$.
+  \item \textbf{Exponentially Weighted Deterministic Greedy (EDG)}: place $v$ to $P_i$ that maximizes $|N(v)\bigcap P_i|\times (1-exp(|P_i|-\frac{n}{k}))$.
+  \item \textbf{Triangles (Tri)}: place $v$ to $P_i$ that maximizes $t_{P_i(v)}$.
+  \item \textbf{Linear Weighted Triangles (LTri)}: place $v$ to $P_i$ that maximizes $t_{P_i(v)}\times (1-\frac{|P_i|}{\frac{n}{k}})$.
+  \item \textbf{Exponentially Weighted Triangles (ETri)}: place $v$ to $P_i$ that maximizes $t_{P_i(v)}\times (1-exp(|P_i|-\frac{n}{k}))$.
+  \item \textbf{Non-Neighbors (NN)}: place $v$ to $P_i$ that minimizes $|P_i\\N(v)|$
+  \item \textbf{FENNEL(FNL)}: place $v$ to $P_i$ such that $\delta g(v, P_i)\geq \delta g(v, P_j)$.
 \end{itemize}
 $v$ is the newly arrived vertex. $N(v)$ denotes the set of neighbors of vertex $v$. For FENNEL, the setting of the parameters we use throughout our experiments is $\gamma=1.5$, $ \alpha=\sqrt{k}\frac{m}{n^{1.5}}$, and $\nu = 1.1$ as mentioned in \cite{Charalampos:fennel}.
 
@@ -625,14 +625,26 @@ in terms of execution time and edge cut with the smaller restriction of memory a
 We then study how \textit{SGL} performance is affected by changes in the input stream ordering, changes in the size of memory, changes in the number of partitions, and changes in the length of \textit{AC} when executed on synthetic graph.
 
 \subsubsection{Performance Comparison on Real Graph}
-We measured the performance of \textit{SGLd} and \textit{SGLs} against other streaming partitioning algorithms on the set of real-world graphs. These experiments were run by partitioning the input graphs on a set of target partitions of $k=4$ with the memory limitation in the range of $30\%, 50\%$ and $80\%$. 
-The running times are reported in Table 2, Table 3 and Table 4. 
+We measured the performance of \textit{SGLd} and \textit{SGLs} against other streaming partitioning algorithms on the set of real-world graphs. These experiments were run by partitioning the input graphs on a set of target partitions of $k=4$ with the memory limitation in the range of $30\%, 50\%$ and $80\%$.
+The running times are reported in Table 2, Table 3 and Table 4.
 the fractions of edges cut are reported in Table 5 and Table 6.
 The normalized maximum loads are reported in Table 7 and Table 8.
-It can be observed that \textbf{Balanced Partition} and \textbf{Hash Partition} are the fastest on average than existing streaming algorithms, and insensitive to the memory size. This excellent performance is achieved by their succinct partition measure, but the measures also bring the worst the fractions of edges cut. The values of $\varsigma$ almost are three times lager than the ones of \textbf{SGLd} and \textbf{SGLs}.
-The others $\varsigma$ of existing partitioning algorithms are better than \textbf{Balanced Partition} and \textbf{Hash Partition}, especially, the $\varsigma$ of \textbf{FNL} is close to \textbf{SGLd} and \textbf{SGLs}. However, they are more sensitive to the memory size than \textbf{SGLd} and \textbf{SGLs} because of disk I/O. As shown from Table 2 to Table 4, \textbf{FNL} suffers the runtime increment of 240.2\% and 148.5\% from the range of memory size proportion $80\%$ to $50\%$ and $50\%$ to$30\%$ respectively. On contrary, there is no memory swap for \textbf{SGLd} and \textbf{SGLs}, so they are faster with the smaller memory. The time increment of \textbf{SGLd} are 12.4\% and 10.5\% from $30\%$ to $50\%$, and $50\%$ to $80\%$ respectively, \textbf{SGLs} are 7.3\% and 6.1\% respectively.
 
-%时间上：SGLd 是fnl的多少倍，SGLs是fnl多少倍。SGLd与SGLs相比。为什么。cut值。balance值。
+It can be observed that \textbf{Balanced Partition} and \textbf{Hash Partition} are the fastest on average than existing streaming algorithms, and insensitive to the memory size. This excellent performance is achieved by their succinct partition measure, but the measures also bring the worst the fractions of edges cut. The values of $\varsigma$ almost are three times lager than the ones of \textbf{SGLd} and \textbf{SGLs}.
+The others $\varsigma$ of existing partitioning algorithms are better than \textbf{Balanced Partition} and \textbf{Hash Partition}, especially, the $\varsigma$ of \textbf{FNL} is close to \textbf{SGLd} and \textbf{SGLs}. As also reported in \cite{Charalampos:fennel}, \textbf{FNL} shown a better performance than the other existing ones. However, they are more sensitive to the memory size than \textbf{SGLd} and \textbf{SGLs} because of massive disk I/O. As shown from Table 2 to Table 4, \textbf{FNL} suffers the runtime increment of 240.2\% and 148.5\% from the range of memory size proportion $80\%$ to $50\%$ and $50\%$ to$30\%$ respectively. On contrary, there is no memory swap for \textbf{SGLd} and \textbf{SGLs}, so they are faster with the smaller memory. The time increment of \textbf{SGLd} are 12.4\% and 10.5\% from $30\%$ to $50\%$, and $50\%$ to $80\%$ respectively, \textbf{SGLs} are 7.3\% and 6.1\%. \textbf{SGLd} and \textbf{SGLs} outperform existing algorithms under the smaller memory limitation. For the memory limitation of 30\%, the runtime of \textbf{SGLd} is 26.5\% of \textbf{FNL}, \textbf{SGLs} is 52\% of \textbf{FNL}. For the memory limitation of 50\%, the runtime of \textbf{SGLd} is 74.1\% of \textbf{FNL}, while \textbf{SGLs} is 138\% of \textbf{FNL}. For larger memory, the probability of swapping is small for all the existing algorithm including\textbf{FNL}, while the larger approximate graph in memory is required for \textbf{SGL}, so existing algorithms outperform \textbf{SGL} in runtime. In the comparison with \textbf{SGLd} and \textbf{SGLs}, although \textbf{SGLd} read the whole graph twice, \textbf{SGLd} only compute the approximate partitioner once, while \textbf{SGLs} have to adjust the approximate partitioner for each reading. So, \textbf{SGLd} perform better than \textbf{SGLs}.
+
+For the fractions of edges cut, all the existing algorithms are insensitive to the memory size. \textbf{FNL} achieves 0.165 on average and perform the best in the existing algorithms. As proved by Lemma \ref{lemma-partitioning-error-func-property}, \textbf{SGLd} and \textbf{SGLs} are more sensitive to the memory size, that is, the upper-bound of $E(\tilde\delta)$ will be decreased with the sample ratio increased, and the experimental results also proves it. As shown in Table 6, \textbf{SGLd} perform better than \textbf{FNL} for all memory configurations and takes the improvement of 2.4\%, 6.7\% and 9.1\% respectively. \textbf{SGLs} outperform \textbf{FNL} only for 80\% limitation and takes 9\% improvement, while suffers the reduction of 4.8\% for 30\% limitation and 1.2\% for 50\% limitation. \textbf{SGLs} shows the worse fractions of edges cut than \textbf{SGLd} in all cases and \textbf{FNL} in the memory limitation of 30\% and 50\%. This is because the approximate partitioner in \textbf{SGLd} is built on the whole graph, which represent the characteristic of graph more accurately, however, the partitioner of \textbf{SGLs} modified continuously until the end of stream is worse representative to graph. 
+For the normalized maximum loads, as depicted by Table 7 and Table 8, both \textbf{SGLd} and in all configurations outperform the competitors except for \textbf{Balanced Partition}. In comparison to \textbf{FNL}, \textbf{SGLd} achieves the average improvements of 5.6\%, 5.4\% and 5.4\% for the memory setting of 30\%, 50\% and 80\%. \textbf{SGLs} outperform \textbf{FNL} with the higher memory size and have 2.1\% improvement at 80\% memory limitation. But it suffers a little reduction of 0.9\% for 30\% memory and 0.2\% for 50\% memory.
+Although the edges cut and maximum load of \textbf{SGLs} are a little worse than \textbf{FNL} for the small memory, it shows much better efficiency of about 50\% improvement.
+
+\subsubsection{Performance Evaluation on Synthetic Graph}
+
+ We firstly present the experimental evaluation of runtime, edges cut and maximum load in comparison with \textbf{SGL} and \textbf{FNL} for each setting of memory limitation and edges orders. Here, we also provide the experiments of \textbf{Random Uniform Sampling (RUS)} beside \textbf{DBS}, which marked by '-eq' in the figure.
+The runtime comparisons are depicted in Figure 1. \textbf{SGLd} with the sampling of RUS and DBS perform well over Random, DFS and BFS orders, especially outperforms \textbf{FNL} greatly under the small memory. More accurately, the runtime of RUS is a little better than DBS, but very closely. \textbf{SGLs} performs worse than \textbf{SGLd}, but much better than \textbf{FNL} with the small memory limitation. Both \textbf{SGLd} and \textbf{SGLs} have little sensitivity to the order, but \textbf{FNL} is quite sensitive. As shown by Figure 1(c), \textbf{FNL} in BFS order performs the worst in comparison to the others, and shows much overhead of runtime. 
+The comparisons of edges cut are depicted in Figure 2. \textbf{SGL} performs much better than \textbf{FNL} for Random and DFS and closely for BFS. \textbf{SGLd} is close to \textbf{SGLs} in all cases. \textbf{RUS} is worse than \textbf{DBS}, especially for Random order.
+The comparisons of maximum loads are shown by Figure 3. \textbf{SGLd} including \textbf{RUS} and \textbf{DBS} has very good load balancing properties. \textbf{SGLs} achieve the comparable performance only in BFS order. For the other orders, \textbf{SGLs} has the similar behaviors as \textbf{FNL}.
+
+Secondly, we present the experimental evaluation with respective to the number of partitions $k$ and input orders. Figure 5 shows t
 
 \begin{table*}[!hpp]
 \centering
