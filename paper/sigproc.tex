@@ -644,7 +644,9 @@ The runtime comparisons are depicted in Figure 1. \textbf{SGLd} with the samplin
 The comparisons of edges cut are depicted in Figure 2. \textbf{SGL} performs much better than \textbf{FNL} for Random and DFS and closely for BFS. \textbf{SGLd} is close to \textbf{SGLs} in all cases. \textbf{RUS} is worse than \textbf{DBS}, especially for Random order.
 The comparisons of maximum loads are shown by Figure 3. \textbf{SGLd} including \textbf{RUS} and \textbf{DBS} has very good load balancing properties. \textbf{SGLs} achieve the comparable performance only in BFS order. For the other orders, \textbf{SGLs} has the similar behaviors as \textbf{FNL}.
 
-Secondly, we present the experimental evaluation with respective to the number of partitions $k$ and input orders. Figure 5 shows t
+Secondly, we present the experimental evaluation with respective to the number of partitions $k$ and input orders. 
+Figure 4 shows the runtime when $k$ ranges from 2 to 16 for each input order. We fix the memory limitation $\rho = 0.3$ and $|AC| = 50$. As we see, the factor of $k$ has less effects on the runtime of \textbf{FNL} than \textbf{SGL}, since \textbf{SGL} applies optimal graph partitioning in memory to build the approximate partitioner. But the factor of input order has much more effects on \textbf{FNL} than \textbf{SGL}, which also shown in the experiments of Figure 1. As depicted by Figure 4(c), the runtime of \textbf{FNL} increases greatly for BFS order in comparison to the other orders, while the runtime of \textbf{SGL} changes slightly over three orders.
+Figure 5 gives the experimental result of edges cut, where the experimental setting is the same as the one of Figure 4. 
 
 \begin{table*}[!hpp]
 \centering
