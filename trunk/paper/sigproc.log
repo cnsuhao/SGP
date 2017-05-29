@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.14)  28 MAY 2017 11:28
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2016.8.14)  29 MAY 2017 10:21
 entering extended mode
 **D:/study/big*graph*partition/experiment/paper/sigproc.tex
 ("D:/study/big graph partition/experiment/paper/sigproc.tex"
@@ -432,17 +432,20 @@ if-
  []
 
 [9]
-Overfull \hbox (27.76666pt too wide) in paragraph at lines 649--670
+Underfull \vbox (badness 1558) has occurred while \output is active []
+
+
+Overfull \hbox (27.76666pt too wide) in paragraph at lines 654--675
  [][] 
  []
 
 
-Overfull \hbox (13.87991pt too wide) in paragraph at lines 675--696
+Overfull \hbox (13.87991pt too wide) in paragraph at lines 680--701
  [][] 
  []
 
 
-Overfull \hbox (2.43217pt too wide) in paragraph at lines 701--721
+Overfull \hbox (2.43217pt too wide) in paragraph at lines 706--726
  [][] 
  []
 
@@ -455,14 +458,14 @@ Package epstopdf Info: Source file: <graph/time-v4k-e85k-a.eps>
 (epstopdf)                    size: 7462 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/time-v4k-e85k-a-eps-c
 onverted-to.pdf graph/time-v4k-e85k-a.eps>
-(epstopdf)             \includegraphics on input line 829.
+(epstopdf)             \includegraphics on input line 834.
 Package epstopdf Info: Output file is already uptodate.
 <graph/time-v4k-e85k-a-eps-converted-to.pdf, id=49, 361.35pt x 252.945pt>
 File: graph/time-v4k-e85k-a-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/time-v4k-e85k-a-eps-converted-to.pdf>
 Package pdftex.def Info: graph/time-v4k-e85k-a-eps-converted-to.pdf used on inp
-ut line 829.
+ut line 834.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/time-v4k-e85k-b.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -473,7 +476,7 @@ Package epstopdf Info: Source file: <graph/time-v4k-e85k-b.eps>
 (epstopdf)                    size: 7457 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/time-v4k-e85k-b-eps-c
 onverted-to.pdf graph/time-v4k-e85k-b.eps>
-(epstopdf)             \includegraphics on input line 833.
+(epstopdf)             \includegraphics on input line 838.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/time-v4k-e85k-b-eps-converted-to.pdf, id=50, 361.35pt x 252.945pt>
@@ -481,7 +484,7 @@ File: graph/time-v4k-e85k-b-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/time-v4k-e85k-b-eps-converted-to.pdf>
 Package pdftex.def Info: graph/time-v4k-e85k-b-eps-converted-to.pdf used on inp
-ut line 833.
+ut line 838.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/time-v4k-e85k-c.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -492,7 +495,7 @@ Package epstopdf Info: Source file: <graph/time-v4k-e85k-c.eps>
 (epstopdf)                    size: 7465 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/time-v4k-e85k-c-eps-c
 onverted-to.pdf graph/time-v4k-e85k-c.eps>
-(epstopdf)             \includegraphics on input line 837.
+(epstopdf)             \includegraphics on input line 842.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/time-v4k-e85k-c-eps-converted-to.pdf, id=51, 361.35pt x 252.945pt>
@@ -500,7 +503,7 @@ File: graph/time-v4k-e85k-c-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/time-v4k-e85k-c-eps-converted-to.pdf>
 Package pdftex.def Info: graph/time-v4k-e85k-c-eps-converted-to.pdf used on inp
-ut line 837.
+ut line 842.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/cut-v4k-e85k-a.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -511,7 +514,7 @@ Package epstopdf Info: Source file: <graph/cut-v4k-e85k-a.eps>
 (epstopdf)                    size: 6552 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/cut-v4k-e85k-a-eps-co
 nverted-to.pdf graph/cut-v4k-e85k-a.eps>
-(epstopdf)             \includegraphics on input line 846.
+(epstopdf)             \includegraphics on input line 851.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/cut-v4k-e85k-a-eps-converted-to.pdf, id=52, 361.35pt x 252.945pt>
@@ -519,7 +522,7 @@ File: graph/cut-v4k-e85k-a-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/cut-v4k-e85k-a-eps-converted-to.pdf>
 Package pdftex.def Info: graph/cut-v4k-e85k-a-eps-converted-to.pdf used on inpu
-t line 846.
+t line 851.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/cut-v4k-e85k-b.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -530,7 +533,7 @@ Package epstopdf Info: Source file: <graph/cut-v4k-e85k-b.eps>
 (epstopdf)                    size: 6552 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/cut-v4k-e85k-b-eps-co
 nverted-to.pdf graph/cut-v4k-e85k-b.eps>
-(epstopdf)             \includegraphics on input line 850.
+(epstopdf)             \includegraphics on input line 855.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/cut-v4k-e85k-b-eps-converted-to.pdf, id=53, 361.35pt x 252.945pt>
@@ -538,7 +541,7 @@ File: graph/cut-v4k-e85k-b-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/cut-v4k-e85k-b-eps-converted-to.pdf>
 Package pdftex.def Info: graph/cut-v4k-e85k-b-eps-converted-to.pdf used on inpu
-t line 850.
+t line 855.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/cut-v4k-e85k-c.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -549,7 +552,7 @@ Package epstopdf Info: Source file: <graph/cut-v4k-e85k-c.eps>
 (epstopdf)                    size: 6550 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/cut-v4k-e85k-c-eps-co
 nverted-to.pdf graph/cut-v4k-e85k-c.eps>
-(epstopdf)             \includegraphics on input line 854.
+(epstopdf)             \includegraphics on input line 859.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/cut-v4k-e85k-c-eps-converted-to.pdf, id=54, 361.35pt x 252.945pt>
@@ -557,7 +560,7 @@ File: graph/cut-v4k-e85k-c-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/cut-v4k-e85k-c-eps-converted-to.pdf>
 Package pdftex.def Info: graph/cut-v4k-e85k-c-eps-converted-to.pdf used on inpu
-t line 854.
+t line 859.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/maxload-v4k-e85k-a.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -568,7 +571,7 @@ pdf>
 (epstopdf)                    size: 6562 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/maxload-v4k-e85k-a-ep
 s-converted-to.pdf graph/maxload-v4k-e85k-a.eps>
-(epstopdf)             \includegraphics on input line 863.
+(epstopdf)             \includegraphics on input line 868.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/maxload-v4k-e85k-a-eps-converted-to.pdf, id=55, 361.35pt x 252.945pt>
@@ -576,7 +579,7 @@ File: graph/maxload-v4k-e85k-a-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/maxload-v4k-e85k-a-eps-converted-to.pdf>
 Package pdftex.def Info: graph/maxload-v4k-e85k-a-eps-converted-to.pdf used on 
-input line 863.
+input line 868.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/maxload-v4k-e85k-b.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -587,7 +590,7 @@ pdf>
 (epstopdf)                    size: 6538 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/maxload-v4k-e85k-b-ep
 s-converted-to.pdf graph/maxload-v4k-e85k-b.eps>
-(epstopdf)             \includegraphics on input line 867.
+(epstopdf)             \includegraphics on input line 872.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/maxload-v4k-e85k-b-eps-converted-to.pdf, id=56, 361.35pt x 252.945pt>
@@ -595,7 +598,7 @@ File: graph/maxload-v4k-e85k-b-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/maxload-v4k-e85k-b-eps-converted-to.pdf>
 Package pdftex.def Info: graph/maxload-v4k-e85k-b-eps-converted-to.pdf used on 
-input line 867.
+input line 872.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/maxload-v4k-e85k-c.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -606,7 +609,7 @@ pdf>
 (epstopdf)                    size: 6551 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/maxload-v4k-e85k-c-ep
 s-converted-to.pdf graph/maxload-v4k-e85k-c.eps>
-(epstopdf)             \includegraphics on input line 871.
+(epstopdf)             \includegraphics on input line 876.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/maxload-v4k-e85k-c-eps-converted-to.pdf, id=57, 361.35pt x 252.945pt>
@@ -614,7 +617,7 @@ File: graph/maxload-v4k-e85k-c-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/maxload-v4k-e85k-c-eps-converted-to.pdf>
 Package pdftex.def Info: graph/maxload-v4k-e85k-c-eps-converted-to.pdf used on 
-input line 871.
+input line 876.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/time-to-k-v4k-e85k-a.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -625,7 +628,7 @@ o.pdf>
 (epstopdf)                    size: 6215 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/time-to-k-v4k-e85k-a-
 eps-converted-to.pdf graph/time-to-k-v4k-e85k-a.eps>
-(epstopdf)             \includegraphics on input line 880.
+(epstopdf)             \includegraphics on input line 885.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/time-to-k-v4k-e85k-a-eps-converted-to.pdf, id=58, 361.35pt x 252.945pt>
@@ -633,7 +636,7 @@ File: graph/time-to-k-v4k-e85k-a-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/time-to-k-v4k-e85k-a-eps-converted-to.pdf>
 Package pdftex.def Info: graph/time-to-k-v4k-e85k-a-eps-converted-to.pdf used o
-n input line 880.
+n input line 885.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/time-to-k-v4k-e85k-b.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -644,7 +647,7 @@ o.pdf>
 (epstopdf)                    size: 6212 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/time-to-k-v4k-e85k-b-
 eps-converted-to.pdf graph/time-to-k-v4k-e85k-b.eps>
-(epstopdf)             \includegraphics on input line 884.
+(epstopdf)             \includegraphics on input line 889.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/time-to-k-v4k-e85k-b-eps-converted-to.pdf, id=59, 361.35pt x 252.945pt>
@@ -652,7 +655,7 @@ File: graph/time-to-k-v4k-e85k-b-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/time-to-k-v4k-e85k-b-eps-converted-to.pdf>
 Package pdftex.def Info: graph/time-to-k-v4k-e85k-b-eps-converted-to.pdf used o
-n input line 884.
+n input line 889.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/time-to-k-v4k-e85k-c.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -663,7 +666,7 @@ o.pdf>
 (epstopdf)                    size: 6188 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/time-to-k-v4k-e85k-c-
 eps-converted-to.pdf graph/time-to-k-v4k-e85k-c.eps>
-(epstopdf)             \includegraphics on input line 888.
+(epstopdf)             \includegraphics on input line 893.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/time-to-k-v4k-e85k-c-eps-converted-to.pdf, id=60, 361.35pt x 252.945pt>
@@ -671,7 +674,7 @@ File: graph/time-to-k-v4k-e85k-c-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/time-to-k-v4k-e85k-c-eps-converted-to.pdf>
 Package pdftex.def Info: graph/time-to-k-v4k-e85k-c-eps-converted-to.pdf used o
-n input line 888.
+n input line 893.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/cut-to-k-v4k-e85k-a.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -682,7 +685,7 @@ Package epstopdf Info: Source file: <graph/cut-to-k-v4k-e85k-a.eps>
 (epstopdf)                    size: 6647 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/cut-to-k-v4k-e85k-a-e
 ps-converted-to.pdf graph/cut-to-k-v4k-e85k-a.eps>
-(epstopdf)             \includegraphics on input line 897.
+(epstopdf)             \includegraphics on input line 902.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/cut-to-k-v4k-e85k-a-eps-converted-to.pdf, id=61, 361.35pt x 252.945pt>
@@ -690,7 +693,7 @@ File: graph/cut-to-k-v4k-e85k-a-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/cut-to-k-v4k-e85k-a-eps-converted-to.pdf>
 Package pdftex.def Info: graph/cut-to-k-v4k-e85k-a-eps-converted-to.pdf used on
- input line 897.
+ input line 902.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/cut-to-k-v4k-e85k-b.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -701,7 +704,7 @@ Package epstopdf Info: Source file: <graph/cut-to-k-v4k-e85k-b.eps>
 (epstopdf)                    size: 6646 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/cut-to-k-v4k-e85k-b-e
 ps-converted-to.pdf graph/cut-to-k-v4k-e85k-b.eps>
-(epstopdf)             \includegraphics on input line 901.
+(epstopdf)             \includegraphics on input line 906.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/cut-to-k-v4k-e85k-b-eps-converted-to.pdf, id=62, 361.35pt x 252.945pt>
@@ -709,7 +712,7 @@ File: graph/cut-to-k-v4k-e85k-b-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/cut-to-k-v4k-e85k-b-eps-converted-to.pdf>
 Package pdftex.def Info: graph/cut-to-k-v4k-e85k-b-eps-converted-to.pdf used on
- input line 901.
+ input line 906.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/cut-to-k-v4k-e85k-c.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -720,7 +723,7 @@ Package epstopdf Info: Source file: <graph/cut-to-k-v4k-e85k-c.eps>
 (epstopdf)                    size: 6645 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/cut-to-k-v4k-e85k-c-e
 ps-converted-to.pdf graph/cut-to-k-v4k-e85k-c.eps>
-(epstopdf)             \includegraphics on input line 905.
+(epstopdf)             \includegraphics on input line 910.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/cut-to-k-v4k-e85k-c-eps-converted-to.pdf, id=63, 361.35pt x 252.945pt>
@@ -728,7 +731,7 @@ File: graph/cut-to-k-v4k-e85k-c-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/cut-to-k-v4k-e85k-c-eps-converted-to.pdf>
 Package pdftex.def Info: graph/cut-to-k-v4k-e85k-c-eps-converted-to.pdf used on
- input line 905.
+ input line 910.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/maxload-to-k-v4k-e85k-a.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -739,7 +742,7 @@ d-to.pdf>
 (epstopdf)                    size: 6586 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/maxload-to-k-v4k-e85k
 -a-eps-converted-to.pdf graph/maxload-to-k-v4k-e85k-a.eps>
-(epstopdf)             \includegraphics on input line 914.
+(epstopdf)             \includegraphics on input line 919.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/maxload-to-k-v4k-e85k-a-eps-converted-to.pdf, id=64, 361.35pt x 252.945p
@@ -748,7 +751,7 @@ File: graph/maxload-to-k-v4k-e85k-a-eps-converted-to.pdf Graphic file (type pdf
 )
  <use graph/maxload-to-k-v4k-e85k-a-eps-converted-to.pdf>
 Package pdftex.def Info: graph/maxload-to-k-v4k-e85k-a-eps-converted-to.pdf use
-d on input line 914.
+d on input line 919.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/maxload-to-k-v4k-e85k-b.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -759,7 +762,7 @@ d-to.pdf>
 (epstopdf)                    size: 6604 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/maxload-to-k-v4k-e85k
 -b-eps-converted-to.pdf graph/maxload-to-k-v4k-e85k-b.eps>
-(epstopdf)             \includegraphics on input line 918.
+(epstopdf)             \includegraphics on input line 923.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/maxload-to-k-v4k-e85k-b-eps-converted-to.pdf, id=65, 361.35pt x 252.945p
@@ -768,7 +771,7 @@ File: graph/maxload-to-k-v4k-e85k-b-eps-converted-to.pdf Graphic file (type pdf
 )
  <use graph/maxload-to-k-v4k-e85k-b-eps-converted-to.pdf>
 Package pdftex.def Info: graph/maxload-to-k-v4k-e85k-b-eps-converted-to.pdf use
-d on input line 918.
+d on input line 923.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/maxload-to-k-v4k-e85k-c.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -779,7 +782,7 @@ d-to.pdf>
 (epstopdf)                    size: 6625 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/maxload-to-k-v4k-e85k
 -c-eps-converted-to.pdf graph/maxload-to-k-v4k-e85k-c.eps>
-(epstopdf)             \includegraphics on input line 922.
+(epstopdf)             \includegraphics on input line 927.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/maxload-to-k-v4k-e85k-c-eps-converted-to.pdf, id=66, 361.35pt x 252.945p
@@ -788,7 +791,7 @@ File: graph/maxload-to-k-v4k-e85k-c-eps-converted-to.pdf Graphic file (type pdf
 )
  <use graph/maxload-to-k-v4k-e85k-c-eps-converted-to.pdf>
 Package pdftex.def Info: graph/maxload-to-k-v4k-e85k-c-eps-converted-to.pdf use
-d on input line 922.
+d on input line 927.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/cut-to-ac-v4k-e85k-a.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -799,7 +802,7 @@ o.pdf>
 (epstopdf)                    size: 6636 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/cut-to-ac-v4k-e85k-a-
 eps-converted-to.pdf graph/cut-to-ac-v4k-e85k-a.eps>
-(epstopdf)             \includegraphics on input line 931.
+(epstopdf)             \includegraphics on input line 936.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/cut-to-ac-v4k-e85k-a-eps-converted-to.pdf, id=67, 361.35pt x 252.945pt>
@@ -807,7 +810,7 @@ File: graph/cut-to-ac-v4k-e85k-a-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/cut-to-ac-v4k-e85k-a-eps-converted-to.pdf>
 Package pdftex.def Info: graph/cut-to-ac-v4k-e85k-a-eps-converted-to.pdf used o
-n input line 931.
+n input line 936.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/cut-to-ac-v4k-e85k-b.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -818,7 +821,7 @@ o.pdf>
 (epstopdf)                    size: 6629 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/cut-to-ac-v4k-e85k-b-
 eps-converted-to.pdf graph/cut-to-ac-v4k-e85k-b.eps>
-(epstopdf)             \includegraphics on input line 935.
+(epstopdf)             \includegraphics on input line 940.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/cut-to-ac-v4k-e85k-b-eps-converted-to.pdf, id=68, 361.35pt x 252.945pt>
@@ -826,7 +829,7 @@ File: graph/cut-to-ac-v4k-e85k-b-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/cut-to-ac-v4k-e85k-b-eps-converted-to.pdf>
 Package pdftex.def Info: graph/cut-to-ac-v4k-e85k-b-eps-converted-to.pdf used o
-n input line 935.
+n input line 940.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/cut-to-ac-v4k-e85k-c.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -837,7 +840,7 @@ o.pdf>
 (epstopdf)                    size: 6622 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/cut-to-ac-v4k-e85k-c-
 eps-converted-to.pdf graph/cut-to-ac-v4k-e85k-c.eps>
-(epstopdf)             \includegraphics on input line 939.
+(epstopdf)             \includegraphics on input line 944.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/cut-to-ac-v4k-e85k-c-eps-converted-to.pdf, id=69, 361.35pt x 252.945pt>
@@ -845,7 +848,7 @@ File: graph/cut-to-ac-v4k-e85k-c-eps-converted-to.pdf Graphic file (type pdf)
 
 <use graph/cut-to-ac-v4k-e85k-c-eps-converted-to.pdf>
 Package pdftex.def Info: graph/cut-to-ac-v4k-e85k-c-eps-converted-to.pdf used o
-n input line 939.
+n input line 944.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/maxload-to-ac-v4k-e85k-a.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -856,7 +859,7 @@ ed-to.pdf>
 (epstopdf)                    size: 6630 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/maxload-to-ac-v4k-e85
 k-a-eps-converted-to.pdf graph/maxload-to-ac-v4k-e85k-a.eps>
-(epstopdf)             \includegraphics on input line 948.
+(epstopdf)             \includegraphics on input line 953.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/maxload-to-ac-v4k-e85k-a-eps-converted-to.pdf, id=70, 361.35pt x 252.945
@@ -865,7 +868,7 @@ File: graph/maxload-to-ac-v4k-e85k-a-eps-converted-to.pdf Graphic file (type pd
 f)
  <use graph/maxload-to-ac-v4k-e85k-a-eps-converted-to.pdf>
 Package pdftex.def Info: graph/maxload-to-ac-v4k-e85k-a-eps-converted-to.pdf us
-ed on input line 948.
+ed on input line 953.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/maxload-to-ac-v4k-e85k-b.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -876,7 +879,7 @@ ed-to.pdf>
 (epstopdf)                    size: 6634 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/maxload-to-ac-v4k-e85
 k-b-eps-converted-to.pdf graph/maxload-to-ac-v4k-e85k-b.eps>
-(epstopdf)             \includegraphics on input line 952.
+(epstopdf)             \includegraphics on input line 957.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/maxload-to-ac-v4k-e85k-b-eps-converted-to.pdf, id=71, 361.35pt x 252.945
@@ -885,7 +888,7 @@ File: graph/maxload-to-ac-v4k-e85k-b-eps-converted-to.pdf Graphic file (type pd
 f)
  <use graph/maxload-to-ac-v4k-e85k-b-eps-converted-to.pdf>
 Package pdftex.def Info: graph/maxload-to-ac-v4k-e85k-b-eps-converted-to.pdf us
-ed on input line 952.
+ed on input line 957.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
 Package epstopdf Info: Source file: <graph/maxload-to-ac-v4k-e85k-c.eps>
 (epstopdf)                    date: 2017-05-17 16:13:54
@@ -896,7 +899,7 @@ ed-to.pdf>
 (epstopdf)                    size: 6629 bytes
 (epstopdf)             Command: <epstopdf --outfile=graph/maxload-to-ac-v4k-e85
 k-c-eps-converted-to.pdf graph/maxload-to-ac-v4k-e85k-c.eps>
-(epstopdf)             \includegraphics on input line 956.
+(epstopdf)             \includegraphics on input line 961.
 Package epstopdf Info: Output file is already uptodate.
 
 <graph/maxload-to-ac-v4k-e85k-c-eps-converted-to.pdf, id=72, 361.35pt x 252.945
@@ -905,7 +908,7 @@ File: graph/maxload-to-ac-v4k-e85k-c-eps-converted-to.pdf Graphic file (type pd
 f)
  <use graph/maxload-to-ac-v4k-e85k-c-eps-converted-to.pdf>
 Package pdftex.def Info: graph/maxload-to-ac-v4k-e85k-c-eps-converted-to.pdf us
-ed on input line 956.
+ed on input line 961.
 (pdftex.def)             Requested size: 158.99377pt x 111.29614pt.
  [10] [11]
 [12] [13 <D:/study/big graph partition/experiment/paper/graph/time-v4k-e85k-a-e
@@ -937,15 +940,19 @@ d-to.pdf> <D:/study/big graph partition/experiment/paper/graph/cut-to-ac-v4k-e8
 /maxload-to-ac-v4k-e85k-a-eps-converted-to.pdf> <D:/study/big graph partition/e
 xperiment/paper/graph/maxload-to-ac-v4k-e85k-b-eps-converted-to.pdf> <D:/study/
 big graph partition/experiment/paper/graph/maxload-to-ac-v4k-e85k-c-eps-convert
-ed-to.pdf>] ("D:\study\big graph partition\experiment\paper\sigproc.bbl")
-[16
+ed-to.pdf>] ("D:\study\big graph partition\experiment\paper\sigproc.bbl"
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
+) [16
+
+]
+[17
 
 ] ("D:\study\big graph partition\experiment\paper\sigproc.aux") ) 
 Here is how much of TeX's memory you used:
  3980 strings out of 495354
  53936 string characters out of 3183859
- 184737 words of memory out of 3000000
+ 186523 words of memory out of 3000000
  7010 multiletter control sequences out of 15000+200000
  54618 words of font info for 74 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
@@ -965,9 +972,9 @@ EX/MiKTeX/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/CTEX/MiKTeX/fonts/type1/
 urw/helvetic/uhvb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/helvetic/uhvr8a.pfb><C:
 /CTEX/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/t
 imes/utmr8a.pfb><C:/CTEX/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on sigproc.pdf (16 pages, 456366 bytes).
+Output written on sigproc.pdf (17 pages, 457893 bytes).
 PDF statistics:
- 383 PDF objects out of 1000 (max. 8388607)
+ 386 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  121 words of extra memory for PDF output out of 10000 (max. 10000000)
 
