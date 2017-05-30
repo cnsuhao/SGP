@@ -27,6 +27,11 @@ Xiaoguang Li\\
 \maketitle
 
 \begin{abstract}
+Graph partitioning is a key problem to enable efficient solving of a wide range of computational tasks and querying over large-scale graph data. The graph has to be loaded into the cluster to facilitate the future computation. But existing graph partitioning heuristics incur high computation and communication cost on large graphs. Although streaming loading algorithms were proposed to improve the loading efficiency, their quality of partitions highly depends on the locality of stream. Especially, their heuristics that shows a good performance always require the global computation and suffer from the expensive runtime with the restriction of memory.
+In this paper, we propose an I/O efficient approach to loading a big graph approximately.
+We introduce the concept of expectation of error gain to measure the quality of partitions instead of edges cut. 
+The theoretical analysis on the bound of gain expectation is given as the base of building the representative graph by streaming sampling edges. We design two efficient algorithms to load the big graph into distributed system in manner of graph
+partitions: SGLd-two-pass disk-based graph partitioning and SGLs-one-pass streaming graph partitioning. We also demonstrated these two methods can dramatically improve the runtime of partitioning with small memory limitation and shows the comparable performance of edge-cut and balance in comparison to the state-in-art.
 
 \end{abstract}
 
@@ -650,7 +655,8 @@ Figure 5 gives the experimental results of edges cut. It is obvious that the val
 Figure 6 shows the experimental results of maximum loads. It can be observed that \textbf{SGLd} performs best over all setting with the average improvement of
 5.7\% for \textbf{SGLd} with \textbf{RUS} and 5.7\% for \textbf{SGLd} with \textbf{DBS} under Random order, 8.3\% and 8.3\% under DFS order, 7.4\% and 7.5\% under BFS order in comparison to \textbf{FNL}. \textbf{SGLs} also performs better than \textbf{FNL} with the improvement of 2.8\% under Random order, 0.6\% under DFS order and 4.8\% under BFS order.
 
-Finally, we present the experiments with respective to \textbf{AC} and input orders with the setting of the memory limitation $\rho = 0.3$ and $k=4$.
+Finally, we present the experiments with respective to \textbf{AC} and input orders with the setting of the memory limitation $\rho = 0.3$ and $k=4$. Figure 7 shows the changes of edges cut over a range of AC size 10 $\sim$ 80. We observe surprisingly that for Random and DFS order, the best cut value is achieved at $AC=50$, not at the larger or smaller size. For BFS order, edges cut decreases moderately with AC size increased, but it isn't sensitive much more to AC size as Random and DFS order. It is because the context of much bigger or small size will be inconsistent greatly with the local neighborhoods of allocated vertex. Moreover, \textbf{SGLd} with \textbf{DBS} and \textbf{SGLs} perform generally better than \textbf{SGLd} with \textbf{RUS} over all AC size for Random and DFS order, while for BFS order three methods are of comparable performances. Figure 8 is the experimental result of maximum normalized load. As depicted by Figure 8, \textbf{SGLd} outperforms \textbf{SGLs} with the improvement of 2.62\% for Random order, 2.34\% for DFS order and 2.06\% for BFS on average. In generally, the maximum normalized load of \textbf{SGLs} is more sensitive to AC size than \textbf{SGLd}.
+
 
 
 \begin{table*}[!hpp]
@@ -1070,7 +1076,7 @@ avg&1&1.001&1.001&1.069&1.062&1.037\\
 \clearpage
 \end{comment}
 \section{Conclusions}
-//We have demonstrated that simple, one-pass streaming graph partitioning heuristics can dramatically improve the edge-cut in distributed graphs.
+In this work we provide a new perspective on the well studied problem of balanced graph partitioning. We introduce the concept of expectation of error gain to measure the quality of partitions instead of edges cut. The theoretical analysis on the bound of gain expectation is given as the base of building the representative graph by streaming sampling edges.  We design two efficient algorithms to load the big graph into distributed system in manner of graph partitions: \textbf{SGLd}, two-pass disk-based graph partitioning and \textbf{SGLs}, one-pass streaming graph partitioning. We also demonstrated these two methods can dramatically improve the runtime of partitioning with small memory limitation and shows the comparable performance of edge-cut and balance in comparison to the state-in-art.
 \section{Acknowledgments}
 
 \bibliographystyle{abbrv}
