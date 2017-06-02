@@ -80,7 +80,7 @@ To address the scale problem, \emph{graph summaries} that substantially smaller 
 
 Sampling graph is another way to obtain a small graph. Sampling on graphs has been used in many different flavors, but few in graph partitioning. Conceptually we can split the graph sampling algorithms into three groups: randomly selecting nodes, randomly selecting edges and the exploration techniques that simulate random walks or virus propagation to find a representative sample of the nodes\cite{DBLP:conf/kdd/LeskovecF06}. Previous work focused on using sampling to condense the graph to allow for better visualization. Works on graph compression focused on transforming the graph to speed up algorithms. Techniques for efficiently storing and retrieving the web-graph were also studied. Internet modeling community studied sampling from undirected graphs and concluded that some graph properties can be preserved by random-node selection with sample sizes down to 30\%.  Works study separability and stability of various graph properties degree distribution, central betweeness, hop-plot\cite{DBLP:conf/kdd/LeskovecF06}. To our knowledge, most related to our work is the algorithm determining the minimum cut base on \emph{graph skeleton} constructed by a small random sample from graph's edges\cite{Karger:mincut}. The algorithm need scan the original graph many times to probe the sampling ratio and compute the skeleton until a certain minimum cut value on the skeleton is greater than $\Omega((\log n)/\epsilon^2)$.
 
-Isabelle. S et.al\cite{Stanton:streampartition} proposed a streaming graph partitioning, which reads serial graph data from a disk onto a cluster. However, they just put forward ten heuristics of selecting the index of the partition where a vertex is assigned, and define three stream orderings of vertex arrival. One might need to perform a full graph partitioning once the graph has been fully loaded.
+Isabelle. S et.al\cite{Stanton:streampartition} and  C.E. Tsourakakis etc\cite{Charalampos:fennel} proposed the algorithms of streaming graph partitioning, which read serial graph data from a disk onto a cluster. However, they just put forward some heuristics of selecting the index of the partition where a vertex is assigned, and define three stream orderings of vertex arrival. One might need to perform a full graph partitioning once the graph has been fully loaded.
 
 \section{Problem Background}\label{section-background}
 \subsection{Notations}
@@ -328,10 +328,10 @@ Similar to Lemma \ref{lemma-partitioning-error-func-property} and Lemma \ref{lem
 
 The algorithm of \textit{DBS} is shown in Algorithm \ref{alg:degree-bias-sampling}. The element of $V_s$ has two items: \textit{vex} and \textit{d} are the information of vertex and its degree respectively. $V_s[v]$ is the element of the vertex $v$. The element in $E_s$ has four items: the item \textit{edge} that includes the vertices $u$ and $v$ of edge, the item \textit{weight} that is the sampling weight determined by the inverse of the minimum degree of $u$ and $v$ and the item with high relative weight has high probability of sampling,  the item \textit{rand} that is a random real in $[0,1]$, and the item \textit{key} that is the key for weighted sampling and calculated by ${rand}^{1/weight}$.   The edge is selected into the reservoir according to the relative $weight$ by the algorithm of weighted random sampling in \textit{DBS}, similar to \textit{A-Res} proposed by Pavlos S. Efraimidis etc \cite{Pavlos:weightedsampling}. The differences between \textit{DBS} and \textit{A-Res} are that:
 
-(1)  for \textit{A-Res} the weight of the item of population must be given in advanced, while for \textit{DBS} the degree observed by now is used to determine the weight. The assumption under \textit{DBS} is that  the degree of vertex is relative high in the observations if it is of the high relative degree in the population.  The assumption can be proved by the following:
-Suppose that the degrees of $u_1$ and $u_2$ are $d_1$ and $d_2$, $d_1\ge d_2$,  the total sampling degree of  $u_1$ and $u_2$ is $l$ and let $k$ be the sampling degree of $u_1$, then the probability distribution of $k$ is the distribution of \textit{Bernouli} , that is, if $l$ is big enough,  $ p(k)=C_l^k p^k(1-p)^{l-k} = \frac{\lambda^k}{k!} e^{-\lambda}$ where $p=\frac{d_1}{d_1+d_2}, \lambda = l p$. Since $d_1\ge d_2$, $p\ge1/2$, then we have $p(k\ge l/2)>1/2$.
+(1)  The weight of the item of population must be given in advanced in \textit{A-Res}, whereas the weight is updated by the degree observed currently in \textit{DBS}. The assumption in \textit{DBS} is that if the vertex is of the high degree in the population, so is it with high probability in the observations. The assumption can be proved by the following:
+suppose that the degrees of $u_1$ and $u_2$ are $d_1$ and $d_2$, $d_1\ge d_2$, respectively.  Their total degree in the sample is $l$ and let $k$ be the degree of $u_1$ in the sample, then the value $k$ follows the distribution of \textit{Bernouli} , that is, if $l$ is big enough,  $ p(k)=C_l^k p^k(1-p)^{l-k} = \frac{\lambda^k}{k!} e^{-\lambda}$ where $p=\frac{d_1}{d_1+d_2}, \lambda = l p$. Since $d_1\ge d_2$, $p\ge1/2$, then we have $p(k\ge l/2)>1/2$.
 
-(2)  In \textit{A-Res} the items except for the first $\rho$ items will be checked one by one, while such strategy will cause the phenomenon \textit{"first arrival, first dead"} for \textit{DBS}, that is,  the degrees of the vertices of the first arrival edge will be increased firstly and then the edges attached on these vertices are of high replaced probability even though the degrees are relative low in the final. Ideally, the random order is expected to avoid such phenomenon, but for DFS order or mixture order, the locality of arrival edges influences seriously the quality of weighted sampling. So, \textit{DBS} introduces an extra buffer of size $\eta$, and updates the degrees after each $\eta$ items read, which reduces the locality in some sense. The parameter of $\eta$ is set by experience. %????????????????
+(2)  The items except for the first $\rho$ items will be checked one by one in \textit{A-Res}, but such strategy will cause the phenomenon \textit{"first arrival, first dead"} for \textit{DBS}. The degrees of the vertices at the first arrival edge will be increased firstly, as a result the edges attached on these vertices are of high substituted probability even though the degrees are relative low in the final. Ideally, it is expected to avoid such phenomenon in the random order, but for DFS order or mixture order, the locality of arrival edges influences the quality of weighted sampling seriously. So, \textit{DBS} introduces an extra buffer of size $\eta$, and updates the degrees after each $\eta$ items, which reduces the locality in some sense. The parameter of $\eta$ is set by experience.
 
 \begin{algorithm}[h]
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
@@ -377,39 +377,39 @@ Sample Graph $G_s$;
 \end{algorithm}
 
 \subsection{Allocating Unsampled Vertex}
-In the second pass of scanning the graph, \textit{SGL} allocates the unsampled edges and vertices according to the approximate partitioner of $G_s$. For the unsampled edge $e=(u, v)$, as shown from Step \ref{alogrithm-sgl-disk-allocate-step-begin} to Step \ref{alogrithm-sgl-disk-allocate-step-end} of Algorithm \ref{alg:sampling-graph}, if both $u$ and $v$ exist in $G_s$, $e$ is allocated by the partitions of $u$ and $v$, whereas if there exits a vertex of edge that doesn't belong to $G_s$, $SGL$ has to wait for allocating it until its locality is retrieved. Here, the locality of vertex is defined as following:
+In the second scan, \textit{SGL} allocates the unsampled edges and vertices according to the approximate partitioner $G_s$. For the unsampled edge $e=(u, v)$, as shown from Step \ref{alogrithm-sgl-disk-allocate-step-begin} to Step \ref{alogrithm-sgl-disk-allocate-step-end} in Algorithm \ref{alg:sampling-graph}, if both $u$ and $v$ exist in $G_s$, $e$ is allocated by the partitions of $u$ and $v$, whereas if there exits a vertex of edge that doesn't belong to $G_s$, $SGL$ has to wait for allocating it when its locality is retrieved. Here, the locality of vertex is defined as following:
 
 \begin{definition}\label{def-locality}
 For graph $G=(V, E)$, the $locality$ of vertex $u\in V$ is defined as the set of its adjacent  vertices, that is $LOC(u)=\{v | v\in V, (u,v)\in E \}$.
 \end{definition}
 
-An unsampled vertex is allocated until more than $s \cdot d$ percent of the adjacent vertices in its locality have been read and partitioned, where $s$ is decided by Equation \ref{theorm-sampling-prob-eq} with the bound of given error $\alpha$, otherwise  the vertices of locality should be cached.
+An unsampled vertex isn't allocated until more than $s \cdot d$ percent of the adjacent vertices in its locality have been read and partitioned, where $s$ is decided by Equation \ref{theorm-sampling-prob-eq} with the bound of given error $\alpha$, otherwise the vertices of locality should be cached.
 For a vertex of degree $d$, the likelihood that none of its $d$ edges is sampled is  $(1-s)^d$ and the expectation of the number of unsampled vertex of degree $d$ is $n_d (1-s)^d$, where $n_d$ is the number of vertices of degree $d$. The expectation of required space is $d n_d (1-s)^d$.
 With the sum of expectation with respect to the degree $1\sim d_{max}$, We have the average space complexity of locality cache is $O(\sum_{d=1}^{d_{max}} {d n_d(1-s)^d})$ .
 Since $s<1$, few of vertices are unsampled and the cache will be small.
 Moreover,  the approximate partitioner needn't to be re-adjusted with unsampled vertex allocated, because it is considered to be qualified to allocating the vertex with the bound of error gain.
 
 \section{ Loading Stream Graph }
-For loading the stream graph , it is infeasible visiting the stream graph twice, since the edges flow continuously into the loading system and usually unable to be stored in the disk of loading node. To this problem, \textit{SGL} is modified here to fit into streaming graph loading.
+For loading the stream graph , it is infeasible visiting the stream graph twice, since the edges flow continuously into the loading system and usually unable to be stored in the disk of loading server. To this problem, \textit{SGL} is modified here to fit into streaming graph loading.
 
 \subsection {Streaming Loading Algorithm}
 
 The algorithm of loading stream graph is shown in Algorithm \ref{alg:streaming-loading}.
 The element of vertex in Algorithm \ref{alg:streaming-loading} has three items:
 the item $sampled$ represents whether the vertex is selected in $V_s$ or not;
-the item $partition$ indicates the partition of the vertex;
+the item $partition$ indicates the partition of vertex;
 the item $AC$ is the \textit{Allocation Context} of vertex determining the partition of unsampled vertex.
 The algorithm mainly includes two phases as following.
 
-\textit{Phase I}: For each new arrival edge $e^+$, \textit{DBS} is applied to select $e^+$ into the reservoir $E_s$. If $e^+$ substituted for $e^-$ in $E_s$, and then it will be checked whether the representative graph should be re-partitioned to update the approximate partitioner or not, as shown from Step \ref{alg-sgl-stream-adjust-partitioner-begin} to Step \ref{alg-sgl-stream-adjust-partitioner-end}. if it required, $G_s$ will be repartitioned after $\eta$ edges read, as shown from Step \ref{alg-sgl-stream-repartition-begin} to \ref{alg-sgl-stream-repartition-end}. The details of re-partitioning will be discussed in Chapter \ref{ch-sgls-adjust-ap}.
+\textit{Phase I}: For each new arrival edge $e^+$, \textit{DBS} is applied to select $e^+$ into the reservoir $E_s$. If $e^+$ substituted for $e^-$ in $E_s$, and then it will be checked whether the representative graph should be re-partitioned or not, as shown from Step \ref{alg-sgl-stream-adjust-partitioner-begin} to Step \ref{alg-sgl-stream-adjust-partitioner-end}. if it required, $G_s$ will be repartitioned after $\eta$ edges read, as shown from Step \ref{alg-sgl-stream-repartition-begin} to \ref{alg-sgl-stream-repartition-end}. The details of re-partitioning will be discussed in Chapter \ref{ch-sgls-adjust-ap}.
 Otherwise, $e^+$ will be allocated and saved  immediately into the corresponding storage node in terms of current approximate partitioner and its $AC$ as shown from Step \ref{alg-sgl-stream-allocate-edge-begin} to Step \ref{alg-sgl-stream-allocate-edge-end}.
 Here, \textit{AC} is the expand locality for determining the partition of unsampled vertex of $e^+$, which will be discussed further in Chapter \ref{ch-sgls-ac}.
 
 \textit{Phase II}:  At the end of stream, the partition of unsampled vertex maybe different from the one of its allocation, so the following should be checked in parallel on each storage node.
 \begin{enumerate}[i.]
-\item If there are vertices in the storage node that were migrated into different partitions on updating the approximate partitioner, they must be removed from the current node, as shown by Step \ref{alg-sgl-stream-clean-storage-node};
-\item For unsampled vertex, if there is the vertex in its $AC$  whose partition is different from the one in the final approximate partitioner, it must be re-allocated, as shown from Step \ref{alg-sgl-stream-ac-change-begin} to Step \ref{alg-sgl-stream-ac-change-end};
-\item After ($i$) and ($ii$), the edge with the partition of its unsampled vertex changed should be re-allocated, as shown from Step \ref{alg-sgl-stream-fix-EP-begin}  to Step \ref{alg-sgl-stream-fix-EP-end}.
+\item As the approximate partitioner updated, the vertices that migrated into different partition must be removed from the current storage node, as shown by Step \ref{alg-sgl-stream-clean-storage-node};
+\item For an allocated vertex, if there is a vertex in its $AC$ whose partition is different from the one in the final approximate partitioner, it must be re-allocated, as shown from Step \ref{alg-sgl-stream-ac-change-begin} to Step \ref{alg-sgl-stream-ac-change-end};
+\item The edge of the unsampled vertices whose partition changed in ($i$) and ($ii$) should be re-allocated, as shown from Step \ref{alg-sgl-stream-fix-EP-begin} to Step \ref{alg-sgl-stream-fix-EP-end}.
 \end{enumerate}
 
 \begin{algorithm}[!htbp]
@@ -499,36 +499,36 @@ $E_{u_0}$ is the set of edges attached on $V_{u_0}$.
 $|V_{u_0}|=l$, $l$ is the size of \textit{AC}.
 \end{definition}
 
-According to the observation, if $u_0$ belongs to the partition $i$, the other vertices in its $AC$ would stay in the partition $i$ with high probability. Here two factors of the vertex $u$ in \textit{AC} are considered to contributing to the allocation of $u_0$:
+According to the observation, if $u_0$ belongs to the partition $i$, the other vertices in its $AC$ would stay in the partition $i$ with high probability. Here two factors of the vertex $u$ in \textit{AC} contribute to the allocation of $u_0$:
 \begin{enumerate}[(1)]
-\item \textit{Influence} to $u_0$ measured by  the distance from $u$ to $u_0$ is the factor that if $u$ is of less distance to $u_0$, it would stay in the same partition to $u_0$ with higher probability. For $u\in{V_{u_0}}$, the influence of $u$ to $u_0$ is
+\item \textit{Influence} to $u_0$ that measured by  the distance from $u$ to $u_0$ is the factor that if $u$ is of less distance to $u_0$, it would stay in the same partition to $u_0$ with higher probability. For $u\in{V_{u_0}}$, the influence of $u$ to $u_0$ is
 \begin{equation}\label{eq-influence}
-influence(u, u_0)=\frac{1}{sp(u, u_0)}
+\phi(u, u_0)=\frac{1}{sp(u, u_0)}
 \end{equation}
-where $sp(u, u_0)$ is the length of shortest path between $u$ and $u_0$ in the graph $AC(u_0)$.
+where $sp(u, u_0)$ is the length of shortest path between $u$ and $u_0$ in the graph built by $AC(u_0)$.
 
-\item \textit{Attraction} to a partition measured by the proportion of its links to the partition is the factor that the more links to the partition is, the higher probability of traversing in the same partition is. For $u\in{V_{u_0}}$, the attraction of $u$ to the partition $i$ is
+\item \textit{Attraction} to partition that measured by the proportion of its links to the partition is the factor that the more links to the partition is, the higher probability of traversing in the same partition is. For $u\in{V_{u_0}}$, the attraction of $u$ to the partition $i$ is
 \begin{equation}\label{eq-attraction}
-attraction(u, i)=\frac{d_{u}^{i}}{d_{u}}
+\varphi(u, i)=\frac{d_{u}^{i}}{d_{u}}
 \end{equation}
 where $d_{u}^{i}$ is the number of links of the vertex $u$ to the partition $i$, $d_{u}$ is the degree of $u$.
 \end{enumerate}
 
-The unsampled vertex $u_0$ is allocated by the following equation.
+So, the unsampled vertex $u_0$ is allocated by the following equation.
 \begin{equation}\label{eq-label-vex}
 Partition(u_0) = \underset{i\in[1...k]}\arg \max {\{w_i\}}
 \end{equation}
 \begin{equation}\label{eq-assign-weight}
-w_i = \sum_{partition(u_j)=i\bigwedge u_j\in {V_{u_0}}} {influence(u_j, u_0) attraction(u_j, i)}
+w_i = \sum_{partition(u_j)=i\bigwedge u_j\in {V_{u_0}}} {\phi(u_j, u_0) \varphi(u_j, i)}
 \end{equation}
 
 \subsection {Adjusting Approximate Partitioner} \label{ch-sgls-adjust-ap}
 
-When the edge $e^+=(u^+,v^+)$ in $E_{seq}$  is selected to substitute for the edge $e^-=(u^-,v^-)$ in $E_s$, the representative graph $G_s$ should be re-partitioned in case of the gain of associated vertex inverse.
-The procedure of repartitioning needn't start at the root of the binary tree of graph partitioning but at the the internal node $LCA(i, j)$.
+When the edge $e^+=(u^+,v^+)$ in $E_{seq}$  is selected to substitute for the edge $e^-=(u^-,v^-)$ in $E_s$, the representative graph $G_s$ should be re-partitioned in case that the gain of associated vertex is inverse.
+Note that the procedure of repartitioning needn't start at the root of the binary tree of graph partitioning but at the the internal node $LCA(i, j)$.
 
-For an non-boundary vertex of $G_s$ with adding or removing incident edge, its sign of gain will not change and then it is unnecessary re-partitioning $G_s$.
-Whereas for an boundary vertex, its sign of gain will be inverse and $G_s$ should be re-partitioned in the following cases.
+When adding or removing incident edge on an non-boundary vertex of $G_s$, its sign of gain will not be changed.
+Whereas on an boundary vertex, its sign of gain will be inverse and $G_s$ should be re-partitioned in the following cases.
 \begin{enumerate}[i.]
 \item\label{repartition-cond1}  If $\exists u \in \{u^-, v^-\} \wedge j \in {[1...k]}$, $Partition(u) = i$, $u \in \mathcal{B} \wedge \{u^-, v^-\}\setminus{u} \not\subseteq \mathcal{B} \wedge \delta_{u}^{ij}=0$, where $\delta_{u}^{ij}$ is the gain of $u$ between the partition of $i$ and $j$ before $e^-$ removed, then the partition $i$ and $j$ should be adjusted.
 \item\label{repartition-cond2} If $\{u^+, v^+\} \subseteq \mathcal{B}$, $Partition(u^+)=i$, $Partition(v^+)=j$, $i \neq j$, $\delta_{u^+}^{ij}=0$ or $\delta_{v^+}^{ji}=0$ before $e^+$ added, then the partition $i$ and $j$ should be adjusted.
@@ -562,7 +562,7 @@ All algorithms have been implemented in C++, and all experiments were performed 
 To simulate the limitation of main memory, we implement the virtual memory system to swap the item of adjacent table.
 The multi-thread program is implemented to simulate the distributed loading with \textit{SGLs}. The \textit{SGLd} and \textit{SGLs} adopted the KL algorithm to partition the sample graph in all experiments.
 
-\begin{table*}[!hpp]
+\begin{table*}[h]
 \centering
 \caption{Datasets in the experiments}
 \begin{tabular}{cccccc}
@@ -659,7 +659,7 @@ Finally, we present the experiments with respective to \textbf{AC} and input ord
 
 
 
-\begin{table*}[!hpp]
+\begin{table*}[h]
 \centering
 \caption{Runtime with $\rho = m\times 30\%,\ k=4$(unit:sec)}
 \begin{tabular}{ccccccccccccc}
@@ -685,7 +685,7 @@ avg.                        &429.1	    &433.9   	&4766.7	    &4925.3	    &4995.5
 \end{tabular}
 \end{table*}
 
-\begin{table*}[!hpp]
+\begin{table*}[h]
 \centering
 \caption{Runtime with $\rho = m\times 50\%,\ k=4$(unit:sec)}
 \begin{tabular}{ccccccccccccc}
@@ -711,7 +711,7 @@ avg.                    &128.8  	&129.3	    &1966.1     &1952.3	    &1947.7	    
 \end{tabular}
 \end{table*}
 
-\begin{table*}[!hpp]
+\begin{table*}[h]
 \centering
 \caption{Runtime with $\rho = m\times 80\%,\ k=4$(unit:sec)}
 \begin{tabular}{ccccccccccccc}
@@ -736,7 +736,7 @@ avg.                        &125.1	    &124.2   	&584.4	    &583.5  	&583.7     
 \end{tabular}
 \end{table*}
 
-\begin{table*}[!hpp]
+\begin{table*}[h]
 \centering
 \caption{$\varsigma$ with $k=4$}
 \begin{tabular}{ccccccccccc}
@@ -761,7 +761,7 @@ avg.                    &0.696      &0.723      &0.023	    &0.261   	&0.270	    
 \end{tabular}
 \end{table*}
 
-\begin{table*}[!hpp]
+\begin{table*}[h]
 \centering
 \caption{SGLd and SGLs - $\varsigma$ with $k=4$, $\rho = 0.3, 0.5, 0.8$}
 \begin{tabular}{ccccccc}
@@ -811,7 +811,7 @@ avg.                    &1.018&1.001&3.091&1.39&1.515&1.973&1.502&1.507&1.986&1.
 \end{tabular}
 \end{table*}
 
-\begin{table*}[!hpp]
+\begin{table*}[h]
 \centering
 \caption{SGLd and SGLs - $\tau$ with $k=4$, $\rho = 0.3, 0.5, 0.8$}
 \begin{tabular}{ccccccc}
@@ -837,7 +837,7 @@ avg&1&1.001&1.001&1.069&1.062&1.037\\
 \end{table*}
 
 \graphicspath{{graph/}}
-\begin{figure*}[htbp]
+\begin{figure*}[h]
     \centering
     \subfigure[RANDOM]{
         \includegraphics[width=2.2in]{time-v4k-e85k-a.eps}
@@ -853,8 +853,7 @@ avg&1&1.001&1.001&1.069&1.062&1.037\\
     }
     \caption{Runtime VS. $\rho$ on syn-v4k-e85k Dataset, $k=4$}\label{fig:time-v4k-e85k}
 \end{figure*}
-
-\begin{figure*}[htbp]
+\begin{figure*}[h]
     \centering
     \subfigure[RANDOM]{
         \includegraphics[width=2.2in]{cut-v4k-e85k-a.eps}
@@ -870,8 +869,7 @@ avg&1&1.001&1.001&1.069&1.062&1.037\\
     }
     \caption{ $\varsigma$ VS. $\rho$ on syn-v4k-e85k Dataset, $k=4$}\label{fig:cut-v4k-e85k}
 \end{figure*}
-
-\begin{figure*}[htbp]
+\begin{figure*}[h]
     \centering
     \subfigure[RANDOM]{
         \includegraphics[width=2.2in]{maxload-v4k-e85k-a.eps}
@@ -887,8 +885,7 @@ avg&1&1.001&1.001&1.069&1.062&1.037\\
     }
     \caption{ $\tau$ VS. $\rho$ on syn-v4k-e85k Dataset, $k=4$}\label{fig:maxload-v4k-e85k}
 \end{figure*}
-
-\begin{figure*}[htbp]
+\begin{figure*}[h]
     \centering
     \subfigure[RANDOM]{
         \includegraphics[width=2.2in]{time-to-k-v4k-e85k-a.eps}
@@ -904,8 +901,7 @@ avg&1&1.001&1.001&1.069&1.062&1.037\\
     }
     \caption{ Time VS. $k$ on syn-v4k-e85k Dataset, $\rho=0.3$}\label{fig:time-to-k-v4k-e85k}
 \end{figure*}
-
-\begin{figure*}[htbp]
+\begin{figure*}[h]
     \centering
     \subfigure[RANDOM]{
         \includegraphics[width=2.2in]{cut-to-k-v4k-e85k-a.eps}
@@ -921,8 +917,7 @@ avg&1&1.001&1.001&1.069&1.062&1.037\\
     }
     \caption{ $\varsigma$ VS. $k$ on syn-v4k-e85k Dataset, $\rho=0.3$}\label{fig:cut-to-k-v4k-e85k}
 \end{figure*}
-
-\begin{figure*}[htbp]
+\begin{figure*}[h]
     \centering
     \subfigure[RANDOM]{
         \includegraphics[width=2.2in]{maxload-to-k-v4k-e85k-a.eps}
@@ -938,8 +933,7 @@ avg&1&1.001&1.001&1.069&1.062&1.037\\
     }
     \caption{ $\tau$ VS. $k$ on syn-v4k-e85k Dataset, $\rho=0.3$}\label{fig:maxload-to-k-v4k-e85k}
 \end{figure*}
-
-\begin{figure*}[htbp]
+\begin{figure*}[h]
     \centering
     \subfigure[RANDOM]{
         \includegraphics[width=2.2in]{cut-to-ac-v4k-e85k-a.eps}
@@ -956,7 +950,7 @@ avg&1&1.001&1.001&1.069&1.062&1.037\\
     \caption{ $\varsigma$ VS. $AC$ on syn-v4k-e85k Dataset, $\rho=0.3$, $k=4$}\label{fig:cut-to-ac-v4k-e85k}
 \end{figure*}
 
-\begin{figure*}[htbp]
+\begin{figure*}[h]
     \centering
     \subfigure[RANDOM]{
         \includegraphics[width=2.2in]{maxload-to-ac-v4k-e85k-a.eps}
