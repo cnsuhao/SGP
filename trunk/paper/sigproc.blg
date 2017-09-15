@@ -1,3 +1,8 @@
 This is BibTeX, Version 0.99dThe top-level auxiliary file: sigproc.aux
 The style file: abbrv.bst
 Database file #1: sigproc.bib
+Too many commas in name 1 of "Yang S, Yan X, Zong B, et al" for entry Yang:partitionmanagement
+while executing---line 1049 of file abbrv.bst
+Too many commas in name 1 of "Yang S, Yan X, Zong B, et al" for entry Yang:partitionmanagement
+while executing---line 1090 of file abbrv.bst
+(There were 2 error messages)

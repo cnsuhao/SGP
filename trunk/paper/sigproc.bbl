@@ -1,5 +1,17 @@
 \begin{thebibliography}{10}
 
+\bibitem{Arora:MultilevelHybrid}
+A.~A and K.~K.
+\newblock Enhanced multilevel hybrid algorithm for graph partitioning.
+\newblock {\em International Journal of Computer Applications}, 120:16--19,
+  2015.
+
+\bibitem{Milton:mathbook}
+M.~Abramowitz and I.~A. Stegun, editors.
+\newblock {\em Handbook of Mathematical Functions: With Formulas, Graphs, and
+  Mathematical Tables}.
+\newblock Courier Dover Publications, 9th edition, 1964.
+
 \bibitem{DBLP:books/sp/social11}
 C.~C. Aggarwal, editor.
 \newblock {\em Social Network Data Analytics}.
@@ -20,10 +32,21 @@ P.~S. Efraimidis and P.~G. Skpirakis.
 \newblock Weighted random sampling with a reservoir.
 \newblock {\em Information Processing Letters}, 97:181--185, 2006.
 
+\bibitem{DBLP:conf/sigcomm/FaloutsosFF99}
+M.~Faloutsos, P.~Faloutsos, and C.~Faloutsos.
+\newblock On power-law relationships of the internet topology.
+\newblock In {\em SIGCOMM}, pages 251--262, 1999.
+
 \bibitem{Fiduccia:klvar}
 C.~Fiduccia and R.~Mattheyses.
 \newblock A linear time heuristics for improving network partitions.
 \newblock In {\em 19th ACM/IEEE Design Automation Conf.}, pages 175--181, 1982.
+
+\bibitem{Echbarthi:Fractionalgreedy}
+E.~G and K.~H.
+\newblock Fractional greedy and partial restreaming partitioning: New methods
+  for massive graph partitioning.
+\newblock {\em IEEE International Conference on Big Data}, pages 25--32, 2014.
 
 \bibitem{Dhillon:multilevel}
 I.S.Dhillon, Y.Guan, and B.Kulis.
@@ -63,11 +86,22 @@ U.~V. Luxburg.
 \newblock A tutorial on spectral clustering.
 \newblock {\em Statistics and Computing}, 17(4):395--416, 2007.
 
+\bibitem{Newman:complexnetwork}
+M.~E.~J. Newman.
+\newblock The structure and function of complex networks.
+\newblock {\em SIAM Review}, 45:167--256, 2003.
+
 \bibitem{Stanton:streampartition}
 I.~Stanton and G.~Kliot.
 \newblock Streaming graph partitioning for large distributed graphs.
 \newblock Technical Report MSR-TR-2011-121, Microsoft Research Institution,
   November 2011.
+
+\bibitem{Chen:DistributedGraphPartitioning}
+C.~T and L.~B.
+\newblock A distributed graph partitioning algorithm for processing large
+  graphs.
+\newblock {\em Service-Oriented System Engineering, IEEE}, pages 53--59, 2016.
 
 \bibitem{Teng:multilevel}
 S.~Teng.
@@ -84,5 +118,11 @@ Y.~Till, editor.
 C.~E. Tsourakakis, C.~Gkantsidis, B.~Radunovic, and M.~Vojnovic.
 \newblock Fennel: Streaming graph partitioning for massive scale graphs.
 \newblock Technical Report MSR-TR-2012-113, Microsoft Research, November 2012.
+
+\bibitem{Yang:partitionmanagement}
+Z.~B. e.~a. Yang~S, Yan~X.
+\newblock Towards effective partition management for large graphs.
+\newblock {\em Proceedings of the ACM SIGMOD International Conference on
+  Management of Data}, pages 517--528, 2012.
 
 \end{thebibliography}
