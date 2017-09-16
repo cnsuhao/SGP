@@ -1,8 +1,21 @@
 This is BibTeX, Version 0.99dThe top-level auxiliary file: sigproc.aux
 The style file: abbrv.bst
 Database file #1: sigproc.bib
-Too many commas in name 1 of "Yang S, Yan X, Zong B, et al" for entry Yang:partitionmanagement
+I was expecting a `,' or a `}'---line 164 of file sigproc.bib
+ :   
+ :   pages = {1560-1572},
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+Too many commas in name 1 of "Petroni F, Querzoni L, Daudjee K, et al." for entry Petroni:HDRF
 while executing---line 1049 of file abbrv.bst
 Too many commas in name 1 of "Yang S, Yan X, Zong B, et al" for entry Yang:partitionmanagement
+while executing---line 1049 of file abbrv.bst
+Too many commas in name 1 of "Xu N, Cui B, Chen L, et al" for entry Xu:heterogeneous
+while executing---line 1049 of file abbrv.bst
+Too many commas in name 1 of "Petroni F, Querzoni L, Daudjee K, et al." for entry Petroni:HDRF
 while executing---line 1090 of file abbrv.bst
-(There were 2 error messages)
+Too many commas in name 1 of "Xu N, Cui B, Chen L, et al" for entry Xu:heterogeneous
+while executing---line 1090 of file abbrv.bst
+Too many commas in name 1 of "Yang S, Yan X, Zong B, et al" for entry Yang:partitionmanagement
+while executing---line 1090 of file abbrv.bst
+(There were 7 error messages)
