@@ -42,11 +42,22 @@ C.~Fiduccia and R.~Mattheyses.
 \newblock A linear time heuristics for improving network partitions.
 \newblock In {\em 19th ACM/IEEE Design Automation Conf.}, pages 175--181, 1982.
 
+\bibitem{Firth:Workload}
+M.~P. Firth~H.
+\newblock Workload-aware streaming graph partitioning.
+\newblock {\em Graphq Workshop, Co-Located with EDBT}, pages 517--528, 2016.
+
 \bibitem{Echbarthi:Fractionalgreedy}
 E.~G and K.~H.
 \newblock Fractional greedy and partial restreaming partitioning: New methods
   for massive graph partitioning.
 \newblock {\em IEEE International Conference on Big Data}, pages 25--32, 2014.
+
+\bibitem{Stanton:balancedrandomgraph}
+S.~I.
+\newblock Streaming balanced graph partitioning algorithms for random graphs.
+\newblock {\em Acm-Siam Symposium on Discrete Algorithms}, pages 1287--1301,
+  2014.
 
 \bibitem{Dhillon:multilevel}
 I.S.Dhillon, Y.Guan, and B.Kulis.
@@ -91,6 +102,24 @@ M.~E.~J. Newman.
 \newblock The structure and function of complex networks.
 \newblock {\em SIAM Review}, 45:167--256, 2003.
 
+\bibitem{Nishimura:versatile}
+J.~Nishimura and J.~Ugander.
+\newblock Restreaming graph partitioning: simple versatile algorithms for
+  advanced balancing.
+\newblock {\em Proceedings of the 19th ACM SIGKDD international conference on
+  Knowledge discovery and data mining}, page 1106¨C1114, 2013.
+
+\bibitem{Petroni:HDRF}
+D.~K. e.~a. Petroni~F, Querzoni~L.
+\newblock Hdrf: Stream-based partitioning for power-law graphs.
+\newblock {\em Proceedings of the 24th ACM International Conference on
+  Information and Knowledge Management}, pages 243--252, 2015.
+
+\bibitem{Sajjad:BoostingPartitioning}
+R.~F. Sajjad H~P, Payberah A~H.
+\newblock Boosting vertex-cut partitioning for streaming graphs.
+\newblock {\em IEEE International Congress on Big Data}, pages 1--8, 2016.
+
 \bibitem{Stanton:streampartition}
 I.~Stanton and G.~Kliot.
 \newblock Streaming graph partitioning for large distributed graphs.
@@ -118,6 +147,12 @@ Y.~Till, editor.
 C.~E. Tsourakakis, C.~Gkantsidis, B.~Radunovic, and M.~Vojnovic.
 \newblock Fennel: Streaming graph partitioning for massive scale graphs.
 \newblock Technical Report MSR-TR-2012-113, Microsoft Research, November 2012.
+
+\bibitem{Xu:heterogeneous}
+C.~L. e.~a. Xu~N, Cui~B.
+\newblock Heterogeneous environment aware streaming graph partitioning.
+\newblock {\em IEEE Transactions on Knowledge and Data Engineering}, 27(6),
+  2015.
 
 \bibitem{Yang:partitionmanagement}
 Z.~B. e.~a. Yang~S, Yan~X.
